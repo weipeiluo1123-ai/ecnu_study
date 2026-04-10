@@ -1,0 +1,63 @@
+1. h(左移)     j(下行)     k(上行)     l(右移)
+
+2. enter vim editor,command: vim <filename> <enter>
+
+3. quit: NOT SAVE: ESC-:q!
+         SAVE:ESC-:wq
+
+4. delete the charactor: x
+
+5. i: insert before charactor
+   a: insert after charactor
+   A: insert after line
+
+
+6. dw:delete a word from pointer
+   d$:delete line from pointer
+   dd:delete all line
+   2dd:delete 2 lines
+   2w:move forward 2 words
+   3e:move forward to the third word end
+   0:move to head of the line
+   u:undo
+   ctrl-R:undo the undo operation
+
+7. p:put the content deleted behind the cursor   
+   r:replace the charactor
+   R:replace the charactor consistently
+   c:change the content behind the cursor,like ce(word)/c$(line)
+
+8. CTRL-G:show the information of the line pointed by cursor
+   G:last line
+   gg:first line
+   484G:jump to line484 
+
+9. /:search
+   ?:search(desc)
+   n:next match option
+   N:next match option(desc)
+   %:find the match bracket
+   :s/old/new/g:replace all the old with new of this line
+   :1,3s/old/new/g:replace line1 to line3
+   :%s/old/new/g:replace in the whole directory
+   :%s/old/new/gc:replace in the whole directory,meanwhile,ask u if u want to replace at the same time.
+   
+10.":!":execute the outdoor command
+   ":!ls":show the list of this directory
+   ":w FILENAME":write into the file and save
+   v:enter the status which can select the content
+   ":r FILENAME":read the content of the file
+   o:like insert,insert in the line behind the line pointed by cursor
+   O:like insert,insert in the line before the line pointed by cursor
+   y:copy
+   p:taste
+   "set ic":ignore case
+   "set hls":high line
+
+11.":help: find the help of something
+   "CTRL-W CTRL-W": switch the windows
+   "edit ~/.vimrc":Unix command, edit the vimrc file
+   "edit ~/_vimrc":MS-Windows command, edit the vimrc file   
+   "CTRL-D":show all command started by xxx
+   "TAB":complete command
+   
