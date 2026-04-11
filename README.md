@@ -1,6 +1,4 @@
 ## 记录学习路线
-<<<<<<< HEAD
-## test on windev
-=======
-## test on macdev
->>>>>>> main
+- 算法
+- 工具
+- 项目
