@@ -1,0 +1,887 @@
+Hi everyone, thanks for coming in. This is the missing semester of your CS education, at least that's what we chose to call the class. If you're not here for this class, then you're in the wrong room.
+大家好，感谢大家的到来。这是你们计算机科学教育中缺失的学期，至少我们是这么称呼这门课的。如果你们不是来上这门课的，那你们就来错地方了。
+
+We will be here for about an hour, just to set your expectations. I want to talk to you a little bit first about why we're doing this class. This class stems out of an observation that
+我们将在这里待大约一个小时，只是让你们做好心理准备。我想先和你们谈谈我们为什么要开这门课。这门课源于我们的一个观察，
+
+Aneesh and Jose and I have made while TAing various classes at MIT. Which is that basically all of us computer scientists, we know that computers are great at doing these repetitive tasks
+Aneesh、Jose 和我都有这个观察，当时我们正在麻省理工学院给各种课程当助教。那就是，我们这些计算机科学家，都知道计算机擅长处理重复性任务，
+
+and automating things. But we often fail to realize that there are lots of tools that can make our own development processes better. We can be a lot more efficient about how we use our computers,
+擅长自动化操作。但我们往往没有意识到，有很多工具可以优化我们自身的开发流程。我们可以更高效地使用计算机，
+
+because we can use the computer as a tool for ourselves, not just for building websites or software or those sorts of things. This class is an attempt to address this.
+把计算机当作自己的工具，而不仅仅是用来搭建网站、开发软件或做诸如此类的事情。开设这门课程就是为了解决这个问题。
+
+It's an attempt to show you some of the tools that you can use to great effect in your day to day, in your research, and in your studies.
+我们希望向大家展示一些工具，大家可以在日常研究中有效利用这些工具，也能运用到学习当中。
+
+It's going to be a class where we want to teach you both how to make the most of the tools that you already know, but also hopefully teach you about some tools that you didn't know before.
+在这堂课上，我们想教大家如何充分利用已知工具，也希望能教大家一些之前不知道的工具。
+
+And how to combine those tools to produce more powerful things than you think you might be able to do with what you know today. The class is going to be structured as a series of 11 one-hour lectures.
+我们还会讲解如何将这些工具结合起来，创造出比大家想象中更强大的成果，超越仅依靠现有知识所能达成的效果。课程将由 11 节一小时的讲座组成。
+
+Each one is going to cover a particular topic. You can see the website, which is also listed there, for the list of lecture topics and what date we'll do each one.
+每节课都会涵盖一个特定主题。你可以查看网站，网址也列在那里，上面有讲座主题列表以及每节课的日期。
+
+They will mostly be independent, so you can show up for the ones that you're interested in,
+这些课程大多是独立的，所以你可以选择参加你感兴趣的课程，
+
+but we will assume that you've been following along, so that as we get to later lectures, I'm not going to be teaching you Bash all over again, for example.
+但我们会假设你一直在跟进课程内容，这样当我们讲到后面的课时，例如，我就不会再重新教你 Bash 了。
+
+We are also going to post both the lecture notes and recordings of the lectures online, exactly when we do that we haven't established yet, but it will be after the lectures.
+我们还将发布课堂笔记，以及在线讲座的录像，具体时间我们还没定，但会在讲座结束后发布。
+
+Obviously the videos have to be posted after. The class is going to be run by me, John, and Anish sitting over there. And Jose, who is not currently here,
+显然，视频必须在讲座结束后发布。这门课将由我 John 来教，还有坐在那边的 Anish。Jose 虽然现在不在，
+
+but will be holding tomorrow's lecture. Keep in mind that we're trying to cover a lot of ground over the course of just 11 one-hour lectures. So we will be moving relatively rapidly,
+但他明天会来讲课。请记住，我们要在仅仅 11 节一小时的课程中涵盖大量内容。所以我们的进度会比较快，
+
+but please do stop us if there's anything where you feel like you're not following along. If you feel like there's something you wish we would spend more time on,
+但如果有任何你觉得跟不上的地方，请一定打断我们。如果你觉得有什么地方希望我们多花些时间讲解，
+
+just let us know, please interrupt us with questions, and also after each lecture, we're going to hold office hours on the ninth floor of building 32. The Data Center, the Computer Science building.
+请告诉我们，用问题打断我们，而且每次课后，我们会在 32 号楼的九层举行办公时间。就是数据中心，计算机科学楼那里。
+
+If you show up at the ninth floor lounge there, in the Gates Tower, then you can come and try some of the exercises that we give for each lecture, or just ask us other questions about things we've talked about in lecture,
+如果你们出现在九层的休息室，也就是盖茨大楼，就可以来尝试我们为每节课准备的一些练习，或者就我们在讲座中讨论过的内容向我们提问，
+
+or other things about using your computer efficiently. Due to the limited time that we have available, we're not going to be able to cover all tools in full detail.
+或者询问其他有关如何高效使用电脑的问题。由于时间有限，我们无法详细介绍所有工具。
+
+What we'll try to do is highlight interesting tools and interesting ways to use them. We won't necessarily dig into the deep details about how all of it works. Or more elaborate use cases.
+我们会尝试重点介绍有趣的工具，以及它们的有趣用法。我们不一定会深入探讨其工作原理的所有细节。或者更复杂的使用案例。
+
+But if you have questions about them, please come ask us about that too. Many of these tools are tools that we have used for years. And we might be able to point you to additional interesting things you can do with them.
+但如果你们对这些工具有疑问，也请一定来问我们。我们使用其中许多工具已经很多年了。我们或许还能为你们指出更多可以用它们来做的有趣的事情。
+
+So take advantage of the fact that we're here. This class is going to, I don't want to say ramp up quickly, but what's going to happen over the course of this particular lecture,
+所以，要利用我们在这里的机会。这门课的难度会……我不想说会迅速增加，但在这节课中会发生的是，
+
+is that we'll cover many of the basics, that we assume that you will know for the rest of the semester. Things like how to use your shell and your terminal.
+我们会讲解很多基础知识，这些知识我们假设你们在本学期剩下的课程中都会知道。比如如何使用 Shell 和终端。
+
+I'll explain what those are to those of you not familiar with them, and then we'll pretty quickly ramp up into more advanced tools and how to use them. You can already see from the lecture notes the kind of topics that we're going to.
+我会向不熟悉的同学解释它们是什么，然后我们会很快进入更高级的工具以及如何使用它们的部分。从讲义中大家已经可以看到我们即将探讨的主题类型了。
+
+That brings us to today's lecture. In which we are going to cover the shell. The shell is gonna be one of the primary ways that you interact with your computer, once you want to do more things than what the visual interfaces you might be used to allow you to do.
+这就到了今天的讲座。我们将介绍 Shell。Shell 是你与计算机交互的主要方式之一，一旦你想做的事情超出了常见的图形用户界面所能支持的范围。
+
+The visual interfaces are limited in what they allow you to do because you can only do the things that there are buttons for, sliders for, input fields for. Often, these textual tools are built to be both composable with one another
+图形用户界面的功能是有限的，因为你只能进行那些有按钮、滑块或输入字段对应的操作。通常，这些文本工具被设计成不仅可以相互组合，
+
+but also to have tons of different ways to combine them or ways to program and automate them. That is why in this class we will be focusing on these command line or text-based tools.
+还能用大量不同的方式进行组合，或者对其进行编程和自动化处理。这就是为什么在这门课上，我们将重点关注这些基于命令行或文本的工具。
+
+The shell is the place that you will do most of this work. For those of you who are not familiar, most platforms provide some kind of shell.
+而 shell 就是你进行大部分此类操作的地方。对于不熟悉的人来说，大多数平台都会提供某种 shell。
+
+On Windows, this is often PowerShell, but there are also other shells available on Windows. On Linux, you will find tons of terminals,
+在 Windows 系统中，通常是 PowerShell，但也有其他 shell 可供选择。在 Linux 系统中，你会发现有大量的终端，
+
+these are windows that allow you to display shells, and you will also find many different types of shells. The most common of which is Bash.
+这些都是可以显示 shell 的窗口，你还会发现有许多不同类型的 shell。其中最常见的是 Bash。
+
+Or the Bourne Again Shell. Because it's such a common shell, it is the one we're primarily gonna be covering in these lectures. If you're on MacOS, you will probably also have Bash,
+也就是 Bourne Again Shell。因为它是如此常见的 shell，所以在这些课程中，我们主要讲解的就是 Bash。如果你使用的是 MacOS，你可能也会有 Bash，
+
+maybe an older version of it. If you open the Terminal app, if you wanna follow along on any of these platforms, feel free. But keep in mind that most of this is gonna be Linux centric in terms of how we teach it.
+也许是旧版本的。如果你打开终端应用程序，想在这些平台上跟着操作的话，没问题。但要记住，我们的教学将主要以 Linux 为中心。
+
+Even though most of these tools work on all the platforms. If you wanna install a terminal and a shell and you don't know how to do it,
+尽管这些工具大多适用于所有平台。如果你想安装终端和 shell，但不知道怎么做，
+
+we're happy to show you at office hours. Or it's usually very easy to just Google, your platform plus terminal, and you will get one.
+我们很乐意在办公时间为你展示。通常只需谷歌搜索一下就很容易找到方法，比如你的平台名加上“终端”，你就会得到一个方法。
+
+Now when you open a terminal, you get something that looks a little bit like this. It will usually have just a single line at the top,
+现在，当你打开终端时，你会看到类似这样的界面。通常顶部只有一行，
+
+This is what's known as the shell prompt. You can see that my shell prompt looks like this. It has my username,
+这就是所谓的 Shell 提示符。你可以看到我的 Shell 提示符是这样的。它显示了我的用户名、
+
+the name of the machine that I'm on, the current path I'm on, and we will talk about paths a little bit later. And then it's really just blinking there,
+我所在的机器名、我当前所在的路径、我们稍后会稍微谈谈路径。然后它就只是在那里闪烁，
+
+asking me for input. This is the shell prompt, where you tell the shell what you want it to do. You can customize this prompt a lot.
+等待我输入。这就是 Shell 提示符，在这里你可以告诉 Shell 你想让它做什么。你可以对这个提示符进行大量自定义。
+
+When you open it on your machine, it might not look exactly like this, it might look something like this. If you've configured it a little,
+当你在自己的机器上打开它时，它可能看起来不完全像这样，可能看起来像这样。如果你对它进行了一些配置，
+
+or it might look all sorts of different ways. We won't go too much into customizing your shell in this particular lecture, we'll do that later.
+或者它可能看起来完全不同。在这节课中，我们不会过多地讨论自定义 Shell，我们稍后会讲。
+
+About how do you use this shell to do useful things. This is the main textual interface you have to your computers through the shell. On the shell prompt,
+关于如何使用这个 shell 来做有用的事情。这是主要的文本界面，你通过 shell 来操作计算机。在 shell 提示符下，
+
+you get to write commands and commands can be, relatively straight forward things, usually it will be something like, executing programs with arguments,
+你可以输入命令，这些命令可以是，相对简单的指令，通常是这样的，用参数执行程序，
+
+what does that look like? One program we can execute is the date program. We just type date and press enter, and then it will show you, unsurprisingly, the date and time.
+这看起来像什么？我们可以执行的一个程序是日期程序。我们只需输入 date 并按回车键，然后它会显示日期和时间，这并不奇怪。
+
+You can also execute a program with arguments. This is one way to modify the behavior of the program. For example, there's a program called echo.
+你也可以用参数来执行程序。这是修改程序行为的一种方式。例如，有一个名为 echo 的程序。
+
+And echo just prints out the arguments you give it. Arguments are just whitespace-separated things that follow the program name. We can say hello and then it will print hello back.
+它只是打印出你输入的参数。参数就是程序名后面用空格隔开的东西。我们可以输入 hello，然后它会回显 hello。
+
+Perhaps not terribly surprising, but this is the very basics of arguments. One thing that you'll notice is that I said that arguments are separated by whitespace.
+也许这并不太令人惊讶，但这就是参数的基本用法。你可能会注意到，我说过参数是用空格分隔的。
+
+And you might wonder, well, what if I want an argument that's multiple words? You can also quote things. So you can do things like echo hello space world,
+你可能会想，如果我想要一个由多个单词组成的参数怎么办？你也可以给内容加上引号。这样你就可以执行像 echo hello space world 这样的操作，
+
+and now the echo program receives one argument, that contains the string hello world with a space. You can also use single quotes for this.
+现在，echo 程序接收到了一个参数，其中包含了字符串 hello world 以及一个空格。你也可以用单引号来实现这一点。
+
+The difference between single quotes and double quotes, we'll get back to when we talk about bash scripting. You can also just escape single characters.
+单引号和双引号的区别，我们在讨论 Bash 脚本时会再详细说明。你也可以对单个字符进行转义。
+
+For example, hello world, this will also work just fine. All of these rules about how you escape and how you parse and quote various arguments and variables, we'll cover a little bit later.
+例如，hello world，这样写也是没问题的。所有这些关于如何转义以及如何解析和引用各种参数和变量的规则，我们稍后会稍微介绍一下。
+
+Hopefully you won't run into too many oddities about this, just keep in mind at least that spaces separate arguments.
+希望大家不会遇到太多这方面的奇怪问题，至少要记住，空格会分隔参数。
+
+So if you want to do something like make a directory called my photos, you can just type make directory my photos, it will create two directories, one called my and one called photos,
+所以如果你想创建一个名为“我的照片”的目录，你可以直接输入“mkdir my photos”，它会创建两个目录，一个叫“my”，一个叫“photos”，
+
+and that is probably not what you want. Now one thing you might ask is, how does the shell know what these programs are? When I type date or when I type echo,
+这可能不是你想要的结果。你可能会问，shell 是如何知道这些程序是什么的？当我输入 date 或 echo 时，
+
+how does it know what these programs are supposed to do? The answer to this is, your computer has a bunch of built-in programs, that comes with the machine.
+它是如何知道这些程序应该做什么的？答案是，你的电脑有一堆内置程序，它们是随机器一起提供的。‘
+
+Just like your machine might ship with the Terminal app, or it might ship with Windows Explorer, or it might ship with some kind of browser.
+就像你的设备可能会预装终端应用程序，或者可能会预装 Windows 资源管理器，也可能会预装某种浏览器。
+
+It also ships with a bunch of terminal-centric applications. These are stored on your file system, and your shell has a way to determine
+它还预装了许多以终端为中心的应用程序。这些应用程序存储在你的文件系统中，你的 shell 有一种方法可以确定
+
+where a program is located. It basically has a way to search for programs. It does this through something called an invariant environment variable. An environment variable is
+程序的位置。它基本上有一种搜索程序的方法。它通过一种叫做不变环境变量的东西来实现这一点。环境变量是
+
+a variable like you might be used to from programming languages. It turns out that the shell and the Bourne again shell, in particular, is really a programming language.
+一种你可能从编程语言中习惯使用的变量。事实证明，特别是 shell 和 Bourne again shell，实际上是一种编程语言。
+
+This prompt that you're given here, is not just able to run a program with arguments, you can also do things like while loops, for loops, conditionals, all of these, you can define functions, you can have variables,
+你在这里看到的这个提示符，不仅能够用参数运行程序，还可以进行诸如 while 循环、for 循环、条件判断等操作，你可以定义函数，可以使用变量，
+
+and all of these things you can do in the shell. We'll cover a lot of that in the next lecture. On shell scripting, for now though,
+所有这些都可以在 Shell 中完成。我们将在下一次讲座中详细介绍这些内容。现在，关于 Shell 脚本，
+
+let's just look at this particular environment. Environment variables are things that are set whenever you start your shell. They're not things you have to set every time you run your shell.
+我们先来看一下这个特定的环境。每当你启动 Shell 时，就会设置环境变量。你无需每次运行 Shell 时都进行设置。
+
+There are a bunch of these that are set, things like where is your home directory, what is your username, and there's also one that's critical for this particular purpose.
+有很多这样已设置好的环境变量，比如你的主目录在哪里，你的用户名是什么，还有一个对这个特定目的至关重要的环境变量。
+
+Which is the path variable. So if I echo out dollar path, this is going to show me all of the paths on my machine that the shell will search for programs.
+那就是路径变量。所以如果我输出美元路径，这会显示我机器上的所有路径，shell 会在这些路径中搜索程序。
+
+You'll notice that this is a list that is colon separated, it might be kind of long and hard to read. But the essentials is that
+你会注意到这是一个列表，以冒号分隔，可能有点长且难以阅读。但关键是，
+
+Bash, whenever you type the name of a program, is going to search through this list of paths on your machine and it's going to look in each directory
+每当你输入一个程序的名称，Bash 都会在这个路径列表中搜索，在你的机器上，它会查看每个目录
+
+for a program or a file whose name matches the command you try to run. In my case, when I try to run data echo, it's going to walk through these one at a time
+是否存在名称与你试图运行的命令相匹配的程序或文件。在我的例子中，当我尝试运行 data echo 时，它会逐个检查这些目录，
+
+until it finds one that contains a program called data echo, and then it's going to run it. If we want to know which one it actually runs,
+直到找到一个包含名为 data echo 的程序的目录，然后运行它。如果我们想知道它实际运行的是哪个，
+
+there's a command called which. Which lets us do that. So I can type which echo, and it will tell me that if I were to run a program called echo, I would run this one.
+有一个叫做 which 的命令。它可以帮助我们做到这一点。所以我可以输入 which echo，它会告诉我，如果我要运行一个名为 echo 的程序，我应该运行这个。
+
+It's worth pausing here to talk about what paths are. Paths are a way to name the location of a file on your computer. On Linux and on MacOS,
+这里值得暂停一下，谈谈什么是路径。路径是命名你电脑上文件位置的一种方式。在 Linux 和 MacOS 上，
+
+these paths are separated by slashes. Forward slashes. You'll see here that this is in the root directory, so the slash at the very beginning.
+这些路径用斜杠分隔。正斜杠。你会看到这里是在根目录中，所以开头是一个斜杠。
+
+It indicates that this is starting from the top of the file system. Then look inside the directory called usr. Then look inside the directory bin.
+这表示从文件系统的顶部开始。然后进入名为 usr 的目录。再进入 bin 目录。
+
+And then look for the file called echo. On Windows, paths like this are usually separated by backslashes instead. And whereas on Linux and MacOS,
+接着寻找名为 echo 的文件。在 Windows 上，像这样的路径通常用反斜杠分隔。而在 Linux 和 MacOS 上，
+
+everything lives under the root namespace, all paths start with a slash, or all absolute paths. On Windows,
+所有内容都在根命名空间下，所以所有路径都以斜杠开头，或者都是绝对路径。在 Windows 上，
+
+there is one root for every partition. So you might have seen things like C:\ or D:\. Windows has separate, sort of file system path hierarchies.
+每个分区都有一个根目录。你可能见过像 C:\ 或 D:\ 这样的东西。Windows 有独立的，文件系统路径层次结构。
+
+For each drive that you have. Whereas on Linux and MacOS, these are all mounted under one namespace. You'll notice that I said the word absolute path,
+对于你拥有的每个驱动器。而在 Linux 和 MacOS 上，这些都挂载在一个命名空间下。你会注意到我说的是绝对路径，
+
+and you might not know what that means. Absolute paths are paths that fully determine the location of a file. In this case, this is talking only about a specific echo file,
+你可能不知道这是什么意思。绝对路径是完全确定文件位置的路径。在这种情况下，这只涉及一个特定的 echo 文件，
+
+and it's giving you the full path to that file. But there are also things known as relative paths. A relative path is relative to where you currently are.
+并给出该文件的完整路径。但也有被称为相对路径的东西。相对路径是相对于你当前所在的位置。
+
+The way we find out where we currently are is you can type pwd, for present working directory. Print working directory.
+我们找到当前位置的方法是，你可以输入 pwd，即 present working directory。打印工作目录。
+
+If I type pwd, it will print out the current path that I'm in. Currently I'm in the home directory, under the root,
+如果我输入 pwd，它会输出我当前所在的路径。现在我在主目录，在根目录下，
+
+and then John under that, and then dev under that, etc. From here I can then choose to change my current working directory. And all relative paths are relative to the current working directory.
+然后是 John，再下面是 dev 等等。从这里我可以选择更改当前工作目录。所有相对路径都是相对于当前工作目录的。
+
+Which is basically where you currently are. In this case, for example, I can do cd /home. Cd is change directory.
+也就是你现在所在的位置。在这种情况下，例如，我可以输入 cd /home。cd 是更改目录的意思。
+
+This is the way that I change what my current working directory is. In this case, I change to home and you'll see my shell prompt change
+这是我更改当前工作目录的方式。在这种情况下，我切换到了主目录，你会看到我的命令提示符发生了变化，
+
+to say that I am now in home. It just gives me the name of the last segment of the path. But you can also configure your terminal to give you the full path whenever you're anywhere. Now if I type pwd,
+表明我现在在主目录。它只显示路径最后一部分的名称。但你也可以配置终端，让它在任何位置都显示完整路径。现在，如果我输入 pwd，
+
+again, it will tell me I'm in /home. There are also a couple of special directories. There is. and.. . means the current directory,
+它会再次告诉我我在 /home 目录。还有几个特殊目录。有. 和..。. 表示当前目录，
+
+. means the parent directory. So this is a way that you can easily navigate around the system. For example, here, if I type cd..,
+. 表示父目录。所以这是一种可以轻松浏览系统的方式。例如，在这里，如果我输入 cd..，
+
+it will tell me that I am now in /, so I'm now in the root of the file system. I was in /home, now I'm in /. And indeed, if I type pwd,
+它会告诉我我现在在 /，也就是文件系统的根目录。我之前在 /home，现在在 /。确实，如果我输入 pwd，
+
+it will do that right thing. And I can also then use relative paths to go down into the file system. So I can do cd./home,
+它会做正确的事。然后我也可以使用相对路径深入文件系统。所以我可以执行 cd./home，
+
+and this is going to cd into the home directory. Under the current directory. So this will bring me back to /home. If I now tried cd./home again,
+这会进入到 home 目录。在当前目录下。这会带我回到 /home。如果我现在再尝试 cd./home，
+
+it will say there's no such directory. Because there is no home directory under the current directory I'm on, which I changed by doing cd.
+它会说没有这样的目录。因为在我当前所在的目录下没有 home 目录，我是通过执行 cd 命令改变的。
+
+And I can cd all the way back to the place that I was, using relative paths. I can also do things like, dot dot dot dot dot.
+我可以一直 cd 回到我之前所在的位置，使用相对路径。我还可以做一些事情，比如点点点。
+
+To get back to somewhere deep in my file system, this happens to be all the way back to the root. Here there's a bin directory,
+要回到文件系统深处的某个地方，恰好要回到根目录。这里有一个 bin 目录，
+
+and under bin there's an echo file. Then I can do world. That runs the echo program under bin. This is a way that you can construct paths to arbitrarily traverse your file system.
+bin 目录下有一个 echo 文件。然后我可以执行 world 命令。这会在 bin 目录下运行 echo 程序。这是一种可以构建路径来任意遍历文件系统的方法。
+
+Sometimes you want absolute paths, and sometimes you want relative ones. Usually, you want to use whichever one is shorter. But if you want to, for example,
+有时候你需要绝对路径，有时候你需要相对路径。通常，你会选择更短的那个。但如果你想，比如说，
+
+run a program or write a program that runs a program, like echo or date, and you want it to be run from anywhere, you either want to just give the name of the program,
+运行一个程序或编写一个运行程序的程序，比如 echo 或 date，并且你希望它可以在任何地方运行，你要么只给出程序的名称，
+
+like date or echo, and let the shell use the path to figure out where it is, or you want to give it the absolute path. Because if you gave a relative path,
+比如 date 或 echo，让 shell 使用路径来确定它的位置，要么你想给它绝对路径。因为如果你给了一个相对路径，
+
+then if I ran it in my home directory, and you ran it in some other directory, it might work for me but not for you. In general,
+那么如果我在我的主目录中运行它，而你在其他目录中运行它，它可能对我有用，但对你没用。一般来说，
+
+when we run a program, it is going to be operating on the current working directory, at least by default, unless we give it any other arguments. This is really handy,
+当我们运行一个程序时，它将在当前工作目录中运行，至少默认情况下是这样，除非我们给它其他参数。这非常方便，
+
+because it means that often we don't have to give full paths for things. We can just use the name of files in the directory that we're currently in. One thing that's really useful,
+因为这意味着我们通常不需要为所有东西提供完整路径。我们可以只使用当前所在目录中文件的名称。有一个非常有用的功能，
+
+is to figure out what is in the current directory we're in. So we already saw pwd, which prints where you currently are. There's a command called ls,
+可以弄清楚当前所在目录中有什么。我们已经看到了 pwd 命令，它会打印出你当前所在的位置。还有一个名为 ls 的命令，
+
+which will list the files in the current directory. If I type ls here, this is all the files in the current directory. This is a handy way to quickly navigate through the file system.
+它会列出当前目录中的文件。如果我在这里输入 ls，这就是当前目录中的所有文件。这是一种快速浏览文件系统的便捷方式。
+
+You'll see that if I cd.. and then do ls, it'll show me the files in that directory instead. But with ls,
+你会看到，如果我输入 cd.. 然后执行 ls，它会显示那个目录中的文件。但使用 ls，
+
+I can also give it ls.., I can give it a path, and then it will ls that file instead of the one that I'm currently in, or ls that directory.
+我也可以给它 ls..，我可以给它一个路径，然后它会列出那个文件，而不是我当前所在的文件，或者列出那个目录。
+
+And you can see this if I go all the way to the root as well. Right? Root has different files. One handy trick you might not know about here,
+你也可以看到，如果我一直走到根目录。对吧？根目录有不同的文件。这里有一个你可能不知道的实用技巧，
+
+is there are two other special things you can do. One is the tilde character, this character. It brings you to your home directory.
+就是还有另外两件特别的事你可以做。一个是波浪字符，就是这个字符。它会带你到你的主目录。
+
+So tilde always expands to the home directory. And you can do relative paths to it. So I can do tilde/dev/pydos classes, missing semester and now I'm there.
+波浪字符总是会扩展为主目录。你可以对它使用相对路径。所以我可以使用波浪字符/开发/pydos 类，“missing semester”，然后我就到那里了。
+
+Because tilde expanded to /home/john. There's also for cd in particular, a really handy argument you can give, which is -h. If you do cd -h,
+因为波浪字符扩展为 /home/john。还有，特别是对于 cd 命令，你可以使用一个非常方便的参数，那就是 -h。如果你执行 cd -h，
+
+it will cd to the directory you were previously in. So if I do cd -h, I go back to root. If I do cd -h again,
+它会切换到你之前所在的目录。所以如果我执行 cd -h，我就会回到根目录。如果我再次执行 cd -h，
+
+Go back to missing semester. This is a handy way if you want to toggle between two different directories. In the case of ls,
+回到“缺失的学期”。这是个很方便的方法，如果你想在两个不同的目录间切换。在 ls 的情况下，
+
+or in the case of cd, there might be arguments that you don't know about. Currently we haven't really been doing anything except giving paths, but how do you even discover that you can give a path to ls in the first place?
+或者在 cd 的情况下，可能会有一些你不知道的参数。目前我们除了给出路径外，并没有做其他事情，但你最初是怎么发现可以给 ls 传递路径的呢？
+
+Most programs, take what are known as arguments, like flags and options. These are things that usually start with a dash. One of the handiest of these is --help.
+大多数程序，接受所谓的参数，比如标志和选项。这些东西通常以破折号开头。其中最方便的一个是 --help。
+
+Most programs implement this, and if you run, for example, ls --help, it will all helpfully print out, a bunch of information about that command.
+大多数程序都实现了这个功能，如果你运行，比如，ls --help，它会很有帮助地打印出，关于该命令的一堆信息。
+
+And you'll see here that it says the usage is ls, and you can give some number of options. And you can give some number of files.
+你会看到这里，它说用法是 ls，你可以给出一些选项。你可以给出一些文件。
+
+The way to read that usage line is, triple dot means one, like zero or one or more, and the square bracket means optional. In this case, there's an optional number of options,
+阅读使用说明的方式是，三个点表示一个，比如零个或一个或多个，方括号表示可选。在这种情况下，有可选数量的选项，
+
+and there's an optional number of files. And you'll see that it says what the program does, and also specifies a number of different types of flags and options
+也有可选数量的文件。你会看到它说明了程序的作用，还指定了许多不同类型的标志和选项，
+
+you can give. Usually, we call things that are single dash and a single letter a flag, and anything that doesn't take a value a flag, and anything that does take a value an option.
+你可以给出。通常我们把单个短划线和单个字母的东西称为标志，任何不需要值的东西都是标志，任何需要值的东西都是选项。
+
+For example, -a and --all are both flags, and -c or --color is an option. One thing you'll see under here, if you scroll down far enough,
+例如，-a 和 --all 都是标志，而-c 或 --color 是一个选项。你会在这里看到一件事，如果你向下滚动足够远，
+
+is the -l. That's unhelpful. The -l flag. The -l flag uses a long listing format, not that that's particularly helpful in and of itself, but let's see what it actually does.
+就是-l。这没什么用。-l 标志。-l 标志使用长列表格式，这本身并不是特别有用，但我们还是看看它到底做了什么。
+
+So if I do ls -l, it still prints the files in the current directory, but it gives me a lot more information about those files. And this is something you'll find yourself using quite a lot.
+所以如果我执行 ls -l，它仍然会打印当前目录中的文件，但它提供了更多关于这些文件的信息。这是你会经常使用的东西。
+
+Because the additional information it gives you, is often quite handy. Let's look at what some of that information is. Yeah.
+因为它提供的额外信息，通常非常方便。我们来看看其中的一些信息。好的。
+
+First of all, the "d" at the beginning of some of these entries indicates that something is a directory. So the underscore data entry here, for example,
+首先，这些条目的开头字母“d”表示这是一个目录。例如，这里的下划线数据条目，
+
+is a directory whereas 404.html is not a directory, it's a file. The following letters after that indicate the permissions that are set for that file. Like we saw earlier,
+是一个目录，而 404.html 不是目录，是一个文件。其后的字母表示为此文件设置的权限。就像我们之前看到的，
+
+I might not be able to open a given file, or I might not be able to cd into a given directory, and this is all dictated by the permissions on that particular file or directory.
+我可能无法打开某个文件，或者我可能无法进入某个目录，这一切都取决于该特定文件或目录的权限。
+
+I might not be able to open a given file, or I might not be able to cd into a given directory, and this is all dictated by the permissions on that particular file or directory.
+我可能无法打开某个文件，或者我可能无法进入某个目录，这一切都取决于该特定文件或目录的权限。
+
+The way to read these is that the first group of three are the permissions that are set for the owner of the file. All of these files you'll see are owned by me,
+阅读这些权限的方法是，第一组三个权限是为文件所有者设置的。你将看到的所有这些文件都归我所有，
+
+the second group of three characters is for the permissions for the group that owns this file, in this case, all of these files are also owned by the John group.
+第二组三个字符是为此文件所属的组设置的权限，在这种情况下，所有这些文件也都归 John 组所有。
+
+And a final group of three is a list of the permissions for everyone else. So anyone who's not a user owner or a group owner. This directory is perhaps kind of boring,
+最后一组三个字符是其他人的权限列表。所以，任何既不是用户所有者也不是组所有者的人。这个目录可能有点无聊，
+
+because all of the things are owned by me, but if we do something like cd / and do ls -l, you'll see that here all of them are owned by root.
+因为所有东西都归我所有，但如果我们执行类似 cd / 的操作，并执行 ls -l，你会看到这里所有的东西都归 root 所有。
+
+We'll get back to what the root user is. But here you'll see some of the permissions are a little bit more interesting. The groups of three are read, write, and execute.
+我们稍后再讨论 root 用户是什么。但在这里，你会发现有些权限设置得更有趣一些。这三组三个字符分别代表读、写和执行。
+
+What these mean differs for files and for directories. For files, it's pretty straight forward. If you have read permissions on a file,
+这些字符的含义在文件和目录中是不同的。对于文件来说，这很好理解。如果你对一个文件拥有读权限，
+
+then you can read its contents. If you have write permissions on a file, then you can save the file, you can add more to it, or you can replace it entirely.
+那么你就可以读取它的内容。如果你对一个文件拥有写权限，那么你就可以保存该文件，可以向其中添加更多内容，或者完全替换它。
+
+And if you have execute the x bit, on a file, then you're allowed to execute that file. So if we do ls -aL in /bin, that's not helpful.
+如果你有执行权限，那么你就被允许执行该文件。所以如果我们在 /bin 目录下执行 ls -aL 命令，这没什么用。
+
+In user bin, you'll see that all of them have the execute bit set, even for people who are not the owner of the file. And this is because the echo program, for example,
+在用户 bin 目录下，你会发现所有文件的可执行位都被设置了，即使对于非文件所有者也是如此。这是因为像 echo 程序，
+
+we want everyone on the computer to be able to execute. There's no reason to say only certain users can run echo, that doesn't really make any sense.
+我们希望计算机上的每个人都能执行它。没有理由说只有特定用户可以运行 echo，这没有任何意义。
+
+For directories, though, these permissions are a little bit different. So read translates to are you allowed to see which files are inside this directory.
+不过对于目录，这些权限稍有不同。所以读权限意味着是否允许你查看这个目录下有哪些文件。
+
+So think of read as list for a directory. Are you allowed to list its contents? Write for a directory is whether you are allowed to rename, create or remove files within that directory.
+可以把读权限理解为列出目录内容。是否有权列出其内容？写权限是指是否有权重命名、在该目录中创建或删除文件。
+
+So it's still kind of write, but notice that this means that if you have write permissions on a file, but you do not have write permissions on its directory,
+所以它仍然属于写权限，但要注意这意味着如果你对一个文件拥有写权限，但对其目录没有写权限，
+
+you cannot delete the file. You can empty it, but you cannot delete it. Because that would require writing to the directory itself. And finally execute on directories,
+你将无法删除该文件。你可以清空它，但不能删除它。因为这需要对目录本身进行写操作。最后是目录的执行权限，
+
+is something that trips people up a lot. Execute on a directory is what's known as search. That's not terribly helpful
+这一点经常让人犯迷糊。对目录的执行权限就是所谓的搜索。这并不是很有帮助，
+
+and what that means is are you allowed to enter this directory? If you want to get to a file, if you want to open it, or read it, or write it,
+但这意味着你是否被允许进入这个目录？如果你想访问一个文件，想要打开、读取或写入它，
+
+whatever you want to do, basically to cd into a directory, you must have the execute permission on all parent directories of that directory, and the directory itself.
+无论你想做什么，基本上都需要先切换到该目录，你必须对该目录的所有上级目录拥有执行权限，以及该目录本身的执行权限。
+
+For example, for me to access a file inside /user/bin, such as /user/bin/echo, I must have execute on root, I must have execute on user,
+例如，我要访问 /user/bin 中的文件，比如 /user/bin/echo，我必须对根目录拥有执行权限，对用户目录拥有执行权限，
+
+and I must have execute on bin. If I do not have all those execute bits, I will not be allowed to access that file. Because I won't be able to enter the directories along the way.
+对 bin 目录拥有执行权限。如果我没有所有这些执行权限，我将无法访问该文件。因为我无法进入沿途的目录。
+
+There are a number of other bits that you might come across, like you might see s's or t's in these lists. You might see l's.
+你可能会遇到其他一些权限，比如在这些列表中看到 s 或 t。你可能会看到 l。
+
+Those we could talk about in office hours if you're curious. They will mostly not matter for anything you will do in this class, but they are handy to know about.
+如果你好奇，我们可以在办公时间讨论这些。它们对你在这门课上要做的任何事情基本都不重要，但了解它们会很有用。
+
+So if you're curious about them, look them up on your own. Or come ask us in office hours. There are some other programs that are handy to know about.
+所以如果你对它们感到好奇，可以自己去查一下。或者在办公时间来问我们。还有一些其他的程序也很有用。
+
+Sorry, there's one more thing I should mention. If you just have a dash, it means you do not have that permission. If it says, for example, r-x,
+抱歉，我还应该提一件事。如果你只有一个破折号，那就意味着你没有那个权限。例如，如果显示的是 r-x，
+
+it means that you have read and execute, but you do not have write. There are some other handy programs to know about at this point. One of them is move or the mv command.
+那就表示你有读取和执行的权限，但没有写入的权限。此时还有一些其他有用的程序需要了解。其中一个是 move 或 mv 命令。
+
+If I cd back to missing semester here, mv lets me rename a file. Rename here takes two paths. It takes the old path and the new path.
+如果我回到“缺失的学期”，mv 可以让我重命名文件。这里的重命名需要两个路径。它需要旧路径和新路径。
+
+This means that move lets you both rename a file if you change the name of a file but not the directory, or it lets you move a file to a completely different directory.
+这意味着 move 命令既可以让你重命名文件，比如你想更改文件的名称但不改变目录，也可以将文件移动到完全不同的目录。
+
+You give the path to the current file and the path to where you want that file to be, and that can change its location and its name. For example, I can move dotfiles.md to be food.md.
+你只需提供当前文件的路径和你希望该文件到达的路径，这样就可以改变它的位置和名称。例如，我可以将 dotfiles.md 移动到 food.md。
+
+Unhelpfully, right? Similarly, I can move it back. There's also this cp command. The cp or copy is very similar. It lets you copy a file.
+这没什么帮助，对吧？同样，我也可以将其移回。还有这个 cp 命令。cp 或复制命令非常相似。它允许你复制文件。
+
+Cp also takes two arguments, it takes the path that you want to copy from and the path that you want to copy to. And these are full paths.
+cp 也接受两个参数，一个是你要复制的源路径，另一个是你要复制到的目标路径。这些都是完整的路径。
+
+So I could use this, for example, to say I want to copy doc files doc.md to dot slash food.md. Sure, food.md.
+所以我可以这样用，比如说，我想把 doc 文件 doc.md 复制到 /food.md。好的，food.md。
+
+And now if I do ls dot dot, you'll see that there's a food.md file. In that directory, so cp as well takes two paths. It does not have to be in the same directory.
+现在如果我执行 ls..，你会看到有一个 food.md 文件。在那个目录中，所以 cp 命令也需要两个路径。它们不一定要在同一个目录中。
+
+And similarly, there's the rm command, which lets you remove a file. And there too, you can give paths. In this case, I'm removing dot slash food.
+同样，还有一个 rm 命令，可以用来删除文件。在这里，你也可以指定路径。在这个例子中，我要删除 /food。
+
+You should be aware, for removing especially on Linux, removal is by default not recursive, so you cannot remove a directory using rm.
+你需要注意，尤其是在 Linux 系统上删除文件时，默认情况下，删除操作不是递归的，所以你不能使用 rm 命令删除目录。
+
+You can pass the -r flag, which lets you do a recursive remove.
+你可以传递 -r 参数，这样就可以进行递归删除。
+
+And then give a path that you want to remove and it will remove everything below it. There is also the rmdir command, which lets you remove a directory.
+然后给出一条路径，你想删除的路径，它会删除该路径下的所有内容。还有 rmdir 命令，可以删除目录。
+
+But it only lets you remove that directory if it is empty. So the idea here is to be a safety mechanism for you so you don't accidentally throw away a bunch of your files. And the final little command that's handy is lsof.
+但它只允许你删除该目录，前提是该目录为空。所以这里的思路是，作为一种安全机制，防止你误删一堆文件。最后一个方便的小命令是 lsof。
+
+The one I recommend you to use is make dir, which lets you create a new directory. As we talked about before, you don't want to do something like this,
+我推荐你使用的是 mkdir，它可以创建新目录。正如我们之前讨论的，你不会想这样做，
+
+because it will create two directories for you, one called my and one called photos. If you actually want to create a directory like this, you would either escape.
+因为它会为你创建两个目录，一个叫“my”，一个叫“photos”。如果你真的想创建这样的目录，你要么转义。
+
+Keep the space or quote the string. If you ever want more information about how any command basically on these platforms work, there's a really handy command for that as well.
+保留空格或引用字符串。如果你想了解更多信息，关于这些平台上任何命令是如何工作的，也有一个非常方便的命令。
+
+There is the program called man, for manual pages. This program takes as an argument the name of another program, and gives you its manual page.
+有一个名为“man”的程序，用于查看手册页。这个程序以另一个程序的名字作为参数，然后显示该程序的手册页。
+
+For example, we could do man ls. This shows us a manual page for ls. You'll notice that in the case of ls, it is fairly similar to what we got with ls --help.
+例如，我们可以执行“man ls”。这将显示一个手册页，是关于“ls”的。你会注意到，对于“ls”，它与我们使用“ls --help”得到的内容相当相似。
+
+But it's a little easier to navigate. It's a little easier to read. Usually towards the bottom, you will also get examples,
+但它更便于浏览。也更便于阅读。通常在底部，你还会看到示例、
+
+information about who wrote it, where you can find more information, and that sort of stuff. One thing that can be confusing sometimes,
+关于编写者的信息、在哪里可以找到更多信息，等等。有一点有时可能会让人困惑，
+
+at least until a recent version, where they added this string at the bottom, where it says "q" to quit. It did not used to say this.
+至少在最近的版本之前是这样，他们在底部添加了这一行字符串，上面写着按“q”键退出。以前可不是这样的。
+
+You press "q" to quit this program. It can be really hard to quit it if you do not know that. A handy keyboard shortcut here, by the way,
+你得按“q”键退出这个程序。如果你不知道这一点，可能真的很难退出。顺便说一下，这里有一个方便的键盘快捷键，
+
+is Control-L, which lets you clear your terminal and go back to the top. So far, we've only talked about programs in isolation.
+是 Control+L，可以清除终端，并回到顶部。到目前为止，我们只讨论了孤立的程序。
+
+But where much of the power of the shell really comes through is once you start combining different programs. So rather than just running cd, running ls,
+但 shell 的强大功能主要体现在将不同的程序组合起来。所以，与其只是运行 cd、ls，
+
+Etc. You might want to chain multiple programs together. You might want to interact with files. And have files operate in between programs.
+等等。你可能想把多个程序链接在一起。你可能想与文件交互。让文件在程序之间操作。
+
+The way we can do this is using this notion of streams that the shell gives us. Every program by default has, I'm gonna simplify a little, and say two primary streams.
+我们可以通过 shell 提供的流概念来实现这一点。默认情况下，每个程序都有，我简化一下，两个主要的流。
+
+It has an input stream and an output stream. By default, the input stream is your keyboard, basically, the input stream is your terminal,
+它有一个输入流和一个输出流。默认情况下，输入流是你的键盘，基本上，输入流就是你的终端，
+
+and whatever you type into your terminal is gonna end up into the program. And it has a default output stream, which is whenever the program prints something, it's gonna print to that stream.
+你在终端中输入的任何内容最终都会进入程序。它有一个默认的输出流，每当程序打印某些内容时，就会输出到该流。
+
+And by default, that is also your terminal. This is why when I type echo hello, it gets printed back to my terminal. But the shell gives you a way to rewire these streams,
+默认情况下，这也是你的终端。这就是为什么当我输入 echo hello 时，它会在我的终端上回显。但 shell 提供了一种重新连接这些流的方法，
+
+to change where the input and output of a program are pointed. The most straightforward way you do this is using the angle bracket signs.
+可以改变程序的输入和输出指向的位置。最直接的方法是使用尖括号。
+
+So you can write something like this. Or you can write something like this. The left angle bracket indicates rewire the input for this program to be the contents of this file.
+你可以这样写。或者你可以这样写。左尖括号表示将此程序的输入重新连接为该文件的内容。
+
+And the end angle bracket means rewire the output of the preceding program into this file. Let's look at an example of what that would look like.
+而右尖括号表示将前一个程序的输出重新连接到这个文件中。我们来看一个示例，
+
+If I do echo hello, I can say I want that context, content to be stored in a file called hello.txt. And because I gave this is a relative path,
+如果我输入 echo hello，我可以说我想要那个上下文，内容存储在一个名为 hello.txt 的文件中。因为我给的是一个相对路径，
+
+this will construct a file in the current directory, called hello.txt, and at least in theory, its contents should be the word hello. So if I run this,
+这将在当前目录中创建一个文件，名为 hello.txt，理论上，其内容应该是单词“hello”。所以如果我运行这个，
+
+notice that nothing got printed to my output, the previous time when I ran echo hello, it printed hello. Now that hello is gone into a file called hello.txt.
+注意到没有任何内容输出到我的输出中，上次我运行 echo hello 时，它打印了“hello”。现在那个“hello”已经进入了一个名为 hello.txt 的文件中。
+
+And I can verify this by using the program called cat, so cat prints the contents of a file. So I can do cat hello.txt,
+我可以使用名为 cat 的程序来验证这一点，cat 会打印文件的内容。所以我可以执行 cat hello.txt，
+
+and there it shows me hello. But cat is also something that supports this kind of wiring. So I can say cat, which by default just prints its input,
+它会显示 hello。但 cat 也支持这种连接方式。所以我可以说 cat，默认情况下它只是打印输入的内容，
+
+it just duplicates its input to its output. I can say I want you to take your input from hello.txt, what will happen in this case is
+它只是将输入复制到输出。我可以说，我希望你从 hello.txt 中获取输入，在这种情况下会发生的是，
+
+that the shell is gonna open hello.txt, take its contents and set that to be the input of cat, and then cat is gonna just print that to its output,
+shell 会打开 hello.txt，读取其内容并将其设置为 cat 的输入，然后 cat 就会将其打印到输出中，
+
+which since I haven't rewired it, it's just gonna be my terminal. So this will just print hello to the output. And I can use both of these at the same time.
+由于我没有重新连接，它就会直接输出到我的终端。所以这只会在输出中打印 hello。我可以同时使用这两个。
+
+At the same time, for example, if I wanna copy a file and I don't wanna use the cp command, for some reason,
+例如，如果我想复制一个文件，但不想使用 cp 命令，不管出于什么原因，
+
+I can do this. And in this case, I'm telling the cat program nothing at all. I'm just saying do your normal thing, the cat program does not know anything about this redirection.
+我可以这样做。在这种情况下，我是在告诉 cat 程序，什么都不用做。我只是说，做你平常做的事，cat 程序对这个重定向一无所知。
+
+But I'm telling the shell to use hello.txt as the input for cat. And to write anything that cat prints to hello2.txt. Again, this prints nothing to my terminal,
+但我告诉 shell 用 hello.txt 作为 cat 的输入。并将 cat 输出的任何内容写入 hello2.txt。同样，这不会在我的终端上输出任何内容，
+
+but if I cat hello2.txt, I get the output as I would have expected. Which is a copy of the original file. There is also a double end bracket,
+但如果我用 cat 命令查看 hello2.txt，就会得到如我所预期的输出。这是原始文件的一个副本。还有一个双端括号，
+
+Append instead of just overwrite. You'll notice that if I do cat hello.txt to hello2.txt again, and then I cat hello2.txt,
+而是追加，而不是直接覆盖。你会注意到，如果我再次执行 cat hello.txt > hello2.txt，然后我 cat hello2.txt，
+
+it still just contains hello, even though it already contained hello. If I switch that to instead be a double angle bracket, it means append,
+它仍然只包含 hello，尽管它已经包含了 hello。如果我将其改为双尖括号，这意味着追加，
+
+and if I now cat that file, it has hello twice. These are pretty straight forward. They're usually just ways to interact with files,
+如果我现在 cat 该文件，它会输出两次 hello。这些都非常简单。它们通常只是与文件交互的方式，
+
+but where it gets really interesting is an additional operator the shell gives you, called the pipe character. Pipe is just a vertical bar.
+但真正有趣的是shell 提供的一个额外操作符，称为管道字符。管道只是一个竖线。
+
+And what pipe means is, take the output of the program to the left, and make it the input of the program to the right. So what does this look like?
+它的意思是，将左边程序的输出作为右边程序的输入。那这看起来像什么呢？
+
+Let's take the example of ls / or ls -l, this prints a bunch of things. Let's say that I only want the last line of this output. There's a command called tail.
+让我们以一个例子来说明，ls / 或 ls -l，这会打印出一堆东西。假设我只想要这个输出的最后一行。有一个叫做 tail 的命令。
+
+And tail prints the last n lines of its input. And I can do -n 1, so this is a flag called n, and you can also use --lines,
+它会打印输入的最后 n 行。我可以使用 -n 1，这是一个名为 n 的标志，你也可以使用 --lines，
+
+if you want to use it as a longer option. But in this case, this is saying, just print the last line. And I can wire these together.
+如果你想把它当作一个更长的选项来使用的话。但在这种情况下，这是说，只打印最后一行。我可以将它们连接在一起。
+
+So I can say ls -l | tail -n 1. And notice here that ls does not know about tail, and tail does not know about ls. They are different programs,
+所以我可以说 ls -l | tail -n 1。注意这里，ls 不知道 tail，而 tail 也不知道 ls。它们是不同的程序，
+
+and have never been programmed to be compatible with one another. All they know how to do is read from input and write to output. And then the pipe is what wires them together.
+从未被编程为相互兼容。它们只知道如何从输入读取和向输出写入。而管道就是将它们连接在一起的东西。
+
+And in this particular case, I'm saying I want the output of ls,
+在这个特定的例子中，我想要 ls 的输出，
+
+To be the input to TAIL, and that I want the output of TAIL to just go to my terminal. Cause I haven't rewired it. I could also rewire this
+作为 TAIL 的输入，我希望 TAIL 的输出直接显示在我的终端上。因为我还没有重新连接它。我也可以重新连接它，
+
+to say I want the output to go to ls -text. And in this case, if I cat ls -text, I would get the appropriate output. And it turns out you can do some really neat things with this.
+让输出发送到 ls -text。在这种情况下，如果我 cat ls -text，就会得到想要的输出。事实证明，你可以用这种方式实现一些非常巧妙的功能。
+
+We're going to cover this a lot more in the data wrangling lecture, that will be in four days or something. On the kind of fancy stuff you can do when you start building more advanced pipelines.
+我们会在数据处理课程中更深入地探讨这个问题，课程大概在四天后。到时候会讲你在构建更高级的管道时可以实现的各种酷炫功能。
+
+To give you one example, we can do something like curl -d head. silent Google.com. Just to show you what that looks like, this gives me all the HTTP headers for accessing Google.com.
+举个例子，我们可以执行类似 curl -d head 这样的操作。静默地访问 Google.com。为了向你展示这是什么样子，这会给我所有访问 Google.com 的 HTTP 标头。
+
+I can pipe that to grep --ignore-case, or just -i if I want. Content length. This is going to print the content length header. grep is a program that we'll talk about later.
+我可以将其通过管道传输到 grep --ignore-case，或者如果我愿意，也可以直接使用 -i。内容长度。这将打印内容长度标头。grep 是一个我们稍后会讨论的程序。
+
+That lets you search in an input stream for a given keyword. We can pipe that through, say, the cut command. It takes a delimiter.
+它允许你在输入流中搜索给定的关键字。我们可以将其通过比如说 cut 命令。它需要一个分隔符。
+
+Set that to be space. And I want the second field. This prints just the content length. This is a silly example, right? This just lets you extract the content length in bytes of google.com from the command line.
+将其设置为空格。我想要第二个字段。这就只打印出内容长度。这是个有点傻的例子，对吧？它只是允许你从命令行提取 google.com 的内容长度（以字节为单位）。
+
+It is not a very useful thing to do, but you can see how by chaining these together, you can achieve a bunch of really interesting text manipulation effects. It turns out pipes are not just for textual data.
+这并不是一件非常有用的事情，但你可以看到，通过将这些命令链接在一起，你可以实现许多非常有趣的文本操作效果。事实证明，管道不仅适用于文本数据。
+
+You can do this for things like images as well. You can have a program that manipulates a binary image on its input, and writes a binary image to its output,
+你也可以对图像等内容进行类似操作。你可以编写一个程序，该程序在输入时处理二进制图像，在输出时写入二进制图像，
+
+and you can chain them together in this way. We'll talk about some of those kinds of examples later on too. You can even do this for video if you want.
+并且你可以通过这种方式将它们链接在一起。我们稍后也会讨论其中一些例子。如果你愿意，你甚至可以对视频进行这种操作。
+
+This is a great way, for example, if you have a Chromecast at home, you can stream a video file like this. By having the last program in your pipe be a Chromecast send program,
+例如，如果你家里有一个 Chromecast，这是一个很好的方法，你可以流式传输这样的视频文件。只要确保管道中的最后一个程序是 Chromecast 发送程序，
+
+you stream a video file into it, and it streams over HTTP to your Chromecast. We'll talk a lot more about this in the data wrangling lecture, but there's one more thing that I wanted to talk to you about,
+你就可以将视频文件流式传输到其中，它会通过 HTTP 流式传输到你的 Chromecast。我们将在数据整理讲座中详细讨论这个问题，但我还想和你们谈一件事，
+
+about how to use the terminal in a more interesting and perhaps more powerful way, that you might be used to. This is perhaps even gonna be interesting for the ones of you who feel like you're already comfortable with the terminal.
+关于如何以一种更有趣、也许更强大的方式使用终端，而不是你习惯的方式。这甚至可能对那些已经觉得自己熟悉终端的人来说也很有趣。
+
+But first we need to cover an important topic, when it comes to Linux systems and MacOS systems in particular, which is the notion of the root user.
+但首先我们需要讨论一个重要的话题，特别是在涉及 Linux 系统和 MacOS 系统时，那就是 root 用户的概念。
+
+The root user is sort of like the administrator user on Windows. It has user ID 0. The root user is special. Because it is allowed to do whatever it wants on your system.
+root 用户有点像 Windows 上的管理员用户。它的用户 ID 为 0。root 用户很特殊。因为它被允许在你的系统上做任何想做的事情。
+
+Even if a file is not readable by anyone, or if it's not writable by anyone, root can still access that file. Root is sort of a super user.
+即使一个文件任何人都不能读取，或者不能写入，root 仍然可以访问该文件。root 有点像超级用户。
+
+They get to do whatever they want. And most of the time, you will not be operating as the super user, you will not be root,
+他们可以为所欲为。大多数时候，你不会以超级用户的身份操作，你不会是 root，
+
+you will be a user like John or whatever your name is. And that's gonna be the user you act with. Because if you were operating your computer as the root user at all times,
+你会是像 John 或其他什么名字的用户。这就是你操作时所使用的用户。因为如果你一直以 root 用户的身份操作电脑，
+
+if you ran the wrong program, it could just completely destroy your computer. You don't want that, right? But every now and again,
+如果你运行了错误的程序，它可能会彻底毁掉你的电脑。你肯定不想这样，对吧？但偶尔，
+
+you want to do something that requires that you are root. Usually for these cases, you will use a program called sudo. S U D O, or do as su.
+你会想要做一些需要你拥有 root 权限的事情。通常对于这些情况，你会使用一个叫做 sudo 的程序。SUDO，或者叫“do as su”。
+
+And su in this case is super user. So this is a way to do the following thing as the super user. Usually, the way sudo works is you write sudo,
+这里的 su 指的是超级用户。这是一种以超级用户的身份执行以下操作的方式。通常，sudo 的工作方式是，你输入 sudo，
+
+and then a command like you would normally on your terminal, and it will just run that command as if you were root as opposed to the user you actually are. Where might you need something like this?
+然后像在终端上通常做的那样输入一个命令，它就会以 root 用户的身份运行该命令，而不是以你实际的用户身份运行。你可能在哪些情况下需要这样做呢？
+
+There are many special filesystems on your computer, but in particular, there's one called sysfs. If you cd to /sys,
+你的电脑上有许多特殊的文件系统，但有一个特别的，叫做 sysfs。如果你切换到 /sys 目录，
+
+this is a whole new world. This file system is not actually files on your computer. Instead, these are various kernel parameters, so the kernel is basically the core of your computer.
+那将是一个全新的世界。这个文件系统实际上并不是你电脑上的文件。相反，这些是各种内核参数，内核基本上就是你电脑的核心。
+
+This is a way for you to access various kernel parameters. Through what looks like a file system. You'll see here that if I cd into class, for example,
+这是你访问各种内核参数的一种方式。通过一个看似文件系统的东西。你会看到，如果我切换到 class 目录，
+
+it has directories for a bunch of different types of devices. That I can interact with, or various queues I can access, or all sorts of weird knobs internally.
+它有针对各种不同类型设备的目录。我可以与这些设备进行交互，或者访问各种队列，或者所有种类奇怪的内部旋钮。
+
+And because we're exposing this as files, it means that we can also use all the tools we've been using so far in order to manipulate them.
+因为我们将其作为文件公开，这意味着我们还可以使用迄今为止一直在使用的所有工具，来对其进行操作。
+
+One example of this, if you go into sys class backlight, this backlight directory lets you configure the backlight on your laptop, if you have one. I can cd into intel_backlight.
+其中一个例子，如果你进入 sys/class/backlight，这个背光目录可以让你配置笔记本电脑的背光，如果你有的话。我可以切换到 intel_backlight。
+
+This is an intel laptop. Inside here you'll see there's a file called brightness. And I can cat the brightness, this is the current brightness of my screen.
+这是一台英特尔笔记本电脑。在这里面，你会看到有一个名为 brightness 的文件。我可以查看 brightness 文件，这是我屏幕当前的亮度。
+
+But not only that, I can modify this too. In order to change the brightness of my screen, you might think that I could do let's see what the max brightness is here.
+但不仅如此，我也可以修改它。为了改变屏幕的亮度，你可能会想，我可以看看这里的最大亮度是多少。
+
+Okay, so it's currently set to the max brightness. You might imagine that I could do something like, if I do echo, let's do half.
+好的，目前它被设置为最大亮度。你可能会想我可以做这样的操作，比如，如果我输入 echo 50，让我们设置为一半。
+
+Or something echo 500 to brightness. But when I do this, it says permission denied. I'm not allowed to modify brightness because in order to change things on the kernel,
+或者将 500 输出到亮度。但当我这样做时，它提示权限被拒绝。我不被允许修改亮度，因为要想在内核上进行更改，
+
+you need to be the administrator. You might imagine that the way to solve this is to write sudo echo 500. But I still get a permission denied error.
+你需要是管理员。你可能会想，解决这个问题的方法是输入 sudo echo 500。但我仍然会收到权限被拒绝的错误。
+
+But why is that? It's because, as I mentioned before, these redirections of input and output is not something the programs know about.
+但这是为什么呢？因为正如我之前提到的，这些输入和输出的重定向并不是程序所知道的。
+
+When we piped ls into tail, tail did not know about ls, and ls did not know about tail. The pipe and the redirection was set up by the shell. In this case,
+当我们把 ls 管道传输到 tail 时，tail 并不知道 ls，ls 也不知道 tail。管道和重定向是由 shell 设置的。在这种情况下，
+
+what's happening is I'm telling my shell run the program sudo, with the argument echo and 500. And send its output to the file called brightness.
+发生的是我告诉我的 shell，运行程序 sudo，参数为 echo 和 500。并将其输出发送到名为 brightness 的文件。
+
+But the shell is what is opening the brightness file. It is not the sudo program. In this case, the shell, which is running as me,
+但是打开 brightness 文件的是 shell。不是 sudo 程序。在这种情况下，以我身份运行的 shell，
+
+tries to open the brightness file, for writing, and it's not allowed to do that. Therefore, I get a permission denied error. You might have seen this
+试图打开 brightness 文件，用于写入，但它不被允许这样做。因此，我得到了一个权限被拒绝的错误。你可能见过这种情况，
+
+if you search for something and end up on Stack Overflow, and it tells you to just run this command, and you'll see that it does something like they give you instructions like,
+如果你搜索某些东西，最后到了 Stack Overflow，它告诉你只需运行这个命令，你会看到它会给你类似这样的指示，
+
+one, two, what's an example? net ip v4 forward, for example. This is something you may have seen if you're setting up a firewall.
+比如一、二，举个例子？比如 net ip v4 forward。这是你可能见过的东西，如果你在设置防火墙的话。
+
+This command is intended to work, because this little pound symbol indicates run this as root. This is something that is very rarely explained,
+这个命令是有效的，因为这个小数字符号表示以 root 身份运行。这一点很少被解释，
+
+but that is what the pound symbol means. You'll see on my prompt there's a dollar symbol instead, and the dollar indicates you are not running as root.
+但这就是数字符号的含义。你会看到我的提示符是一个美元符号，而美元符号表示你不是以 root 身份运行的。
+
+So the question is how do I get around this? Well, I could switch into a root terminal, so one way to do this is to run sudo su. sudo su is saying run the following command as root,
+那么问题来了，我该如何解决这个问题呢？我可以切换到 root 终端，一种方法是运行 sudo su。sudo su 的意思是使用 root 身份运行以下命令，
+
+and su is a complicated command. That effectively gets you a shell as the superuser. So if I do this, type a password, now you'll see that the username at the beginning changed from John to root,
+而 su 是一个复杂的命令。它实际上会以超级用户的身份给你一个 shell。所以如果我这样做，输入密码，现在你会看到开头的用户名从 John 变成了 root，
+
+and the prompt changed from a doll.
+提示符也从“$”变成了“#”。
+
+A dollar to a pound. If I now echo into that file, if I do echo 500 to brightness, my screen got a little dimmer, but you can't see it.
+一美元兑换一英镑。如果我现在向该文件中回显，如果我执行 echo 500 to brightness，我的屏幕变暗了一点，但你看不出来。
+
+You just have to trust me. And now I didn't get an error, and this is because the shell is now running as root. It is not running as John.
+你只能相信我。现在我没有得到错误，这是因为 shell 现在以 root 身份运行。它不是以 John 的身份运行。
+
+And the root user is allowed to open this file. But given our knowledge that we have of the terminal now, there's actually a way for us to do this without having to drop to a root shell.
+而 root 用户被允许打开这个文件。但鉴于我们现在对终端的了解，实际上有一种方法可以让我们不必切换到 root shell 就能做到这一点。
+
+And that is as follows. Let's say I restore it to 1060. So do you see why this is different? Here I'm telling my shell
+方法如下。假设我将其恢复到 1060。你明白为什么这不一样了吗？我在这里告诉我的 shell，
+
+to run the echo 1060 command, which is gonna echo 1060. And I'm telling it to run the sudo t brightness command, and I'm telling it to send the output of echo into sudo t.
+运行 echo 1060 命令，它会输出 1060。我还让它运行 sudo t brightness 命令，并将 echo 的输出发送到 sudo t。
+
+In order to understand this, you need to know what the t command does. The t command takes its input and writes it to a file,
+要理解这一点，你需要知道 t 命令的作用。t 命令会获取输入，并将其写入文件，
+
+but also to standard out. So t is a convenient way if you have, say, a log file that you want to send to a file to store for later, but you also want to see it yourself.
+同时也输出到标准输出。所以 t 是一种便捷的方式，如果你有一个日志文件，你想将其发送到一个文件中存储以备后用，但你自己也想查看它。
+
+Then you can pipe it through t, give it the name of a file, and it will write whatever its input is, both to that file and to your screen.
+那么你可以通过 t 管道传输，给它一个文件名，它会将输入的内容同时写入该文件和你的屏幕。
+
+Here I'm taking advantage of that program. I'm saying run t as root, and have t write into the brightness file. In this case,
+这里我利用了这个程序。我是说以 root 身份运行 t，并让 t 写入亮度文件。在这种情况下，
+
+the t program, which is what is opening the brightness file, is running as root, and so it is allowed to do this. If I run this,
+打开亮度文件的 t 程序，是以 root 身份运行的，所以它被允许这样做。如果我运行这个，
+
+again, you can't see, but the brightness has now been turned up on my laptop. And I don't get any errors, and I never had to drop into a root shell and run commands there.
+你可能看不到，但我的笔记本电脑的亮度现在已经调高了。我没有收到任何错误，也从不需要切换到 root shell 并在那里运行命令。
+
+Which can often be somewhat dangerous. If you want to explore this filesystem a little bit more, there's a lot of interesting stuff in here.
+这通常可能有点危险。如果你想进一步探索这个文件系统，这里有很多有趣的东西。
+
+If you just start browsing around, you can find all sorts of fun things. For example, we noticed that there was a fun brightness command here. I wonder what other kinds of brightness I can set.
+如果你只是开始四处浏览，你可以发现各种各样有趣的东西。例如，我们注意到这里有一个有趣的亮度命令。我想知道我还可以设置其他什么种类的亮度。
+
+I can use the find command, which we'll also talk about in a coming lecture. I want to look at any file. Whose name is a little like brightness.
+我可以使用 find 命令，我们也会在接下来的讲座中讨论这个命令。我想查看任何文件。只要文件名有点像“亮度”就行。
+
+In the current directory. That's unhelpful. Maybe they're not files. Did I misspell brightness? Why is it being annoying?
+就在当前目录下。这没什么用。也许它们不是文件。我是不是拼错了“亮度”这个词？为什么它这么烦人？
+
+Oh. Apparently it does not want to search for brightness for me. Oh well. Luckily for you, I know of one already.
+哦。显然它不想帮我搜索“亮度”。好吧。对你来说幸运的是，我已经知道一个了。
+
+Handy that. There is a subdirectory called LEDs. And LEDs have brightness too. What kind of LEDs are there? Ooh, lots of things.
+这很方便。有一个名为“leds”的子目录。led 也有亮度。有哪些种类的 led 呢？哦，有很多。
+
+For example, the scroll lock. LED. Now, most of you probably don't know what the scroll lock LED is, or much less what scroll lock is.
+例如，滚动锁定。led。现在，你们大多数人可能不知道滚动锁定 led 是什么，更不知道滚动锁定是什么。
+
+But you might have seen a key on your keyboard named scroll lock. Basically no one knows what it means anymore, no one really uses it for anything,
+但你可能在键盘上看到过一个标有“滚动锁定”的键。基本上没人知道它是什么意思了，也没人真的用它做任何事，
+
+it's mostly just a dead key. And also a dead LED. What if you wanted to configure it so that every time you get an email, your scroll lock LED lights up?
+它大多只是一个摆设键。也是一个坏了的 led。如果你想对它进行配置，让每次收到邮件时，滚动锁定的 led 灯就会亮起呢？
+
+Cause there's no other reason why it would light up. Well, if we cd into this particular directory, there's a brightness place.
+因为没有其他原因会让它亮起来。如果我们进入这个特定目录，会看到有一个亮度调节的地方。
+
+And it's set to zero. What happens if I write one into it? You probably should not just be writing random numbers into random files, in this directory because you are affecting your kernel directly.
+它被设置为零。如果我写入 1 会怎样？你可能不应该随意向随机文件中写入随机数字，因为你这是在直接影响内核。
+
+Look up what the files do. In this particular case, I have worn safety goggles and I have done my research. Now you can't tell,
+去查一下这些文件是做什么的。在这种特定情况下，我戴上了护目镜，也做了研究。现在你可能看不出来，
+
+but on my keyboard, the Scroll Lock LED is now lit. So now if I wrote a program that did some checking of mail and stuff, I could have it at the end run a program
+但在我的键盘上，Scroll Lock 指示灯现在亮着。如果我写了一个程序，它能检查邮件之类的，我可以在最后运行一个程序，
+
+that echoes one into this file, and now I have a way for my LED to my keyboard to indicate when I have a new email. At this point,
+让它向这个文件写入 1，现在我就有办法让我的指示灯通过键盘显示我有新邮件了。在这一步，
+
+you should know roughly your way around the terminal, around the shell, and know enough to accomplish at least basic tasks. At least in theory,
+你应该大致熟悉终端的操作，了解 shell，并且掌握足够的知识来完成至少基本任务。至少在理论上是这样。
+
+now you shouldn't need to...
+现在你应该不需要……
+
+You use point-and-click interfaces to find files anymore. There's one remaining trick you might need, and that is the ability to open a file.
+你使用点击界面来查找文件。还有一个小技巧你可能会用到，那就是打开文件的能力。
+
+So far, I've only really given you ways to find files, but one thing you should know about is, missing semester.
+到目前为止，我只是给了你一些方法，来查找文件，但有一件事你应该知道，那就是“失踪的学期”。
+
+xdg-open. This will probably only work on Linux, on Mac. I think it's just called open. On Windows, who knows? XDG-open, you give the name of a file,
+xdg-open。这可能只在 Linux 上有效，在 Mac 上。我想它就叫 Open。在 Windows 上，谁知道呢？XDG-open，你指定一个文件的名称，
+
+and it will open it in the appropriate program. So if you do XDG-open an HTML file, it will open your browser and open that file. And once you have that program,
+它就会用相应的程序打开。所以如果你用 XDG-open 打开一个 HTML 文件，它会打开你的浏览器并打开那个文件。一旦你有了那个程序，
+
+in theory, you should no longer need to open a Finder window ever again. You might want to for other reasons, but in theory, you can accomplish it all using the tools that we've learned today.
+理论上你就再也不需要打开 Finder 窗口了。你可能因为其他原因还会想打开它，但理论上你可以用今天所学的工具完成所有操作。
+
+This might all seem relatively basic for some of you, but as I mentioned, this is the ramp-up period of now. We all know how the shell works.
+这对你们中的一些人来说可能看起来都很基础，但正如我提到的，这是一个过渡期。现在我们都知道 shell 是如何工作的了。
+
+A lot of what we'll be doing in future, like lectures, is using this knowledge to do really interesting things using the shell. This is learning the interface
+我们未来要做的很多事情，比如讲座，就是利用这些知识，借助 shell 来做一些非常有趣的事情。这就好比学习接口，
+
+that we're going to be using. So it's important we all know it. We're going to talk a lot more in the next lecture about how to automate tasks like this,
+我们即将使用的接口。所以我们都了解它是很重要的。在下一次讲座中，我们会更多地讨论如何自动化这样的任务，
+
+how to write scripts that run a bunch of programs for you, and how to do things like conditionals and loops and stuff in your terminal. And do things like run a program until it fails.
+如何编写脚本来为你运行一系列程序，以及如何在终端中进行条件判断和循环等操作。还会讲解如何运行一个程序直到它出错。
+
+It can be handy in classes where you want to run something, until your test suite fails, for example. That's the topic for next week's lecture.
+这在你想运行某些东西的课堂上会很有用，比如直到测试套件失败。这就是下周讲座的主题。
+
+Did you have a question? Yeah, just related to what you've been demoing. This directory that presumably will only work if you're dual booting into Linux, not if you're running Windows Subsystem for Linux.
+你有问题吗？有，和你刚才展示的内容有关。这个目录只有在你同时安装了 Linux 和 MacOS 系统时才会起作用，而不是在你运行 Windows Subsystem for Linux 时起作用。
+
+That is a good question. I don't know whether the Windows Subsystem for Linux, will expose the sys filesystem. If it does, it probably only exposes a very small number of things.
+这是个好问题。我不确定 Windows Subsystem for Linux 是否会公开 sys 文件系统。如果它公开了，可能也只公开了很少的一部分内容。
+
+It might, because there are... I don't know. Check it out. One thing you'll see is, the lecture notes for this lecture are already online. At the very bottom of the file,
+可能会，因为有……我不确定。去看看吧。你会看到的一件事是，这节课的讲义已经在网上了。在文件的最底部，
+
+there are a bunch of exercises. Some of them are relatively easy, some of them are a little bit harder. What we encourage you to do is
+有一些练习题。有些相对简单，有些则有点难。我们鼓励大家去做的是，
+
+to take a stab at going through them. If you know this stuff already, it should go really quickly. If you don't,
+试着去做一下。如果你已经掌握了这些知识，那应该会做得很快。如果没有，
+
+it might teach you a bunch of things. That you might not realize you didn't know. For the office hours that we're gonna do right after this lecture, we will happily help you get through all of those,
+可能会学到很多东西。你可能没有意识到自己不懂这些。这次讲座结束后的答疑时间，我们很乐意帮助大家解决所有这些问题，
+
+or if there are other commands you learn in the process, you wanna know how to use more efficiently, in next lecture,
+或者如果你在这个过程中学到了其他命令，想知道如何更高效地使用，那么在下一次讲座中，
+
+which is tomorrow, we'll basically be assuming that you know the kind of stuff that the exercise is going to teach you. There's also an email address on the website,
+也就是明天，我们将假设你已经掌握了练习要教的那些内容。网站上还有一个电子邮件地址，
+
+where you can send us questions. If you think of something after the office hours are finished. Are there any questions before we end today?
+大家可以给我们发邮件提问。如果你在答疑时间结束后想到了什么问题。今天结束之前还有什么问题吗？
+
+or if there are other commands you learn in the process, you wanna know how to use more efficiently, in next lecture,
+或者如果你在这个过程中学到了其他命令，想知道如何更高效地使用，那么在下一次讲座中，
+
+which is tomorrow, we'll basically be assuming that you know the kind of stuff that the exercise is going to teach you. There's also an email address on the website,
+也就是明天，我们将假设你已经掌握了练习要教的那些内容。网站上还有一个电子邮件地址，
+
+where you can send us questions. If you think of something after the office hours are finished. Are there any questions before we end today?
+大家可以给我们发邮件提问。如果你在答疑时间结束后想到了什么问题。今天结束之前还有什么问题吗？
+
+No? Alright. We will have office hours on the ninth floor of the Gates Building of Building 32 in five minutes. See you there.
+没有吗？好的。我们将在盖茨大楼的九楼进行答疑，五分钟后在 32 号楼。到时候见。
+
+Alright everyone,
+好的，各位，
