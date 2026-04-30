@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build & Run Current File",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-std=c++17",
+                "-O2",
+                "-Wall",
+                "-Wextra",
+                "-I${workspaceFolder}/include",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build & Run with Input",
+            "type": "shell",
+            "command": "cd ${fileDirname} && g++ -std=c++17 -O2 -Wall -Wextra -I${workspaceFolder}/include -o ${fileBasenameNoExtension} ${file} && echo '--- OUTPUT ---' && ./${fileBasenameNoExtension}",
+            "group": "none",
+            "problemMatcher": ["$gcc"]
+        }
+    ]
+}
