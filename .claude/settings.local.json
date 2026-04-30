@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next *)",
+      "Bash(npm install *)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /F /PID 31568)",
+      "Bash(tskill 31568)",
+      "Bash(cmd.exe /c \"taskkill /F /PID 13172\")",
+      "Bash(node -e ' *)",
+      "Bash(taskkill *)",
+      "Bash(kill -9 29464)",
+      "Bash(npx --yes lsof -ti:3000)",
+      "Bash(xargs kill *)",
+      "Bash(cmd.exe *)"
+    ]
+  }
+}

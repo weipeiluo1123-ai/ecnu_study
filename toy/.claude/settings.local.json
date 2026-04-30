@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet --version)",
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(data[0]['text']\\)\")",
+      "Bash(winget --version)",
+      "Bash(choco --version)",
+      "Bash(\"/c/Program Files/Tuanjie/Hub/Editor/2022.3.62t7/Editor/Tuanjie.exe\" -createProject \"E:\\\\github\\\\ecnu_study\\\\toy\\\\RaftGame\" -logFile \"E:\\\\github\\\\ecnu_study\\\\toy\\\\RaftGame\\\\create_log.txt\" -quit)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(\"/c/Program Files/Tuanjie/Hub/Editor/2022.3.62t7/Editor/Tuanjie.exe\" -projectPath \"E:\\\\github\\\\ecnu_study\\\\toy\\\\RaftGame\" -executeMethod ProjectSetup.SetupURP -logFile \"E:\\\\github\\\\ecnu_study\\\\toy\\\\RaftGame\\\\setup_log.txt\" -quit -batchmode -nographics)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(rm -rf \"E:/github/ecnu_study/toy/RaftGame/Library\" \"E:/github/ecnu_study/toy/RaftGame/*.sln\" \"E:/github/ecnu_study/toy/RaftGame/*.csproj\")",
+      "Bash(rm -f \"E:/github/ecnu_study/toy/RaftGame/Assets/*.meta\")",
+      "Bash(/c/Program Files/Tuanjie/Hub/Editor/2022.3.62t7/Editor/Tuanjie.exe *)",
+      "Bash(taskkill /F /IM Tuanjie.exe)",
+      "Bash(taskkill /F /IM \"Tuanjie Hub.exe\")",
+      "Bash(ps -W)",
+      "Bash(taskkill /F /IM \"Tuanjie.exe\")",
+      "Bash(taskkill /F /IM \"Tuanjie.Licensing.Client.exe\")",
+      "Bash(taskkill /F /IM \"hasp_rt.exe\")",
+      "Bash(\"/c/Program Files/Tuanjie/Hub/Editor/2022.3.62t7/Editor/Tuanjie.exe\" -projectPath \"E:\\\\github\\\\ecnu_study\\\\toy\\\\RaftGame\" -executeMethod SceneSetup.SetupInitialScene -logFile \"E:\\\\github\\\\ecnu_study\\\\toy\\\\RaftGame\\\\scene_setup_log.txt\" -quit -batchmode -nographics)",
+      "Bash(\"/c/Program Files/Tuanjie Hub/Uninstall Tuanjie Hub.exe\" /S /VERYSILENT)",
+      "Bash(\"/c/Program Files/Tuanjie/Hub/Editor/2022.3.62t7/Editor/Uninstall.exe\" /S /VERYSILENT)",
+      "Bash(taskkill //F //PID 84328 //PID 89908 //PID 86680 //PID 68164)",
+      "Bash(taskkill -F -IM \"Tuanjie.exe\")",
+      "Bash(cmd.exe /c \"rmdir /s /q \\\\\"C:\\\\Program Files\\\\Tuanjie Hub\\\\\"\")",
+      "Bash(cmd.exe /c \"rmdir /s /q \\\\\"C:\\\\Program Files\\\\Tuanjie\\\\\"\")",
+      "Bash(rm -rf \"/c/Users/Administrator/AppData/Roaming/TuanjieHub\" \"/c/Users/Administrator/AppData/Roaming/Tuanjie\" \"/c/Users/Administrator/AppData/Local/Tuanjie\" \"/c/Users/Administrator/AppData/LocalLow/Tuanjie\")",
+      "Bash(rm -rf \"/c/Users/Administrator/AppData/Roaming/TuanjieWebGLHost\")"
+    ]
+  }
+}
