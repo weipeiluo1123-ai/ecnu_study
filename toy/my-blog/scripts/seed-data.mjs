@@ -2001,52 +2001,58 @@ const insertAll = db.transaction(() => {
 insertAll();
 console.log(`Seeded ${articles.length} articles`);
 
-// ── Generate likes (realistic distribution) ──
+// ── Interaction generation: dates spread between post creation and now ──
+// Map: slug → created_at for date range calculation
+const slugDates = new Map(articles.map(a => [a.slug, new Date(a.date).getTime()]));
 const allSlugs = articles.map(a => a.slug);
-const insertLike = db.prepare("INSERT OR IGNORE INTO likes (post_slug, user_id, created_at) VALUES (?, ?, ?)");
+const nowMs = Date.now();
 
-// Each user likes some random subset of articles
+// Helper: random timestamp between post date and now
+function randomDateBetween(slug) {
+  const postMs = slugDates.get(slug) || nowMs;
+  const gap = Math.max(3600000, nowMs - postMs); // at least 1 hour
+  return new Date(postMs + Math.random() * gap).toISOString();
+}
+
+// ── Likes ──
+const insertLike = db.prepare("INSERT OR IGNORE INTO likes (post_slug, user_id, created_at) VALUES (?, ?, ?)");
 const likeData = [];
 for (const user of [...otherUsers, weipeiluo]) {
-  // Each user likes 8-20 random articles
-  const count = 8 + Math.floor(Math.random() * 13);
+  const count = 8 + Math.floor(Math.random() * 13); // 8-20 likes per user
   const shuffled = [...allSlugs].sort(() => Math.random() - 0.5);
   for (const slug of shuffled.slice(0, count)) {
-    likeData.push({ slug, userId: user.id, date: hoursAgo(Math.floor(Math.random() * 72)) });
+    likeData.push({ slug, userId: user.id, date: randomDateBetween(slug) });
   }
 }
 const insertLikes = db.transaction(() => {
   for (const l of likeData) insertLike.run(l.slug, l.userId, l.date);
 });
 insertLikes();
-
-// Update likes_count on user_posts
 const likeCounts = db.prepare("SELECT post_slug, COUNT(*) as cnt FROM likes GROUP BY post_slug").all();
 const updateLikes = db.prepare("UPDATE user_posts SET likes_count = ? WHERE slug = ?");
 for (const lc of likeCounts) updateLikes.run(lc.cnt, lc.post_slug);
 console.log(`Seeded ${likeData.length} likes`);
 
-// ── Generate bookmarks ──
+// ── Bookmarks ──
 const insertBm = db.prepare("INSERT OR IGNORE INTO bookmarks (post_slug, user_id, created_at) VALUES (?, ?, ?)");
 const bmData = [];
 for (const user of otherUsers) {
   const count = 3 + Math.floor(Math.random() * 8);
   const shuffled = [...allSlugs].sort(() => Math.random() - 0.5);
   for (const slug of shuffled.slice(0, count)) {
-    bmData.push({ slug, userId: user.id, date: hoursAgo(Math.floor(Math.random() * 48)) });
+    bmData.push({ slug, userId: user.id, date: randomDateBetween(slug) });
   }
 }
 const insertBms = db.transaction(() => {
   for (const b of bmData) insertBm.run(b.slug, b.userId, b.date);
 });
 insertBms();
-
 const bmCounts = db.prepare("SELECT post_slug, COUNT(*) as cnt FROM bookmarks GROUP BY post_slug").all();
 const updateBms = db.prepare("UPDATE user_posts SET bookmarks_count = ? WHERE slug = ?");
 for (const bc of bmCounts) updateBms.run(bc.cnt, bc.post_slug);
 console.log(`Seeded ${bmData.length} bookmarks`);
 
-// ── Generate comments ──
+// ── Comments ──
 const insertComment = db.prepare("INSERT INTO comments (post_slug, author_id, author_name, content, parent_id, created_at) VALUES (?, ?, ?, ?, NULL, ?)");
 const commentTemplates = [
   "写得太好了！收获很大，收藏了慢慢看。",
@@ -2064,8 +2070,7 @@ const commentTemplates = [
   "收藏了，作为参考资料很不错。",
   "文章质量很高，希望能继续更新。",
   "同感，我之前也遇到过类似的问题。",
-  "写得很好，但我感觉 X 部分还能再深入。",
-  "为什么选择这个方案而不是 Y 呢？",
+  "写得很好",
   "每天刷一篇，进步看得见。",
   "技术博客就应该这样写，简单明了。",
   "看完了，受益匪浅！",
@@ -2076,7 +2081,7 @@ for (const user of [...otherUsers, weipeiluo]) {
   const shuffled = [...allSlugs].sort(() => Math.random() - 0.5);
   for (const slug of shuffled.slice(0, count)) {
     const content = commentTemplates[Math.floor(Math.random() * commentTemplates.length)];
-    commentData.push({ slug, userId: user.id, username: user.username, content, date: hoursAgo(Math.floor(Math.random() * 48)) });
+    commentData.push({ slug, userId: user.id, username: user.username, content, date: randomDateBetween(slug) });
   }
 }
 const insertComments = db.transaction(() => {
@@ -2085,21 +2090,20 @@ const insertComments = db.transaction(() => {
 insertComments();
 console.log(`Seeded ${commentData.length} comments`);
 
-// ── Generate views ──
+// ── Views ──
 const insertView = db.prepare("INSERT INTO views (post_slug, visitor_id, created_at) VALUES (?, ?, ?)");
 const viewData = [];
-const visitors = ["user1-visitor", "user2-visitor", "user3-visitor", "anonymous"];
+const visitors = ["user1-visitor", "user2-visitor", "user3-visitor", "anonymous", "google-bot"];
 for (const slug of allSlugs) {
   const count = 10 + Math.floor(Math.random() * 80);
   for (let i = 0; i < count; i++) {
-    viewData.push({ slug, vid: visitors[Math.floor(Math.random() * visitors.length)], date: hoursAgo(Math.floor(Math.random() * 168)) });
+    viewData.push({ slug, vid: visitors[Math.floor(Math.random() * visitors.length)], date: randomDateBetween(slug) });
   }
 }
 const insertViews = db.transaction(() => {
   for (const v of viewData) insertView.run(v.slug, v.vid, v.date);
 });
 insertViews();
-
 const viewCounts = db.prepare("SELECT post_slug, COUNT(*) as cnt FROM views GROUP BY post_slug").all();
 const updateViews = db.prepare("UPDATE user_posts SET views_count = ? WHERE slug = ?");
 for (const vc of viewCounts) updateViews.run(vc.cnt, vc.post_slug);
