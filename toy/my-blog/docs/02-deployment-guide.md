@@ -61,6 +61,23 @@ pm2 restart nexus-blog # 重启
 pm2 stop nexus-blog   # 停止
 ```
 
+### 环境变量配置
+
+云服务器部署前，确保 `.env.local` 包含以下配置：
+
+```env
+# SMTP 邮箱配置（用于注册验证码）
+SMTP_HOST=smtp.qq.com
+SMTP_PORT=587
+SMTP_USER=your-email@qq.com
+SMTP_PASS=your-smtp-authorization-code
+
+# JWT 密钥（生产环境请修改为强随机字符串）
+JWT_SECRET=your-strong-secret-key
+```
+
+> ⚠️ `.env.local` 包含敏感信息，不要提交到 git。`.gitignore` 已默认排除。
+
 ---
 
 ## 2. 云服务器部署（Windows 作为服务器）

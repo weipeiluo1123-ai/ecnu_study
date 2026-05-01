@@ -6,7 +6,7 @@
 |------|------|
 | [01-project-overview.md](./01-project-overview.md) | 项目结构、功能模块、数据库 Schema、默认账号 |
 | [02-deployment-guide.md](./02-deployment-guide.md) | 本地部署 + Windows 云服务器 + MacBook 远程管理 |
-| [03-tech-stack-details.md](./03-tech-stack-details.md) | 技术栈详解（SQLite / Drizzle / JWT / 评论 / 排行榜 / 改名审核） |
+| [03-tech-stack-details.md](./03-tech-stack-details.md) | 技术栈详解（SQLite / Drizzle / JWT / 邮件服务 / 评论 / 排行榜 / 改名审核） |
 | [04-content-management.md](./04-content-management.md) | 文章写作指南（含 author 字段说明） |
 | [05-user-guide.md](./05-user-guide.md) | 用户操作指南（注册/改名/评论/排行榜/用户主页/管理后台/审核） |
 

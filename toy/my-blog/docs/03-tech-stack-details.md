@@ -264,6 +264,62 @@ PATCH /api/name-change          → 审核申请（批准/驳回，管理员）
 | 批准 | 更新 `status = 'approved'`，保留当前用户名 |
 | 驳回 | 更新 `status = 'rejected'`，将 `users.username` 回滚为 `old_name` |
 
+## 邮件服务（nodemailer + SMTP）
+
+### 工作原理
+
+```
+注册页面 → POST /api/auth/send-code → 生成 6 位验证码 → 存储到 verification_codes 表
+                                                            ↓
+                                                     nodemailer → SMTP → QQ邮箱
+                                                            ↓
+注册页面 → 填写验证码 → POST /api/auth/register → 校验 verification_codes 表 → 注册
+```
+
+### 配置
+
+通过 `.env.local` 中的环境变量配置 SMTP：
+
+```env
+SMTP_HOST=smtp.qq.com       # SMTP 服务器地址
+SMTP_PORT=587               # 端口（587 为 STARTTLS）
+SMTP_USER=xxx@qq.com        # 邮箱账号
+SMTP_PASS=xxxxxxxxxxxx      # SMTP 授权码（非登录密码）
+```
+
+### 验证码表
+
+```sql
+CREATE TABLE verification_codes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL,        -- 接收验证码的邮箱
+  code TEXT NOT NULL,         -- 6 位数字验证码
+  type TEXT DEFAULT 'register', -- 类型：register / reset
+  expires_at TEXT NOT NULL,   -- 过期时间（当前 + 5 分钟）
+  used_at TEXT,               -- 使用时间（null 表示未使用）
+  created_at TEXT NOT NULL
+);
+```
+
+### 安全策略
+
+- **有效期**：验证码生成后 5 分钟过期
+- **单次使用**：验证码使用后标记 `used_at`，不可重复使用
+- **频率限制**：同一邮箱 60 秒内不可重复发送（前后端双重限制）
+- **发送前清理**：新发码前自动删除该邮箱之前未使用的验证码
+- **邮箱验证**：QQ SMTP 返回 550 错误时，提示用户"邮箱地址不存在"
+- **索引优化**：`verification_codes` 表在 `email` 和 `code` 列建有索引
+
+### 邮件模板
+
+使用 nodemailer 发送 HTML 邮件，暗色风格与博客主题一致，包含：
+- Nexus Blog 品牌标识（渐变标题）
+- 6 位验证码（大号字体、等宽排版）
+- 有效期提示
+- 安全提醒
+
+---
+
 ### 文章数据层融合
 
 项目有两种文章来源：MDX 文件（`content/posts/`）和数据库用户文章（`user_posts` 表）。`getAllPosts()` 函数会自动合并两者并去重（按 slug）：

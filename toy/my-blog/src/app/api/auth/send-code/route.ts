@@ -4,6 +4,11 @@ import { verificationCodes } from "@/lib/db/schema";
 import { eq, and, isNull, lt, gte } from "drizzle-orm";
 import { sendVerificationCode } from "@/lib/email";
 
+interface SmtpError extends Error {
+  responseCode?: number;
+  response?: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
@@ -48,11 +53,19 @@ export async function POST(req: NextRequest) {
       createdAt: now.toISOString(),
     }).run();
 
-    // Send email (fire-and-forget, don't block on failure)
+    // Send email and surface SMTP errors to the user
     try {
       await sendVerificationCode(email, code);
-    } catch (mailErr) {
+    } catch (mailErr: unknown) {
       console.error("Failed to send email:", mailErr);
+      // QQ SMTP returns 550 when the recipient email doesn't exist
+      const smtpErr = mailErr as SmtpError;
+      if (smtpErr.responseCode === 550) {
+        return NextResponse.json(
+          { error: "该邮箱地址不存在，请检查后重试" },
+          { status: 400 }
+        );
+      }
       return NextResponse.json({ error: "验证码发送失败，请检查邮箱地址或稍后重试" }, { status: 500 });
     }
 
