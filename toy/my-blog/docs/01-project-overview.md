@@ -41,7 +41,9 @@ my-blog/
 │   ├── app/                  # Next.js App Router 页面
 │   │   ├── globals.css       # 全局样式（赛博朋克主题）
 │   │   ├── layout.tsx        # 根布局
-│   │   ├── page.tsx          # 首页
+│   │   ├── page.tsx          # 网关首页（项目门户/导航页）
+│   │   ├── home/
+│   │   │   └── page.tsx      # 博客首页（精选文章/分类/标签）
 │   │   ├── not-found.tsx     # 404 页面
 │   │   │
 │   │   ├── posts/

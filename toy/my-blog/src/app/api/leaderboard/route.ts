@@ -17,18 +17,15 @@ function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): Date | nul
   }
 }
 
-function batchCount(
-  table: { postSlug: typeof likes.postSlug; createdAt: typeof likes.createdAt },
-  since: Date | null,
-) {
-  let q = db.select({
+function batchCount(table: any, since: Date | null) {
+  let q: any = db.select({
     slug: table.postSlug,
     count: count(),
-  }).from(table as any);
+  }).from(table);
   if (since) {
-    q = (q as any).where(sql`${table.createdAt} >= ${since.toISOString()}`);
+    q = q.where(sql`${table.createdAt} >= ${since.toISOString()}`);
   }
-  return (q as any).groupBy(table.postSlug).all() as { slug: string; count: number }[];
+  return q.groupBy(table.postSlug).all() as { slug: string; count: number }[];
 }
 
 export async function GET(req: NextRequest) {

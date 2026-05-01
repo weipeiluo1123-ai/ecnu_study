@@ -9,7 +9,7 @@ export default function NotFound() {
       <p className="mt-4 text-xl text-muted">页面未找到</p>
       <p className="mt-2 text-sm text-muted">你访问的页面不存在或已被移除</p>
       <Link
-        href="/"
+        href="/home"
         className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neon-cyan text-background font-medium hover:bg-neon-cyan/90 transition-all"
       >
         返回首页

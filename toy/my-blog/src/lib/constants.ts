@@ -5,7 +5,7 @@ export const BLOG_DESCRIPTION = "个人技术博客 — 分享编程、技术与
 export const POSTS_PER_PAGE = 10;
 
 export const NAV_LINKS = [
-  { href: "/", label: "首页" },
+  { href: "/home", label: "博客" },
   { href: "/posts", label: "文章" },
   { href: "/categories", label: "分类" },
   { href: "/tags", label: "标签" },

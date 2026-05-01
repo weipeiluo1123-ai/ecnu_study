@@ -21,7 +21,7 @@ export function Header() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="group flex items-center gap-2">
+          <Link href="/home" className="group flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight">
               <span className="text-neon-cyan glitch" data-text="NEXUS">
                 NEXUS

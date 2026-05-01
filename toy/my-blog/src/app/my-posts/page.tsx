@@ -119,7 +119,7 @@ export default function MyPostsPage() {
         <div className="flex items-center justify-between">
           <div>
             <Link
-              href="/"
+              href="/home"
               className="inline-flex items-center gap-1 text-sm text-muted hover:text-neon-cyan transition-colors mb-4"
             >
               <ArrowLeft size={14} />

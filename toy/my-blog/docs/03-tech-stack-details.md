@@ -12,11 +12,24 @@
 ### 项目中使用的路由模式
 
 ```
-静态路由:   /about, /leaderboard, /tags, /categories
+静态路由:   / (网关入口), /home, /about, /leaderboard, /tags, /categories
 动态路由:   /posts/[slug], /categories/[category], /tags/[tag]
 API 路由:   /api/auth/login, /api/comments, /api/likes, ...
 查询参数:   /posts?page=1, /search?q=keyword
 ```
+
+### 路由分层设计
+
+博客采用两层入口设计：
+
+| 层级 | 路由 | 说明 |
+|------|------|------|
+| 网关层 | `/` | 项目展示门户，包含 Nexus Blog 等项目的入口卡片 |
+| 博客层 | `/home` | Nexus Blog 首页，展示精选文章、分类、标签云 |
+
+`/` 作为网关页面，列出 Nexus 生态下的所有项目（Blog、Code Arena、DevForge 等），各项目卡片带有状态标识（已上线 / 开发中）。点击「进入」跳转至具体项目入口。
+
+`/home` 承载博客的核心首页功能（精选文章、最新文章、分类导航），导航栏的「博客」标签和顶部 Logo 均指向此路径。所有内页的「返回首页」链接也统一指向 `/home`。
 
 ---
 
