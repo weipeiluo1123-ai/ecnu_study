@@ -49,6 +49,12 @@ interface LeaderboardEntry {
 
 type Range = "all" | "monthly" | "weekly" | "daily";
 
+interface LeaderboardResponse {
+  range: string;
+  label?: string;
+  leaderboard: LeaderboardEntry[];
+}
+
 interface RangeConfig {
   key: Range;
   label: string;
@@ -69,11 +75,12 @@ export default function LeaderboardPage() {
   const [allData, setAllData] = useState<Record<Range, LeaderboardEntry[]>>({
     all: [], monthly: [], weekly: [], daily: [],
   });
+  const [labels, setLabels] = useState<Record<Range, string>>({ all: "", monthly: "", weekly: "", daily: "" });
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
     try {
-      const results = await Promise.all(
+      const results: LeaderboardResponse[] = await Promise.all(
         ranges.map((r) =>
           fetch(`/api/leaderboard?range=${r.key}`).then((res) => res.json())
         )
@@ -83,6 +90,12 @@ export default function LeaderboardPage() {
         monthly: results[1].leaderboard || [],
         weekly: results[2].leaderboard || [],
         daily: results[3].leaderboard || [],
+      });
+      setLabels({
+        all: results[0].label || "",
+        monthly: results[1].label || "",
+        weekly: results[2].label || "",
+        daily: results[3].label || "",
       });
     } catch {} finally {
       setLoading(false);
@@ -127,9 +140,14 @@ export default function LeaderboardPage() {
               return (
                 <div key={range.key} className="rounded-xl border border-border bg-surface flex flex-col">
                   {/* Column header */}
-                  <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
-                    <Icon size={20} className={range.color} />
-                    <h2 className="text-base font-bold text-foreground">{range.label}</h2>
+                  <div className="px-5 py-4 border-b border-border">
+                    <div className="flex items-center gap-2">
+                      <Icon size={20} className={range.color} />
+                      <h2 className="text-base font-bold text-foreground">{range.label}</h2>
+                    </div>
+                    {labels[range.key] && (
+                      <p className="text-[11px] text-muted mt-0.5">{labels[range.key]}</p>
+                    )}
                   </div>
 
                   {/* Column body */}
@@ -180,8 +198,10 @@ export default function LeaderboardPage() {
         <div className="rounded-xl border border-border bg-surface p-6">
           <h2 className="text-sm font-semibold text-foreground mb-3">积分算法</h2>
           <div className="text-xs text-muted space-y-1">
-            <p>单篇文章积分 = 浏览量 × 1 + 点赞量 × 5 + 收藏量 × 10</p>
-            <p>用户总积分 = 该周期内所有文章的积分之和</p>
+            <p>每篇文章贡献 = 浏览量×1 + 点赞量×5 + 收藏量×10 + 互动基数×1</p>
+            <p>用户总积分 = 该周期内有互动的文章贡献之和</p>
+            <p>👥 互动人数 = 与该用户文章互动过的不同用户数（去重）</p>
+            <p className="text-muted/60 mt-2">数据每分钟自动刷新</p>
           </div>
         </div>
       </AnimatedSection>

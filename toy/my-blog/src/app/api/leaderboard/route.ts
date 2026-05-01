@@ -4,10 +4,43 @@ import { likes, bookmarks, views, comments, users } from "@/lib/db/schema";
 import { count, sql } from "drizzle-orm";
 import { getAllPosts } from "@/lib/posts";
 
-function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): string | null {
-  if (range === "all") return null;
-  const ms = range === "daily" ? 86400000 : range === "weekly" ? 604800000 : 2592000000;
-  return new Date(Date.now() - ms).toISOString();
+interface DateRange {
+  since: string | null;
+  label: string;
+}
+
+function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): DateRange {
+  const now = new Date();
+  const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, "/");
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  if (range === "all") return { since: null, label: "" };
+
+  if (range === "daily") {
+    const start = now.toISOString().slice(0, 10) + "T00:00:00.000Z";
+    return { since: start, label: fmt(now) };
+  }
+
+  if (range === "weekly") {
+    const day = now.getUTCDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    const mon = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + mondayOffset));
+    const sun = new Date(mon.getTime() + 6 * 86400000);
+    return {
+      since: mon.toISOString().slice(0, 10) + "T00:00:00.000Z",
+      label: `${fmt(mon)} ~ ${fmt(sun)}`,
+    };
+  }
+
+  // monthly
+  const y = now.getUTCFullYear();
+  const m = now.getUTCMonth();
+  const first = new Date(Date.UTC(y, m, 1));
+  const last = new Date(Date.UTC(y, m + 1, 0));
+  return {
+    since: first.toISOString().slice(0, 10) + "T00:00:00.000Z",
+    label: `${fmt(first)} ~ ${fmt(last)}`,
+  };
 }
 
 function batchCount(table: any, since: string | null) {
@@ -24,7 +57,7 @@ function batchCount(table: any, since: string | null) {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const range = (searchParams.get("range") || "all") as "daily" | "weekly" | "monthly" | "all";
-  const since = getDateRange(range);
+  const { since, label } = getDateRange(range);
 
   // Batch aggregate queries — only 3 queries total regardless of post count
   const likesBatch = batchCount(likes, since);
@@ -124,5 +157,5 @@ export async function GET(req: NextRequest) {
     .sort((a, b) => b.score - a.score)
     .map((s, i) => ({ rank: i + 1, ...s, interactors: interactorMap.get(s.userId) ?? 0 }));
 
-  return NextResponse.json({ range, leaderboard: sorted });
+  return NextResponse.json({ range, label, leaderboard: sorted });
 }
