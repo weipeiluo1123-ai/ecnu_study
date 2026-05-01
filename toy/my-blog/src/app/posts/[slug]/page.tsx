@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Tag, User, Crown } from "lucide-react";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getPostBySlug, getPostSlugs } from "@/lib/posts";
+import { getPostBySlug } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { TagBadge } from "@/components/ui/TagBadge";
@@ -17,14 +17,11 @@ import { db } from "@/lib/db/index";
 import { userPosts, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
+// Always serve fresh content — user posts update frequently
+export const revalidate = 0;
+
 interface Props {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  // Only pre-render MDX slugs, user posts are dynamic
-  const mdxSlugs = getPostSlugs().map((slug) => ({ slug: slug.replace(/\.(md|mdx)$/, "") }));
-  return mdxSlugs;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

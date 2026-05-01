@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { Toast } from "@/components/ui/Toast";
 import { ArrowLeft, Save, Eye, Edit3, FileText, Code } from "lucide-react";
 import Link from "next/link";
 import { CATEGORIES, TAGS } from "@/lib/constants";
@@ -26,6 +27,8 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [preview, setPreview] = useState(false);
   const [format, setFormat] = useState<"markdown" | "txt">("markdown");
   const [notFound, setNotFound] = useState(false);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const closeToast = useCallback(() => setToast(null), []);
 
   useEffect(() => {
     if (loading) return;
@@ -72,12 +75,16 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       });
       if (res.ok) {
         setSuccess("保存成功！");
+        setToast({ type: "success", message: "保存成功！" });
+        setTimeout(() => router.push("/my-posts"), 1200);
       } else {
         const data = await res.json();
         setError(data.error || "保存失败");
+        setToast({ type: "error", message: data.error || "保存失败" });
       }
     } catch {
       setError("网络错误");
+      setToast({ type: "error", message: "网络错误" });
     } finally {
       setSaving(false);
     }
@@ -132,11 +139,13 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         </div>
       </AnimatedSection>
 
+      {toast && <Toast type={toast.type} message={toast.message} onClose={closeToast} />}
+
       <AnimatedSection delay={0.1} className="mt-8">
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>
         )}
-        {success && (
+        {success && !toast && (
           <div className="mb-4 p-3 rounded-lg bg-neon-green/10 border border-neon-green/20 text-neon-green text-sm">{success}</div>
         )}
 

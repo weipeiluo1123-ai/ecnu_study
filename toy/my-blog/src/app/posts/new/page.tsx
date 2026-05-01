@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { Toast } from "@/components/ui/Toast";
 import { CATEGORIES, TAGS } from "@/lib/constants";
 import { Eye, Edit3, Send, FileText, Code } from "lucide-react";
 import Link from "next/link";
@@ -21,6 +22,8 @@ export default function NewPostPage() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(false);
   const [format, setFormat] = useState<"markdown" | "txt">("markdown");
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const closeToast = useCallback(() => setToast(null), []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,11 +39,14 @@ export default function NewPostPage() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "发布失败");
+        setToast({ type: "error", message: data.error || "发布失败" });
       } else {
-        router.push("/posts");
+        setToast({ type: "success", message: "文章发布成功！" });
+        setTimeout(() => router.push("/my-posts"), 1200);
       }
     } catch {
       setError("发布失败，请稍后重试");
+      setToast({ type: "error", message: "发布失败，请稍后重试" });
     } finally {
       setLoading(false);
     }
@@ -78,6 +84,8 @@ export default function NewPostPage() {
           </button>
         </div>
       </AnimatedSection>
+
+      {toast && <Toast type={toast.type} message={toast.message} onClose={closeToast} />}
 
       <AnimatedSection delay={0.1} className="mt-8">
         {error && <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>}

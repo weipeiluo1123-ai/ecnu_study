@@ -94,7 +94,7 @@ my-blog/
 │   │   ├── providers.tsx     # 主题 Provider
 │   │   ├── layout/           # Header, Footer, ThemeToggle
 │   │   ├── ui/               # PostCard, Pagination, LikeButton,
-│   │   │                     # BookmarkButton, ViewCounter, 等
+│   │   │                     # BookmarkButton, ViewCounter, Toast, 等
 │   │   ├── comments/         # CommentSection（内建评论）
 │   │   └── auth/             # AuthProvider
 │   │
@@ -113,6 +113,9 @@ my-blog/
 │       └── utils.ts
 │
 ├── docs/                     # 📚 项目文档
+├── scripts/                   # 工具脚本
+│   └── seed-posts.mjs         # 批量生成文章种子数据
+│
 ├── next.config.ts
 ├── package.json
 └── tsconfig.json
@@ -131,6 +134,8 @@ my-blog/
 | MDX 文章 | `content/posts/*.md` | 管理员 | SSG 静态生成，速度快 |
 | 用户文章 | SQLite `user_posts` 表 | 注册用户 | 动态渲染，支持排行榜 |
 
+现有 22 篇 MDX 文章和 34 篇用户文章（其中 32 篇归属超级管理员 weipeiluo，涵盖全部 12 个分类和 30 个标签）。
+
 MDX 文章在中文档中算作对应作者的**归属文章**，在个人主页、排行榜、个人设置积分中均被纳入统计。
 
 MDX 文章 YAML 前置元数据：
@@ -148,6 +153,10 @@ published: true
 featured: true
 ---
 ```
+
+**实时刷新机制：** 文章详情页 `/posts/[slug]` 采用 `revalidate = 0` 策略，确保每次访问都从数据库读取最新内容。配合 Nginx 代理缓存（匿名用户 60s），实现编辑后「保存即可见」的实时效果。
+
+**发布成功后：** 自动显示 Toast 通知（右上角浮窗，3 秒消失），随后跳转到「我的文章」管理页面。
 
 ### 2. 用户系统
 
@@ -246,13 +255,13 @@ featured: true
 - `/admin/reviews` — 改名审核 + 用户文章管理
 - `/admin/comments` — 评论管理（按时间线，可跳转原文）
 
-### 8. 搜索（双栏搜索）
+### 9. 搜索（双栏搜索）
 
 - **文章搜索** — 基于 Fuse.js 的客户端全文搜索，模糊匹配标题、描述、标签、分类
 - **用户搜索** — 按用户名、个人简介搜索注册用户，结果以卡片展示
 - 标签切换：文章/用户，实时搜索结果计数
 
-### 9. 排行榜
+### 10. 排行榜
 
 四个时间维度统计用户积分排名，数据每 **60 秒**自动刷新。前端展示每页 **10 人**，容器高度容纳约 5 人，超出部分可滚动查看：
 
@@ -271,7 +280,7 @@ featured: true
 
 积分从 `likes`、`bookmarks`、`views` 事件表中按时间范围过滤聚合，使用 **GROUP BY 批量聚合查询**代替逐文章查询（N+1 → 3 次查询），不同周期展示不同结果。默认展示"总分"（全部时间）。
 
-### 10. 其他功能
+### 11. 其他功能
 
 - 深色/亮色主题切换
 - 12 个文章分类 / 30 个标签
