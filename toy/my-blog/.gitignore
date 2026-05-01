@@ -44,3 +44,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+data_old:
+  - data_old
+data_old/
+.claude/settings.local.json
