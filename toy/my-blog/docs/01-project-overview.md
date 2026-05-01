@@ -81,7 +81,8 @@ my-blog/
 │   │   ├── providers.tsx     # 主题 Provider
 │   │   ├── layout/           # Header, Footer, ThemeToggle
 │   │   ├── ui/               # PostCard, Pagination, LikeButton,
-│   │   │                     # BookmarkButton, ViewCounter, Toast, 等
+│   │   │                     # BookmarkButton, ViewCounter, Toast,
+│   │   │                     # MarkdownEditor（共享 MD 编辑器）
 │   │   ├── comments/         # CommentSection（内建评论）
 │   │   └── auth/             # AuthProvider
 │   │
@@ -199,9 +200,17 @@ featured: true
 
 **写文章（`/posts/new`）：**
 - 所有登录用户均可发布文章
-- 支持 Markdown 语法，实时预览
+- **Markdown 工具栏** — 12 个快捷按钮：加粗、斜体、标题、引用、代码块、链接、图片、列表、任务列表、表格等
+- **实时预览** — 切换编辑/预览模式，实时渲染 Markdown 效果
+- **字符/词数统计** — 编辑器右上角实时显示字符数和词数
+- **草稿自动保存** — 编辑中的内容按用户 ID 隔离存储到 localStorage，不同账号间互不干扰，7 天内可恢复
 - 填写标题、分类、标签、摘要
 - 发布后展示在文章列表中
+
+**编辑文章（`/my-posts/[id]/edit`）：**
+- 共享与写文章相同的 Markdown 编辑器组件（`MarkdownEditor`）
+- 支持修改标题、内容、分类、标签、摘要及发布状态
+- 同样具备工具栏、实时预览、草稿保存功能
 
 ### 6. 互动系统
 
