@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { Trophy, Medal, TrendingUp, Calendar } from "lucide-react";
+import { Trophy, Medal, TrendingUp, Calendar, Star } from "lucide-react";
 import Link from "next/link";
 
 interface LeaderboardEntry {

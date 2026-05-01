@@ -4,6 +4,7 @@ import { userPosts, users } from "@/lib/db/schema";
 import { eq, desc, count } from "drizzle-orm";
 import { getSession, canUser } from "@/lib/auth";
 import { normalizeTags } from "@/lib/constants";
+import { getAllPosts } from "@/lib/posts";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -31,7 +32,42 @@ export async function GET(req: NextRequest) {
     .orderBy(desc(userPosts.createdAt));
 
   if (authorId) {
-    query = query.where(eq(userPosts.authorId, parseInt(authorId))) as any;
+    const uid = parseInt(authorId);
+    query = query.where(eq(userPosts.authorId, uid)) as any;
+
+    // Also include MDX posts for admin/super_admin users
+    const author = db.select().from(users).where(eq(users.id, uid)).get();
+    if (author && (author.role === "admin" || author.role === "super_admin")) {
+      const allPosts = getAllPosts();
+      const mdxPosts = allPosts
+        .filter(p => p.authorId === uid)
+        .map(p => ({
+          id: 0,
+          title: p.title,
+          description: p.description,
+          slug: p.slug,
+          category: p.category,
+          tags: JSON.stringify(p.tags),
+          likesCount: p.likesCount ?? 0,
+          viewsCount: 0,
+          bookmarksCount: p.bookmarksCount ?? 0,
+          isPublished: true,
+          author: { id: uid, username: p.author },
+          createdAt: p.date,
+        }));
+
+      const dbResults = query.all();
+      // Merge MDX posts with DB posts, deduplicate by slug
+      const seen = new Set(dbResults.map(r => r.slug));
+      const merged = [...dbResults];
+      for (const mdx of mdxPosts) {
+        if (!seen.has(mdx.slug)) {
+          seen.add(mdx.slug);
+          merged.push(mdx);
+        }
+      }
+      return NextResponse.json({ posts: merged });
+    }
   }
 
   const results = query.all();

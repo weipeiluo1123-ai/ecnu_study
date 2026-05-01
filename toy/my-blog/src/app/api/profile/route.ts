@@ -3,6 +3,7 @@ import { db } from "@/lib/db/index";
 import { users, userPosts, likes, bookmarks, views } from "@/lib/db/schema";
 import { eq, count, sql } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
+import { getAllPosts } from "@/lib/posts";
 
 function getDateRange(range: "weekly" | "monthly"): Date {
   const now = new Date();
@@ -14,7 +15,7 @@ function getDateRange(range: "weekly" | "monthly"): Date {
   }
 }
 
-function computeScoreForPosts(posts: any[], since?: string): number {
+function computeScoreForPosts(posts: { slug: string }[], since?: string): number {
   let score = 0;
   for (const post of posts) {
     const sinceFilter = since ? sql` AND ${likes.createdAt} >= ${since}` : sql``;
@@ -34,7 +35,7 @@ function computeScoreForPosts(posts: any[], since?: string): number {
     const likeCount = likeRow?.count || 0;
     const bmCount = bmRow?.count || 0;
     const viewCount = viewRow?.count || 0;
-    score += likeCount * 2 + bmCount * 3 + viewCount * 1;
+    score += likeCount * 5 + bmCount * 10 + viewCount * 1;
   }
   return score;
 }
@@ -51,8 +52,19 @@ export async function GET() {
     return NextResponse.json({ error: "用户不存在" }, { status: 404 });
   }
 
-  // Compute scores
+  // Get all posts for this user (both user_posts and MDX posts)
   const userPostsList = db.select().from(userPosts).where(eq(userPosts.authorId, session.id)).all();
+  const allMdxPosts = getAllPosts();
+  const mdxPosts = allMdxPosts.filter(p => p.authorId === session.id);
+
+  // Merge, deduplicate by slug (user_posts take precedence)
+  const seen = new Set(userPostsList.map(p => p.slug));
+  for (const mdx of mdxPosts) {
+    if (!seen.has(mdx.slug)) {
+      userPostsList.push({ slug: mdx.slug } as any);
+    }
+  }
+
   const now = new Date().toISOString();
   const weeklySince = getDateRange("weekly").toISOString();
   const monthlySince = getDateRange("monthly").toISOString();
