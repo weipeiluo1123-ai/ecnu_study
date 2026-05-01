@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Calendar, Heart, Bookmark, ArrowUpRight, User, Crown } from "lucide-react";
 import type { PostMeta } from "@/lib/posts";
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function PostCard({ post, index = 0 }: Props) {
+  const router = useRouter();
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -56,10 +58,9 @@ export function PostCard({ post, index = 0 }: Props) {
                 {/* Author */}
                 <div className="mt-2 flex items-center gap-2">
                   {post.authorId ? (
-                    <Link
-                      href={`/users/${post.authorId}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1.5 text-xs text-muted hover:text-neon-cyan transition-colors"
+                    <button
+                      onClick={(e) => { e.stopPropagation(); router.push(`/users/${post.authorId}`); }}
+                      className="flex items-center gap-1.5 text-xs text-muted hover:text-neon-cyan transition-colors cursor-pointer"
                     >
                       {post.authorRole === "super_admin" ? (
                         <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-[0_0_6px_rgba(251,191,36,0.4)]">
@@ -74,7 +75,7 @@ export function PostCard({ post, index = 0 }: Props) {
                       {post.authorRole === "super_admin" && (
                         <span className="text-[10px] text-amber-400 font-medium">⦿</span>
                       )}
-                    </Link>
+                    </button>
                   ) : (
                     <span className="flex items-center gap-1.5 text-xs text-muted">
                       <User size={12} />
