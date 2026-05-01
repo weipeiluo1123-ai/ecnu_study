@@ -1,20 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db/index";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { users, verificationCodes } from "@/lib/db/schema";
+import { eq, and, isNull } from "drizzle-orm";
 import { setSessionCookie, parsePermissions } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, email, password } = await req.json();
+    const { username, email, password, code } = await req.json();
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !code) {
       return NextResponse.json(
-        { error: "用户名、邮箱和密码不能为空" },
+        { error: "用户名、邮箱、密码和验证码不能为空" },
         { status: 400 }
       );
     }
+
+    const now = new Date().toISOString();
+
+    // Verify the code
+    const validCode = db.select().from(verificationCodes).where(
+      and(
+        eq(verificationCodes.email, email),
+        eq(verificationCodes.code, code),
+        eq(verificationCodes.type, "register"),
+        isNull(verificationCodes.usedAt),
+      )
+    ).get();
+
+    if (!validCode) {
+      return NextResponse.json(
+        { error: "验证码错误或已过期" },
+        { status: 400 }
+      );
+    }
+
+    if (validCode.expiresAt < now) {
+      return NextResponse.json(
+        { error: "验证码已过期，请重新发送" },
+        { status: 400 }
+      );
+    }
+
+    // Mark code as used
+    db.update(verificationCodes)
+      .set({ usedAt: now })
+      .where(eq(verificationCodes.id, validCode.id))
+      .run();
 
     if (username.length < 2 || username.length > 20) {
       return NextResponse.json(
@@ -53,12 +85,12 @@ export async function POST(req: NextRequest) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const now = new Date().toISOString();
 
     const result = db.insert(users).values({
       username,
       email,
       passwordHash,
+      emailVerified: true,
       role: "user",
       permissions: JSON.stringify({
         canComment: true,

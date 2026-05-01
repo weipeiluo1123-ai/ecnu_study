@@ -9,6 +9,7 @@ export const users = sqliteTable("users", {
   avatar: text("avatar"),
   bio: text("bio"),
   permissions: text("permissions").default("{}"),
+  emailVerified: integer("email_verified", { mode: "boolean" }).notNull().default(false),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
@@ -62,6 +63,16 @@ export const userPosts = sqliteTable("user_posts", {
   bookmarksCount: integer("bookmarks_count").notNull().default(0),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
+});
+
+export const verificationCodes = sqliteTable("verification_codes", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  email: text("email").notNull(),
+  code: text("code").notNull(),
+  type: text("type", { enum: ["register", "reset"] }).notNull().default("register"),
+  expiresAt: text("expires_at").notNull(),
+  usedAt: text("used_at"),
+  createdAt: text("created_at").notNull(),
 });
 
 export const views = sqliteTable("views", {

@@ -96,6 +96,19 @@ export function initDB() {
       reviewed_at TEXT,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS verification_codes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL,
+      code TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'register',
+      expires_at TEXT NOT NULL,
+      used_at TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_verification_codes_email ON verification_codes(email);
+    CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes(code);
   `);
 
   // Migration: add author_name column to comments if not exists
@@ -157,6 +170,17 @@ export function initDB() {
         ALTER TABLE users_new RENAME TO users;
         PRAGMA foreign_keys = ON;
       `);
+    }
+  } catch (e) {
+    // Migration may fail; that's OK
+  }
+
+  // Migration: add email_verified column to users if not exists
+  try {
+    const userCols = sqlite.prepare("PRAGMA table_info(users)").all() as any[];
+    const hasEmailVerified = userCols.some((c: any) => c.name === "email_verified");
+    if (!hasEmailVerified) {
+      sqlite.exec(`ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0;`);
     }
   } catch (e) {
     // Migration may fail; that's OK

@@ -14,7 +14,8 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<string | null>;
-  register: (username: string, email: string, password: string) => Promise<string | null>;
+  register: (username: string, email: string, password: string, code: string) => Promise<string | null>;
+  sendCode: (email: string) => Promise<string | null>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => null,
   register: async () => null,
+  sendCode: async () => null,
   logout: async () => {},
   refresh: async () => {},
 });
@@ -61,11 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(
-    async (username: string, email: string, password: string): Promise<string | null> => {
+    async (username: string, email: string, password: string, code: string): Promise<string | null> => {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, code }),
       });
       const data = await res.json();
       if (!res.ok) return data.error || "注册失败";
@@ -75,13 +77,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const sendCode = useCallback(async (email: string): Promise<string | null> => {
+    const res = await fetch("/api/auth/send-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) return data.error || "发送失败";
+    return null;
+  }, []);
+
   const logout = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, login, register, sendCode, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );
