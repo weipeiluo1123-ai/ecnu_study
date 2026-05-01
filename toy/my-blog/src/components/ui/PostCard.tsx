@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowUpRight, User, Crown } from "lucide-react";
+import { Calendar, Heart, Bookmark, ArrowUpRight, User, Crown } from "lucide-react";
 import type { PostMeta } from "@/lib/posts";
 import { formatDateShort } from "@/lib/format";
-import { estimateReadingTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { TAGS } from "@/lib/constants";
 
@@ -90,9 +89,13 @@ export function PostCard({ post, index = 0 }: Props) {
                     <Calendar size={12} />
                     {formatDateShort(post.date)}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Clock size={12} />
-                    {estimateReadingTime(post.description)} 分钟阅读
+                  <span className="flex items-center gap-1" title="点赞数">
+                    <Heart size={12} className="text-neon-pink/70" />
+                    {post.likesCount ?? 0}
+                  </span>
+                  <span className="flex items-center gap-1" title="收藏数">
+                    <Bookmark size={12} className="text-neon-cyan/70" />
+                    {post.bookmarksCount ?? 0}
                   </span>
                 </div>
               </div>

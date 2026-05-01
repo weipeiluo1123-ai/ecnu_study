@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { db } from "@/lib/db/index";
-import { userPosts, users } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { userPosts, users, likes, bookmarks } from "@/lib/db/schema";
+import { eq, and, sql } from "drizzle-orm";
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
@@ -21,6 +21,8 @@ export interface PostMeta {
   coverImage?: string;
   published: boolean;
   featured?: boolean;
+  likesCount?: number;
+  bookmarksCount?: number;
 }
 
 export interface PostData extends PostMeta {
@@ -107,6 +109,8 @@ function getAllDbPosts(): PostMeta[] {
       authorId: userPosts.authorId,
       authorUsername: users.username,
       authorRole: users.role,
+      likesCount: userPosts.likesCount,
+      bookmarksCount: userPosts.bookmarksCount,
     })
     .from(userPosts)
     .leftJoin(users, eq(userPosts.authorId, users.id))
@@ -125,6 +129,8 @@ function getAllDbPosts(): PostMeta[] {
       authorId: r.authorId,
       authorRole: r.authorRole,
       published: true,
+      likesCount: r.likesCount ?? 0,
+      bookmarksCount: r.bookmarksCount ?? 0,
     }));
   } catch {
     return [];
@@ -143,6 +149,33 @@ export function getAllPosts(): PostMeta[] {
       seen.add(post.slug);
       merged.push(post);
     }
+  }
+
+  // Batch query likes and bookmarks counts for MDX posts
+  try {
+    const likeRows = db.select({
+      slug: likes.postSlug,
+      count: sql<number>`count(*)`,
+    }).from(likes).groupBy(likes.postSlug).all() as { slug: string; count: number }[];
+
+    const bmRows = db.select({
+      slug: bookmarks.postSlug,
+      count: sql<number>`count(*)`,
+    }).from(bookmarks).groupBy(bookmarks.postSlug).all() as { slug: string; count: number }[];
+
+    const likeMap = new Map(likeRows.map(r => [r.slug, r.count]));
+    const bmMap = new Map(bmRows.map(r => [r.slug, r.count]));
+
+    for (const post of merged) {
+      if (post.likesCount === undefined) {
+        post.likesCount = likeMap.get(post.slug) ?? 0;
+      }
+      if (post.bookmarksCount === undefined) {
+        post.bookmarksCount = bmMap.get(post.slug) ?? 0;
+      }
+    }
+  } catch {
+    // Silently fail; counts default to 0
   }
 
   return merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

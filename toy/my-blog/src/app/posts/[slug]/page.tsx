@@ -1,17 +1,17 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Clock, Tag, User, Crown } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, User, Crown } from "lucide-react";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPostBySlug, getPostSlugs } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
-import { estimateReadingTime } from "@/lib/format";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { TagBadge } from "@/components/ui/TagBadge";
 import { CommentSection } from "@/components/comments/CommentSection";
 import { LikeButton } from "@/components/ui/LikeButton";
 import { BookmarkButton } from "@/components/ui/BookmarkButton";
 import { ViewCounter } from "@/components/ui/ViewCounter";
+import { PostActions } from "@/components/ui/PostActions";
 import { db } from "@/lib/db/index";
 import { userPosts, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -75,7 +75,6 @@ export default async function PostPage({ params }: Props) {
   if (!userPost) notFound();
   if (!userPost.isPublished) notFound();
 
-  const readingTime = estimateReadingTime(userPost.content);
   const tags = JSON.parse(userPost.tags || "[]");
 
   return (
@@ -132,10 +131,6 @@ export default async function PostPage({ params }: Props) {
               <Calendar size={14} />
               {formatDate(userPost.createdAt)}
             </span>
-            <span className="flex items-center gap-1">
-              <Clock size={14} />
-              {readingTime} 分钟阅读
-            </span>
             <ViewCounter postSlug={slug} />
             <LikeButton postSlug={slug} />
             <BookmarkButton postSlug={slug} />
@@ -161,15 +156,15 @@ export default async function PostPage({ params }: Props) {
         </div>
       </AnimatedSection>
 
+      {/* Bottom action bar */}
+      <PostActions postSlug={slug} />
+
       <CommentSection postSlug={slug} />
     </article>
   );
 }
 
 async function renderMDXPost(post: any, slug: string) {
-  // ... existing MDX rendering code moved here
-  const readingTime = estimateReadingTime(post.content);
-
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
       <AnimatedSection>
@@ -228,10 +223,6 @@ async function renderMDXPost(post: any, slug: string) {
               <Calendar size={14} />
               {formatDate(post.date)}
             </span>
-            <span className="flex items-center gap-1">
-              <Clock size={14} />
-              {readingTime} 分钟阅读
-            </span>
             <ViewCounter postSlug={slug} />
             <LikeButton postSlug={slug} />
             <BookmarkButton postSlug={slug} />
@@ -254,7 +245,11 @@ async function renderMDXPost(post: any, slug: string) {
         </div>
       </AnimatedSection>
 
+      {/* Bottom action bar */}
+      <PostActions postSlug={slug} />
+
       <CommentSection postSlug={slug} />
     </article>
   );
 }
+
