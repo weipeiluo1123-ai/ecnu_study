@@ -246,14 +246,18 @@ export default function MyPostsPage() {
                         className="p-2 rounded-lg text-muted hover:text-neon-cyan transition-colors" title="查看文章">
                         <ExternalLink size={16} />
                       </Link>
-                      <Link href={`/my-posts/${post.id}/edit`}
-                        className="p-2 rounded-lg text-muted hover:text-neon-cyan transition-colors" title="编辑文章">
-                        <Edit size={16} />
-                      </Link>
-                      <button onClick={() => deletePost(post.id, post.title)}
-                        className="p-2 rounded-lg text-muted hover:text-red-400 transition-colors cursor-pointer" title="删除文章">
-                        <Trash2 size={16} />
-                      </button>
+                      {post.id > 0 && (
+                        <Link href={`/my-posts/${post.id}/edit`}
+                          className="p-2 rounded-lg text-muted hover:text-neon-cyan transition-colors" title="编辑文章">
+                          <Edit size={16} />
+                        </Link>
+                      )}
+                      {post.id > 0 && (
+                        <button onClick={() => deletePost(post.id, post.title)}
+                          className="p-2 rounded-lg text-muted hover:text-red-400 transition-colors cursor-pointer" title="删除文章">
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

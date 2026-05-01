@@ -42,8 +42,8 @@ export async function GET(req: NextRequest) {
       const allPosts = getAllPosts();
       const mdxPosts = allPosts
         .filter(p => p.authorId === uid)
-        .map(p => ({
-          id: 0,
+        .map((p, i) => ({
+          id: -(i + 1),
           title: p.title,
           description: p.description,
           slug: p.slug,
