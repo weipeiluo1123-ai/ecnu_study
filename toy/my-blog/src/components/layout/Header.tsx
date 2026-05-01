@@ -21,7 +21,7 @@ export function Header() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/home" className="group flex items-center gap-2">
+          <Link href="/home/blog" className="group flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight">
               <span className="text-neon-cyan glitch" data-text="NEXUS">
                 NEXUS
@@ -93,7 +93,7 @@ export function Header() {
                           </div>
 
                           <Link
-                            href="/my-posts"
+                            href="/home/blog/my-posts"
                             onClick={() => setUserMenuOpen(false)}
                             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-surface-alt transition-colors"
                           >
@@ -101,7 +101,7 @@ export function Header() {
                             我的文章
                           </Link>
                           <Link
-                            href="/my-bookmarks"
+                            href="/home/blog/my-bookmarks"
                             onClick={() => setUserMenuOpen(false)}
                             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-surface-alt transition-colors"
                           >
@@ -109,7 +109,7 @@ export function Header() {
                             我的收藏
                           </Link>
                           <Link
-                            href="/settings"
+                            href="/home/blog/settings"
                             onClick={() => setUserMenuOpen(false)}
                             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-surface-alt transition-colors"
                           >
@@ -119,7 +119,7 @@ export function Header() {
 
                           {(user.role === "admin" || user.role === "super_admin") && (
                             <Link
-                              href="/admin"
+                              href="/home/blog/admin"
                               onClick={() => setUserMenuOpen(false)}
                               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-surface-alt transition-colors"
                             >
@@ -149,7 +149,7 @@ export function Header() {
                 </>
               ) : (
                 <Link
-                  href="/auth/login"
+                  href="/home/blog/auth/login"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neon-cyan text-background text-sm font-medium hover:bg-neon-cyan/90 transition-colors"
                 >
                   <User size={14} />
@@ -210,7 +210,7 @@ export function Header() {
                   )}
                 </div>
                 <Link
-                  href="/my-posts"
+                  href="/home/blog/my-posts"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
                 >
@@ -218,7 +218,7 @@ export function Header() {
                   我的文章
                 </Link>
                 <Link
-                  href="/my-bookmarks"
+                  href="/home/blog/my-bookmarks"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
                 >
@@ -226,7 +226,7 @@ export function Header() {
                   我的书签
                 </Link>
                 <Link
-                  href="/settings"
+                  href="/home/blog/settings"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
                 >
@@ -235,7 +235,7 @@ export function Header() {
                 </Link>
                 {(user.role === "admin" || user.role === "super_admin") && (
                   <Link
-                    href="/admin"
+                    href="/home/blog/admin"
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
                   >
@@ -259,7 +259,7 @@ export function Header() {
               </>
             ) : (
               <Link
-                href="/auth/login"
+                href="/home/blog/auth/login"
                 onClick={() => setMenuOpen(false)}
                 className="block px-3 py-2 rounded-md text-sm text-neon-cyan hover:bg-surface-alt transition-colors"
               >

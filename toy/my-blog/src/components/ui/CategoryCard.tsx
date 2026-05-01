@@ -32,7 +32,7 @@ export function CategoryCard({ category, count, index = 0 }: Props) {
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
       <Link
-        href={`/categories/${category.slug}`}
+        href={`/home/blog/categories/${category.slug}`}
         className="block h-full"
         style={{ perspective: "800px" }}
         onMouseEnter={() => setFlipped(true)}

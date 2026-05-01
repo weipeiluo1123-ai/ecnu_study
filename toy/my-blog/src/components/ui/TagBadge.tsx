@@ -19,7 +19,7 @@ export function TagBadge({ tag, count, size = "sm" }: Props) {
 
   return (
     <Link
-      href={`/tags/${tag}`}
+      href={`/home/blog/tags/${tag}`}
       className={`inline-flex items-center gap-1 rounded-full border border-border bg-surface-alt ${sizeClasses[size]} text-muted hover:text-neon-cyan hover:border-neon-cyan/30 transition-all duration-300`}
     >
       <span>#</span>

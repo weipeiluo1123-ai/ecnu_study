@@ -87,7 +87,7 @@ function CommentItem({
             </div>
             {comment.author.id ? (
               <Link
-                href={`/users/${comment.author.id}`}
+                href={`/home/blog/users/${comment.author.id}`}
                 className="text-sm font-medium text-foreground hover:text-neon-cyan transition-colors"
               >
                 {comment.author.username}
@@ -304,7 +304,7 @@ export function CommentSection({ postSlug }: Props) {
         </div>
       ) : (
         <div className="mb-8 p-4 rounded-xl bg-surface-alt border border-border text-center text-sm text-muted">
-          <Link href="/auth/login" className="text-neon-cyan hover:underline">登录</Link>
+          <Link href="/home/blog/auth/login" className="text-neon-cyan hover:underline">登录</Link>
           {" 后即可评论"}
         </div>
       )}

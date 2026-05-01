@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/home" className="text-lg font-bold tracking-tight">
+            <Link href="/home/blog" className="text-lg font-bold tracking-tight">
               <span className="text-neon-cyan">NEXUS</span>
               <span className="text-foreground">.</span>
             </Link>
@@ -24,7 +24,7 @@ export function Footer() {
               {CATEGORIES.slice(0, 6).map((cat) => (
                 <li key={cat.slug}>
                   <Link
-                    href={`/categories/${cat.slug}`}
+                    href={`/home/blog/categories/${cat.slug}`}
                     className="text-sm text-muted hover:text-neon-cyan transition-colors"
                   >
                     {cat.name}
@@ -39,22 +39,22 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-foreground mb-3">链接</h3>
             <ul className="space-y-1.5">
               <li>
-                <Link href="/leaderboard" className="text-sm text-muted hover:text-neon-cyan transition-colors">
+                <Link href="/home/blog/leaderboard" className="text-sm text-muted hover:text-neon-cyan transition-colors">
                   排行榜
                 </Link>
               </li>
               <li>
-                <Link href="/search" className="text-sm text-muted hover:text-neon-cyan transition-colors">
+                <Link href="/home/blog/search" className="text-sm text-muted hover:text-neon-cyan transition-colors">
                   搜索文章
                 </Link>
               </li>
               <li>
-                <Link href="/tags" className="text-sm text-muted hover:text-neon-cyan transition-colors">
+                <Link href="/home/blog/tags" className="text-sm text-muted hover:text-neon-cyan transition-colors">
                   标签云
                 </Link>
               </li>
               <li>
-                <Link href="/auth/login" className="text-sm text-muted hover:text-neon-cyan transition-colors">
+                <Link href="/home/blog/auth/login" className="text-sm text-muted hover:text-neon-cyan transition-colors">
                   登录 / 注册
                 </Link>
               </li>
