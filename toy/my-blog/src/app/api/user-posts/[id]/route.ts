@@ -79,7 +79,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
   db.update(userPosts).set(updateData).where(eq(userPosts.id, postId)).run();
 
   clearPostsCache();
-  revalidatePath("/posts/" + post.slug);
+  revalidatePath("/home/blog/posts/" + post.slug);
 
   return NextResponse.json({ ok: true, post: { id: postId, ...updateData } });
 }
@@ -112,7 +112,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
   db.delete(userPosts).where(eq(userPosts.id, postId)).run();
 
   clearPostsCache();
-  revalidatePath("/posts/" + post.slug);
+  revalidatePath("/home/blog/posts/" + post.slug);
 
   return NextResponse.json({ ok: true });
 }

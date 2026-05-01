@@ -38,12 +38,12 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   "relative px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                  pathname === link.href
+                  (link.href === "/home/blog" ? pathname === link.href : pathname.startsWith(link.href))
                     ? "text-neon-cyan"
                     : "text-muted hover:text-foreground"
                 )}
               >
-                {pathname === link.href && (
+                {(link.href === "/home/blog" ? pathname === link.href : pathname.startsWith(link.href)) && (
                   <motion.span
                     layoutId="nav-active"
                     className="absolute inset-0 rounded-md bg-surface-alt border border-border"
@@ -189,7 +189,7 @@ export function Header() {
                 onClick={() => setMenuOpen(false)}
                 className={cn(
                   "block px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                  pathname === link.href
+                  (link.href === "/home/blog" ? pathname === link.href : pathname.startsWith(link.href))
                     ? "text-neon-cyan bg-surface-alt"
                     : "text-muted hover:text-foreground"
                 )}

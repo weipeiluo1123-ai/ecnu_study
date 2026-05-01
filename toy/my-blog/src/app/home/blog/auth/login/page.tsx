@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,15 +12,15 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login, user } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const { addToast } = useToast();
   const router = useRouter();
 
-  // Redirect if already logged in
-  if (user) {
-    router.replace("/home/blog");
-    return null;
-  }
+  useEffect(() => {
+    if (user && !authLoading) {
+      router.replace("/home/blog");
+    }
+  }, [user, authLoading, router]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
