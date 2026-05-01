@@ -13,13 +13,20 @@ const db = new Database(dbPath);
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
-// Get users
-const users = db.prepare("SELECT id, username, role FROM users").all();
+// Get users — only use the 4 original seed users (exclude any newly registered users)
+const seedUsernames = new Set(["weipeiluo", "admin", "morn1ng", "alice", "bob"]);
+const users = db.prepare("SELECT id, username, role FROM users").all().filter(u => seedUsernames.has(u.username));
 const weipeiluo = users.find(u => u.username === "weipeiluo");
 if (!weipeiluo) { console.error("weipeiluo not found! Run the app first."); process.exit(1); }
 const otherUsers = users.filter(u => u.username !== "weipeiluo");
 
-console.log(`Users: ${users.map(u => u.username).join(", ")}`);
+console.log(`Seed users: ${users.map(u => u.username).join(", ")}`);
+// Update seed user created_at to before first post (March 15, 2026)
+const seedUserDate = "2026-03-15T08:00:00.000Z";
+for (const u of users) {
+  db.prepare("UPDATE users SET created_at = ?, updated_at = ? WHERE id = ? AND created_at > ?")
+    .run(seedUserDate, seedUserDate, u.id, seedUserDate);
+}
 
 // Clear existing seed data
 db.exec("DELETE FROM user_posts");

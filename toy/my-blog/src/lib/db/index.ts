@@ -218,12 +218,12 @@ try {
   if (!row) {
     const bcrypt = require("bcryptjs");
     const hash = bcrypt.hashSync("admin123", 10);
-    const now = new Date().toISOString();
+    const seedDate = "2026-03-15T08:00:00.000Z";
     const perms = JSON.stringify({ canComment: true, canPost: true, canLike: true });
     sqlite.prepare(`
       INSERT INTO users (username, email, password_hash, role, permissions, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run("admin", "admin@nexus.blog", hash, "admin", perms, now, now);
+    `).run("admin", "admin@nexus.blog", hash, "admin", perms, seedDate, seedDate);
     console.log("✅ Admin user seeded: admin / admin123");
   }
 } catch (e) {
@@ -238,16 +238,16 @@ try {
     { username: "bob", email: "bob@nexus.blog", bio: "后端开发，Go & Rust 爱好者" },
   ];
   const bcrypt = require("bcryptjs");
+  const seedDate = "2026-03-15T08:00:00.000Z";
   for (const u of testUsers) {
     const existing = sqlite.prepare("SELECT id FROM users WHERE username = ?").get(u.username);
     if (!existing) {
       const hash = bcrypt.hashSync("123456", 10);
-      const now = new Date().toISOString();
       const perms = JSON.stringify({ canComment: true, canPost: true, canLike: true });
       sqlite.prepare(`
         INSERT INTO users (username, email, password_hash, role, permissions, bio, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(u.username, u.email, hash, "user", perms, u.bio, now, now);
+      `).run(u.username, u.email, hash, "user", perms, u.bio, seedDate, seedDate);
       console.log(`✅ Test user seeded: ${u.username} / 123456`);
     }
   }
@@ -261,12 +261,12 @@ try {
   if (!existing) {
     const bcrypt = require("bcryptjs");
     const hash = bcrypt.hashSync("weipeiluo123", 10);
-    const now = new Date().toISOString();
+    const seedDate = "2026-03-15T08:00:00.000Z";
     const perms = JSON.stringify({ canComment: true, canPost: true, canLike: true });
     sqlite.prepare(`
       INSERT INTO users (username, email, password_hash, role, permissions, bio, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run("weipeiluo", "weipeiluo@nexus.blog", hash, "super_admin", perms, "Nexus Blog 创始人 · 全栈开发者 · 开源爱好者", now, now);
+    `).run("weipeiluo", "weipeiluo@nexus.blog", hash, "super_admin", perms, "Nexus Blog 创始人 · 全栈开发者 · 开源爱好者", seedDate, seedDate);
     console.log("✅ Super admin seeded: weipeiluo / weipeiluo123");
   }
 } catch (e) {
