@@ -1,7 +1,8 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
+import { ToastProvider } from "@/hooks/useToast";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -11,7 +12,9 @@ export function Providers({ children }: { children: ReactNode }) {
       enableSystem={false}
       storageKey="nexus-blog-theme"
     >
-      {children}
+      <ToastProvider>
+        {children}
+      </ToastProvider>
     </ThemeProvider>
   );
 }

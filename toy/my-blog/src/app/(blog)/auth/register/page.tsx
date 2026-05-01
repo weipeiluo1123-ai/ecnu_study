@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { UserPlus, Send, CheckCircle } from "lucide-react";
 
@@ -12,27 +13,27 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [codeSending, setCodeSending] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const { register, sendCode } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
 
   async function handleSendCode() {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("请先输入正确的邮箱地址");
+      addToast("error", "请先输入正确的邮箱地址");
       return;
     }
-    setError("");
     setCodeSending(true);
     const err = await sendCode(email);
     setCodeSending(false);
     if (err) {
-      setError(err);
+      addToast("error", err);
     } else {
       setCodeSent(true);
+      addToast("success", "验证码已发送");
       setCooldown(60);
       const timer = setInterval(() => {
         setCooldown((c) => {
@@ -48,16 +49,16 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     const err = await register(username, email, password, code);
     setLoading(false);
 
     if (err) {
-      setError(err);
+      addToast("error", err);
     } else {
-      router.push("/");
+      addToast("success", "注册成功");
+      router.push("/home");
     }
   }
 
@@ -71,12 +72,6 @@ export default function RegisterPage() {
                 <UserPlus size={24} className="text-neon-cyan" />
                 <h1 className="text-2xl font-bold text-foreground">注册</h1>
               </div>
-
-              {error && (
-                <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                  {error}
-                </div>
-              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

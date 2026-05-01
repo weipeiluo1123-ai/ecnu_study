@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { ArrowLeft, CheckCircle, XCircle, Eye, EyeOff, Trash2, Crown, Shield, User, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -34,6 +35,7 @@ interface UserPost {
 
 export default function AdminReviewsPage() {
   const { user, loading } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
   const [nameRequests, setNameRequests] = useState<NameChangeRequest[]>([]);
   const [posts, setPosts] = useState<UserPost[]>([]);
@@ -92,7 +94,10 @@ export default function AdminReviewsPage() {
   async function deletePost(postId: number, title: string) {
     if (!confirm(`确定删除文章 "${title}"？此操作不可恢复。`)) return;
     const res = await fetch(`/api/admin/posts?id=${postId}`, { method: "DELETE" });
-    if (res.ok) fetchData();
+    if (res.ok) {
+      addToast("success", "文章已删除");
+      fetchData();
+    }
   }
 
   if (loading || fetching) {

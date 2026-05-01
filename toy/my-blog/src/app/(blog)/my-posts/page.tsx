@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { ArrowLeft, FileText, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Filter, X } from "lucide-react";
 import Link from "next/link";
@@ -29,6 +30,7 @@ const ALL_CATEGORY = "__all__";
 
 export default function MyPostsPage() {
   const { user, loading } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
   const [posts, setPosts] = useState<UserPost[]>([]);
   const [fetching, setFetching] = useState(true);
@@ -95,8 +97,15 @@ export default function MyPostsPage() {
     if (!confirm(`确定删除文章 "${title}"？此操作不可恢复。`)) return;
     try {
       const res = await fetch(`/api/user-posts/${postId}`, { method: "DELETE" });
-      if (res.ok) fetchMyPosts();
-    } catch {}
+      if (res.ok) {
+        addToast("success", "文章已删除");
+        fetchMyPosts();
+      } else {
+        addToast("error", "删除失败");
+      }
+    } catch {
+      addToast("error", "网络错误");
+    }
   }
 
   // Reset page when filters change

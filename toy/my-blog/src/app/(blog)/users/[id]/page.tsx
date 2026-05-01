@@ -28,7 +28,7 @@ export default async function UserProfilePage({ params, searchParams }: Props) {
   // Get user_posts (DB posts)
   const dbPosts = db.select()
     .from(userPosts)
-    .where(and(eq(userPosts.authorId, userId), eq(userPosts.isPublished, true as any)))
+    .where(and(eq(userPosts.authorId, userId), eq(userPosts.isPublished, true)))
     .orderBy(desc(userPosts.createdAt))
     .all();
 

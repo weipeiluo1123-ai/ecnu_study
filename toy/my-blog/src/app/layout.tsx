@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL || "http://43.138.158.121"),
   title: "WPL Space",
   description: "WPL 的个人空间 — 博客 · 项目 · 探索",
 };

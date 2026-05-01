@@ -1,10 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { Trophy, Medal, TrendingUp, Calendar, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trophy, Crown, TrendingUp, Calendar, Star } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+
+// Rank badge component — gold / silver / bronze for top 3
+function RankBadge({ rank }: { rank: number }) {
+  if (rank === 1) {
+    return (
+      <span className="shrink-0 w-7 text-center" title="冠军">
+        <Crown size={20} className="inline-block text-neon-yellow drop-shadow-[0_0_6px_rgba(255,221,0,0.5)]" />
+      </span>
+    );
+  }
+  if (rank === 2) {
+    return (
+      <span className="shrink-0 w-7 text-center font-bold text-sm text-slate-300" title="亚军">
+        2
+      </span>
+    );
+  }
+  if (rank === 3) {
+    return (
+      <span className="shrink-0 w-7 text-center font-bold text-sm text-amber-600" title="季军">
+        3
+      </span>
+    );
+  }
+  return (
+    <span className="shrink-0 w-7 text-center text-sm font-bold text-muted">
+      {rank}
+    </span>
+  );
+}
 
 interface LeaderboardEntry {
   rank: number;
@@ -17,220 +46,133 @@ interface LeaderboardEntry {
   totalBookmarks: number;
 }
 
-type Range = "all" | "daily" | "weekly" | "monthly";
+type Range = "all" | "monthly" | "weekly" | "daily";
 
-const PAGE_SIZE = 10;
+interface RangeConfig {
+  key: Range;
+  label: string;
+  icon: typeof Trophy;
+  color: string;
+}
 
-const rangeLabels: Record<Range, string> = {
-  all: "总分",
-  daily: "每日",
-  weekly: "每周",
-  monthly: "每月",
-};
+const ranges: RangeConfig[] = [
+  { key: "all",      label: "总分榜", icon: Trophy,     color: "text-neon-yellow" },
+  { key: "monthly",  label: "月榜",   icon: Star,        color: "text-neon-cyan" },
+  { key: "weekly",   label: "周榜",   icon: TrendingUp,  color: "text-neon-purple" },
+  { key: "daily",    label: "日榜",   icon: Calendar,    color: "text-neon-green" },
+];
 
-const rangeIcons: Record<Range, any> = {
-  all: Trophy,
-  daily: Calendar,
-  weekly: TrendingUp,
-  monthly: Star,
-};
+const TOP_N = 8;
 
 export default function LeaderboardPage() {
-  const [range, setRange] = useState<Range>("all");
-  const [data, setData] = useState<LeaderboardEntry[]>([]);
+  const [allData, setAllData] = useState<Record<Range, LeaderboardEntry[]>>({
+    all: [], monthly: [], weekly: [], daily: [],
+  });
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    setLoading(true);
-    setPage(1);
-    fetch(`/api/leaderboard?range=${range}`)
-      .then((r) => r.json())
-      .then((d) => setData(d.leaderboard || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [range]);
+  const fetchAll = useCallback(async () => {
+    try {
+      const results = await Promise.all(
+        ranges.map((r) =>
+          fetch(`/api/leaderboard?range=${r.key}`).then((res) => res.json())
+        )
+      );
+      setAllData({
+        all: results[0].leaderboard || [],
+        monthly: results[1].leaderboard || [],
+        weekly: results[2].leaderboard || [],
+        daily: results[3].leaderboard || [],
+      });
+    } catch {} finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   // Auto-refresh every 60 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch(`/api/leaderboard?range=${range}`)
-        .then((r) => r.json())
-        .then((d) => setData(d.leaderboard || []))
-        .catch(() => {});
-    }, 60000);
+    const interval = setInterval(fetchAll, 60000);
     return () => clearInterval(interval);
-  }, [range]);
-
-  const totalPages = Math.max(1, Math.ceil(data.length / PAGE_SIZE));
-  const paginated = data.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  }, [fetchAll]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <AnimatedSection>
         <div className="flex items-center gap-3 mb-2">
           <Trophy size={28} className="text-neon-yellow" />
           <h1 className="text-3xl font-bold text-foreground">排行榜</h1>
         </div>
         <p className="text-muted">
-          根据用户发布文章的浏览量、点赞量、收藏量计算的积分排名
+          根据用户发布文章的浏览量、点赞量、收藏量计算的积分排名 · 每分钟自动刷新
         </p>
       </AnimatedSection>
 
-      {/* Range Tabs */}
-      <AnimatedSection delay={0.05} className="mt-8">
-        <div className="flex gap-2">
-          {(["all", "daily", "weekly", "monthly"] as Range[]).map((r) => {
-            const Icon = rangeIcons[r];
-            const active = range === r;
-            return (
-              <button
-                key={r}
-                onClick={() => setRange(r)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                  active
-                    ? "bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30"
-                    : "bg-surface text-muted border border-border hover:text-foreground"
-                }`}
-              >
-                <Icon size={16} />
-                {rangeLabels[r]}
-              </button>
-            );
-          })}
-        </div>
-      </AnimatedSection>
-
-      {/* Leaderboard */}
-      <AnimatedSection delay={0.1} className="mt-8">
-        {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="skeleton h-16 rounded-xl" />
-            ))}
-          </div>
-        ) : data.length === 0 ? (
-          <div className="text-center py-20">
-            <Trophy size={48} className="mx-auto text-muted/30 mb-4" />
-            <p className="text-muted">暂无排行数据</p>
-            <p className="text-sm text-muted mt-1">发布文章并获取互动即可上榜</p>
-          </div>
-        ) : (
-          <>
-            <div className="text-xs text-muted mb-3">
-              共 {data.length} 人上榜
-              {totalPages > 1 && `，第 ${page}/${totalPages} 页`}
+      {loading ? (
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="space-y-3">
+              <div className="skeleton h-8 w-24 rounded-lg" />
+              <div className="skeleton h-64 rounded-xl" />
             </div>
+          ))}
+        </div>
+      ) : (
+        <AnimatedSection delay={0.1} className="mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            {ranges.map((range) => {
+              const Icon = range.icon;
+              const list = allData[range.key].slice(0, TOP_N);
+              return (
+                <div key={range.key} className="rounded-xl border border-border bg-surface flex flex-col">
+                  {/* Column header */}
+                  <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
+                    <Icon size={20} className={range.color} />
+                    <h2 className="text-base font-bold text-foreground">{range.label}</h2>
+                  </div>
 
-            {/* Scrollable list container */}
-            <div className="max-h-[460px] overflow-y-auto pr-1 space-y-3 scrollbar-thin">
-              {paginated.map((entry) => (
-                <div
-                  key={entry.userId}
-                  className="gradient-border rounded-xl p-[1px]"
-                >
-                  <div className="rounded-xl bg-surface p-4 flex items-center gap-4">
-                    {/* Rank */}
-                    <div className="shrink-0 w-10 text-center">
-                      {entry.rank <= 3 ? (
-                        <Medal
-                          size={28}
-                          className={
-                            entry.rank === 1
-                              ? "text-neon-yellow"
-                              : entry.rank === 2
-                              ? "text-muted"
-                              : "text-neon-orange"
-                          }
-                        />
-                      ) : (
-                        <span className="text-lg font-bold text-muted">
-                          {entry.rank}
-                        </span>
-                      )}
-                    </div>
+                  {/* Column body */}
+                  <div className="flex-1 p-4 space-y-2.5">
+                    {list.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-10 text-muted text-sm">
+                        <Trophy size={28} className="mb-2 text-muted/20" />
+                        暂无数据
+                      </div>
+                    ) : (
+                      list.map((entry) => (
+                        <Link
+                          key={entry.userId}
+                          href={`/users/${entry.userId}`}
+                          className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-alt transition-colors group"
+                        >
+                          {/* Rank */}
+                          <RankBadge rank={entry.rank} />
 
-                    {/* User */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-neon-cyan/20 flex items-center justify-center text-sm text-neon-cyan font-medium">
-                          {entry.username.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <Link
-                            href={`/users/${entry.userId}`}
-                            className="font-medium text-foreground hover:text-neon-cyan transition-colors"
-                          >
-                            {entry.username}
-                          </Link>
-                          <div className="text-xs text-muted">
-                            {entry.postCount} 篇文章
+                          {/* Avatar + Name */}
+                          <div className="w-7 h-7 rounded-full bg-neon-cyan/20 flex items-center justify-center text-xs text-neon-cyan font-medium shrink-0">
+                            {entry.username.charAt(0).toUpperCase()}
                           </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="hidden sm:flex items-center gap-4 text-xs text-muted">
-                      <span>👁 {entry.totalViews}</span>
-                      <span>❤ {entry.totalLikes}</span>
-                      <span>🔖 {entry.totalBookmarks}</span>
-                    </div>
-
-                    {/* Score */}
-                    <div className="shrink-0 text-right">
-                      <div className="text-lg font-bold text-neon-cyan">
-                        {entry.score}
-                      </div>
-                      <div className="text-xs text-muted">积分</div>
-                    </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground group-hover:text-neon-cyan transition-colors truncate">
+                              {entry.username}
+                            </div>
+                            <div className="text-[11px] text-muted">
+                              {entry.postCount} 篇 · 👁{entry.totalViews} · ❤{entry.totalLikes}
+                            </div>
+                          </div>
+                          <span className="shrink-0 text-sm font-bold text-neon-cyan tabular-nums">
+                            {entry.score}
+                          </span>
+                        </Link>
+                      ))
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-1 mt-6">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page <= 1}
-                  className={cn(
-                    "flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer",
-                    page <= 1 && "opacity-40",
-                  )}
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={cn(
-                      "flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium border transition-colors cursor-pointer",
-                      p === page
-                        ? "border-neon-cyan bg-neon-cyan/10 text-neon-cyan"
-                        : "border-border text-muted hover:text-foreground hover:border-accent",
-                    )}
-                  >
-                    {p}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page >= totalPages}
-                  className={cn(
-                    "flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer",
-                    page >= totalPages && "opacity-40",
-                  )}
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </AnimatedSection>
+              );
+            })}
+          </div>
+        </AnimatedSection>
+      )}
 
       {/* Score formula */}
       <AnimatedSection delay={0.2} className="mt-10">
@@ -239,7 +181,6 @@ export default function LeaderboardPage() {
           <div className="text-xs text-muted space-y-1">
             <p>单篇文章积分 = 浏览量 × 1 + 点赞量 × 5 + 收藏量 × 10</p>
             <p>用户总积分 = 该周期内所有文章的积分之和</p>
-            <p className="text-muted/60 mt-2">数据每分钟自动刷新</p>
           </div>
         </div>
       </AnimatedSection>

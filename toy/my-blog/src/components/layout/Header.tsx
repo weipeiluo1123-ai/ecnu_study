@@ -209,13 +209,42 @@ export function Header() {
                     <span className="ml-2 text-xs text-neon-purple">管理员</span>
                   )}
                 </div>
+                <Link
+                  href="/my-posts"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
+                >
+                  <FileText size={16} className="text-muted" />
+                  我的文章
+                </Link>
+                <Link
+                  href="/my-bookmarks"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
+                >
+                  <Bookmark size={16} className="text-muted" />
+                  我的书签
+                </Link>
+                <Link
+                  href="/settings"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
+                >
+                  <User size={16} className="text-muted" />
+                  个人设置
+                </Link>
                 {(user.role === "admin" || user.role === "super_admin") && (
                   <Link
                     href="/admin"
                     onClick={() => setMenuOpen(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-foreground hover:bg-surface-alt transition-colors"
                   >
-                    ⚙ 管理后台
+                    {user.role === "super_admin" ? (
+                      <Crown size={16} className="text-amber-400" />
+                    ) : (
+                      <Shield size={16} className="text-neon-purple" />
+                    )}
+                    管理后台
                   </Link>
                 )}
                 <button

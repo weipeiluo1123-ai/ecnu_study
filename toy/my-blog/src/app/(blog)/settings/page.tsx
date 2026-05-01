@@ -3,17 +3,18 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { ArrowLeft, User, Save, Crown, Mail, BookOpen, Trophy, TrendingUp, Calendar, AlertCircle, CheckCircle, FileText } from "lucide-react";
+import { ArrowLeft, User, Save, Crown, Mail, BookOpen, Trophy, TrendingUp, Calendar, FileText } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/format";
 
 export default function SettingsPage() {
   const { user, loading, refresh } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
   const [newName, setNewName] = useState("");
   const [bio, setBio] = useState("");
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [profileData, setProfileData] = useState<{
     user: { username: string; email: string; bio: string | null; createdAt: string };
@@ -49,8 +50,7 @@ export default function SettingsPage() {
     e.preventDefault();
     if (!user || newName.trim() === user.username) return;
     setSubmitting(true);
-    setMessage(null);
-    try {
+        try {
       const res = await fetch("/api/name-change", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -58,15 +58,15 @@ export default function SettingsPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage({ type: "success", text: data.message || "改名成功！" });
+        addToast("success", data.message || "改名成功！");
         await refresh();
         loadProfile();
       } else {
-        setMessage({ type: "error", text: data.error || "改名失败" });
+        addToast("error", data.error || "改名失败");
         setNewName(user.username);
       }
     } catch {
-      setMessage({ type: "error", text: "网络错误" });
+      addToast("error", "网络错误");
     } finally {
       setSubmitting(false);
     }
@@ -74,21 +74,20 @@ export default function SettingsPage() {
 
   async function handleSaveBio() {
     setSavingBio(true);
-    setMessage(null);
-    try {
+        try {
       const res = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bio }),
       });
       if (res.ok) {
-        setMessage({ type: "success", text: "个人简介已更新" });
+        addToast("success", "个人简介已更新");
         loadProfile();
       } else {
-        setMessage({ type: "error", text: "保存失败" });
+        addToast("error", "保存失败");
       }
     } catch {
-      setMessage({ type: "error", text: "网络错误" });
+      addToast("error", "网络错误");
     } finally {
       setSavingBio(false);
     }
@@ -116,19 +115,6 @@ export default function SettingsPage() {
         <h1 className="text-3xl font-bold text-foreground">个人设置</h1>
         <p className="mt-2 text-muted">管理你的个人资料信息</p>
       </AnimatedSection>
-
-      {message && (
-        <AnimatedSection delay={0.05} className="mt-6">
-          <div className={`flex items-center gap-2 p-3 rounded-lg text-sm ${
-            message.type === "success"
-              ? "bg-neon-green/10 text-neon-green border border-neon-green/20"
-              : "bg-red-500/10 text-red-400 border border-red-500/20"
-          }`}>
-            {message.type === "success" ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
-            {message.text}
-          </div>
-        </AnimatedSection>
-      )}
 
       {/* Profile Overview */}
       <AnimatedSection delay={0.08} className="mt-6">

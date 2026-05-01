@@ -2,6 +2,8 @@ import { db } from "@/lib/db/index";
 import { views, likes, bookmarks, comments, userPosts } from "@/lib/db/schema";
 import { count, sql } from "drizzle-orm";
 
+type QueryRow = { slug?: string; hour?: string; c: number; uid?: number };
+
 export interface OverviewStats {
   totalViews: number;
   activeUsers: number;
@@ -103,7 +105,8 @@ export function getOverviewStats(range: string = "24h"): OverviewStats {
       newPosts: newPosts?.c ?? 0,
       totalInteractions: interactions,
     };
-  } catch {
+  } catch (e) {
+    console.error("getOverviewStats failed", e);
     return { totalViews: 0, activeUsers: 0, newPosts: 0, totalInteractions: 0 };
   }
 }
@@ -120,10 +123,11 @@ export function getHourlyViews(range: string = "24h"): HourlyCount[] {
           hour: hourSql,
           c: count(),
         }).from(views)
-    ).groupBy(sql`substr(${views.createdAt}, 12, 2)`).orderBy(sql`substr(${views.createdAt}, 12, 2)`).all() as any[];
+    ).groupBy(sql`substr(${views.createdAt}, 12, 2)`).orderBy(sql`substr(${views.createdAt}, 12, 2)`).all() as QueryRow[];
 
     return fillMissingHours(rows.map(r => ({ hour: r.hour as string, count: Number(r.c) })));
-  } catch {
+  } catch (e) {
+    console.error("getHourlyViews failed", e);
     return fillMissingHours([]);
   }
 }
@@ -135,17 +139,17 @@ export function getHourlyEngagement(range: string = "24h"): EngagementData[] {
     const likesRows = (since
       ? db.select({ hour: sql<string>`substr(${likes.createdAt}, 12, 2) || ':00'`, c: count() }).from(likes).where(sql`${likes.createdAt} >= ${since}`)
       : db.select({ hour: sql<string>`substr(${likes.createdAt}, 12, 2) || ':00'`, c: count() }).from(likes)
-    ).groupBy(sql`substr(${likes.createdAt}, 12, 2)`).orderBy(sql`substr(${likes.createdAt}, 12, 2)`).all() as any[];
+    ).groupBy(sql`substr(${likes.createdAt}, 12, 2)`).orderBy(sql`substr(${likes.createdAt}, 12, 2)`).all() as QueryRow[];
 
     const commentsRows = (since
       ? db.select({ hour: sql<string>`substr(${comments.createdAt}, 12, 2) || ':00'`, c: count() }).from(comments).where(sql`${comments.createdAt} >= ${since}`)
       : db.select({ hour: sql<string>`substr(${comments.createdAt}, 12, 2) || ':00'`, c: count() }).from(comments)
-    ).groupBy(sql`substr(${comments.createdAt}, 12, 2)`).orderBy(sql`substr(${comments.createdAt}, 12, 2)`).all() as any[];
+    ).groupBy(sql`substr(${comments.createdAt}, 12, 2)`).orderBy(sql`substr(${comments.createdAt}, 12, 2)`).all() as QueryRow[];
 
     const bmRows = (since
       ? db.select({ hour: sql<string>`substr(${bookmarks.createdAt}, 12, 2) || ':00'`, c: count() }).from(bookmarks).where(sql`${bookmarks.createdAt} >= ${since}`)
       : db.select({ hour: sql<string>`substr(${bookmarks.createdAt}, 12, 2) || ':00'`, c: count() }).from(bookmarks)
-    ).groupBy(sql`substr(${bookmarks.createdAt}, 12, 2)`).orderBy(sql`substr(${bookmarks.createdAt}, 12, 2)`).all() as any[];
+    ).groupBy(sql`substr(${bookmarks.createdAt}, 12, 2)`).orderBy(sql`substr(${bookmarks.createdAt}, 12, 2)`).all() as QueryRow[];
 
     const likesMap = new Map(likesRows.map(r => [r.hour as string, Number(r.c)]));
     const commentsMap = new Map(commentsRows.map(r => [r.hour as string, Number(r.c)]));
@@ -162,7 +166,8 @@ export function getHourlyEngagement(range: string = "24h"): EngagementData[] {
       });
     }
     return result;
-  } catch {
+  } catch (e) {
+    console.error("getHourlyEngagement failed", e);
     return Array.from({ length: 24 }, (_, i) => ({
       hour: String(i).padStart(2, "0") + ":00",
       likes: 0, comments: 0, bookmarks: 0,
@@ -179,20 +184,20 @@ export function getTopPosts(
     const since = getSince(range);
 
     const viewsBatch = since
-      ? db.select({ slug: views.postSlug, c: count() }).from(views).where(sql`${views.createdAt} >= ${since}`).groupBy(views.postSlug).all() as any[]
-      : db.select({ slug: views.postSlug, c: count() }).from(views).groupBy(views.postSlug).all() as any[];
+      ? db.select({ slug: views.postSlug, c: count() }).from(views).where(sql`${views.createdAt} >= ${since}`).groupBy(views.postSlug).all() as QueryRow[]
+      : db.select({ slug: views.postSlug, c: count() }).from(views).groupBy(views.postSlug).all() as QueryRow[];
 
     const likesBatch = since
-      ? db.select({ slug: likes.postSlug, c: count() }).from(likes).where(sql`${likes.createdAt} >= ${since}`).groupBy(likes.postSlug).all() as any[]
-      : db.select({ slug: likes.postSlug, c: count() }).from(likes).groupBy(likes.postSlug).all() as any[];
+      ? db.select({ slug: likes.postSlug, c: count() }).from(likes).where(sql`${likes.createdAt} >= ${since}`).groupBy(likes.postSlug).all() as QueryRow[]
+      : db.select({ slug: likes.postSlug, c: count() }).from(likes).groupBy(likes.postSlug).all() as QueryRow[];
 
     const bmBatch = since
-      ? db.select({ slug: bookmarks.postSlug, c: count() }).from(bookmarks).where(sql`${bookmarks.createdAt} >= ${since}`).groupBy(bookmarks.postSlug).all() as any[]
-      : db.select({ slug: bookmarks.postSlug, c: count() }).from(bookmarks).groupBy(bookmarks.postSlug).all() as any[];
+      ? db.select({ slug: bookmarks.postSlug, c: count() }).from(bookmarks).where(sql`${bookmarks.createdAt} >= ${since}`).groupBy(bookmarks.postSlug).all() as QueryRow[]
+      : db.select({ slug: bookmarks.postSlug, c: count() }).from(bookmarks).groupBy(bookmarks.postSlug).all() as QueryRow[];
 
     const commentBatch = since
-      ? db.select({ slug: comments.postSlug, c: count() }).from(comments).where(sql`${comments.createdAt} >= ${since}`).groupBy(comments.postSlug).all() as any[]
-      : db.select({ slug: comments.postSlug, c: count() }).from(comments).groupBy(comments.postSlug).all() as any[];
+      ? db.select({ slug: comments.postSlug, c: count() }).from(comments).where(sql`${comments.createdAt} >= ${since}`).groupBy(comments.postSlug).all() as QueryRow[]
+      : db.select({ slug: comments.postSlug, c: count() }).from(comments).groupBy(comments.postSlug).all() as QueryRow[];
 
     const viewsMap = new Map(viewsBatch.map(r => [r.slug, Number(r.c)]));
     const likesMap = new Map(likesBatch.map(r => [r.slug, Number(r.c)]));
@@ -201,10 +206,10 @@ export function getTopPosts(
 
     // Collect all slugs from all 4 sources
     const allSlugs = new Set<string>();
-    viewsBatch.forEach(r => allSlugs.add(r.slug));
-    likesBatch.forEach(r => allSlugs.add(r.slug));
-    bmBatch.forEach(r => allSlugs.add(r.slug));
-    commentBatch.forEach(r => allSlugs.add(r.slug));
+    viewsBatch.forEach(r => allSlugs.add(r.slug!));
+    likesBatch.forEach(r => allSlugs.add(r.slug!));
+    bmBatch.forEach(r => allSlugs.add(r.slug!));
+    commentBatch.forEach(r => allSlugs.add(r.slug!));
 
     const posts = db.select({
       slug: userPosts.slug,
@@ -228,7 +233,8 @@ export function getTopPosts(
       : "views" as const;
 
     return result.sort((a, b) => b[sortKey] - a[sortKey]).slice(0, limit);
-  } catch {
+  } catch (e) {
+    console.error("getTopPosts failed", e);
     return [];
   }
 }
@@ -241,7 +247,7 @@ export function getPostAnalytics(postSlug: string): PostAnalytics {
     }).from(views).where(sql`${views.postSlug} = ${postSlug}`)
       .groupBy(sql`substr(${views.createdAt}, 12, 2)`)
       .orderBy(sql`substr(${views.createdAt}, 12, 2)`)
-      .all() as any[];
+      .all() as QueryRow[];
 
     const hourlyLikes = db.select({
       hour: sql<string>`substr(${likes.createdAt}, 12, 2) || ':00'`,
@@ -249,7 +255,7 @@ export function getPostAnalytics(postSlug: string): PostAnalytics {
     }).from(likes).where(sql`${likes.postSlug} = ${postSlug}`)
       .groupBy(sql`substr(${likes.createdAt}, 12, 2)`)
       .orderBy(sql`substr(${likes.createdAt}, 12, 2)`)
-      .all() as any[];
+      .all() as QueryRow[];
 
     const hourlyBm = db.select({
       hour: sql<string>`substr(${bookmarks.createdAt}, 12, 2) || ':00'`,
@@ -257,14 +263,15 @@ export function getPostAnalytics(postSlug: string): PostAnalytics {
     }).from(bookmarks).where(sql`${bookmarks.postSlug} = ${postSlug}`)
       .groupBy(sql`substr(${bookmarks.createdAt}, 12, 2)`)
       .orderBy(sql`substr(${bookmarks.createdAt}, 12, 2)`)
-      .all() as any[];
+      .all() as QueryRow[];
 
     return {
       hourlyViews: fillMissingHours(hourlyViews.map(r => ({ hour: r.hour as string, count: Number(r.c) }))),
       hourlyLikes: fillMissingHours(hourlyLikes.map(r => ({ hour: r.hour as string, count: Number(r.c) }))),
       hourlyBookmarks: fillMissingHours(hourlyBm.map(r => ({ hour: r.hour as string, count: Number(r.c) }))),
     };
-  } catch {
+  } catch (e) {
+    console.error("getPostAnalytics failed", e);
     return { hourlyViews: fillMissingHours([]), hourlyLikes: fillMissingHours([]), hourlyBookmarks: fillMissingHours([]) };
   }
 }

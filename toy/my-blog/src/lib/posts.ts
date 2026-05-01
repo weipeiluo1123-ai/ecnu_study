@@ -11,7 +11,7 @@ let mdxCache: PostMeta[] | null = null;
 // getAllPosts() result cache with 6s TTL — avoids redoing heavy work
 // on every dynamic render (searchParams forces /posts to be dynamic)
 let allPostsCache: { data: PostMeta[]; time: number } | null = null;
-const ALL_POSTS_TTL = 6000;
+const ALL_POSTS_TTL = 60000;
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
@@ -45,16 +45,15 @@ export interface AuthorInfo {
 
 export function getAuthorInfo(username: string): AuthorInfo {
   try {
-    const Database = require("better-sqlite3");
-    const path = require("path");
-    const dbPath = path.join(process.cwd(), "data", "blog.db");
-    if (require("fs").existsSync(dbPath)) {
-      const sqlite = new Database(dbPath);
-      const row = sqlite.prepare("SELECT id, username, role FROM users WHERE username = ?").get(username);
-      sqlite.close();
-      if (row) return { id: row.id, username: row.username, role: row.role || null };
-    }
-  } catch {}
+    const user = db.select({
+      id: users.id,
+      username: users.username,
+      role: users.role,
+    }).from(users).where(eq(users.username, username)).get();
+    if (user) return { id: user.id, username: user.username, role: user.role };
+  } catch (e) {
+    console.error("getAuthorInfo failed for", username, e);
+  }
   return { id: null, username, role: null };
 }
 
@@ -90,7 +89,8 @@ export function getPostBySlug(slug: string): PostData | null {
       featured: data.featured || false,
       content,
     };
-  } catch {
+  } catch (e) {
+    console.error("getPostBySlug failed for", slug, e);
     return null;
   }
 }
@@ -124,7 +124,7 @@ function getAllDbPosts(): PostMeta[] {
     })
     .from(userPosts)
     .leftJoin(users, eq(userPosts.authorId, users.id))
-    .where(eq(userPosts.isPublished, true as any))
+    .where(eq(userPosts.isPublished, true))
     .all();
 
     return rows.map(r => ({
@@ -142,7 +142,8 @@ function getAllDbPosts(): PostMeta[] {
       likesCount: r.likesCount ?? 0,
       bookmarksCount: r.bookmarksCount ?? 0,
     }));
-  } catch {
+  } catch (e) {
+    console.error("getAllDbPosts failed", e);
     return [];
   }
 }
@@ -190,8 +191,8 @@ export function getAllPosts(): PostMeta[] {
         post.bookmarksCount = bmMap.get(post.slug) ?? 0;
       }
     }
-  } catch {
-    // Silently fail; counts default to 0
+  } catch (e) {
+    console.error("batch like/bookmark count failed", e);
   }
 
   const result = merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

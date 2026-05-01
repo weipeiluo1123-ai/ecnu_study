@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { ArrowLeft, Shield, User, Ban, Trash2, ToggleLeft, ToggleRight, Crown } from "lucide-react";
 import Link from "next/link";
@@ -19,10 +20,10 @@ interface UserData {
 
 export default function AdminUsersPage() {
   const { user, loading } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
   const [users, setUsers] = useState<UserData[]>([]);
   const [fetching, setFetching] = useState(true);
-  const [error, setError] = useState("");
 
   async function fetchUsers() {
     try {
@@ -34,7 +35,7 @@ export default function AdminUsersPage() {
       const data = await res.json();
       setUsers(data.users || []);
     } catch {
-      setError("加载失败");
+      addToast("error", "加载失败");
     } finally {
       setFetching(false);
     }
@@ -68,7 +69,7 @@ export default function AdminUsersPage() {
   async function toggleRole(userId: number, currentRole: string) {
     if (userId === user?.id) return;
     if (currentRole === "super_admin") {
-      alert("不能修改超级管理员");
+      addToast("error", "不能修改超级管理员");
       return;
     }
     const newRole = currentRole === "admin" ? "user" : "admin";
@@ -84,11 +85,11 @@ export default function AdminUsersPage() {
 
   async function deleteUser(userId: number, username: string, role: string) {
     if (userId === user?.id) {
-      alert("不能删除自己");
+      addToast("error", "不能删除自己");
       return;
     }
     if (role === "super_admin") {
-      alert("不能删除超级管理员");
+      addToast("error", "不能删除超级管理员");
       return;
     }
     if (!confirm(`确定删除用户 "${username}"？此操作不可恢复。`)) return;
@@ -119,12 +120,6 @@ export default function AdminUsersPage() {
         <h1 className="text-3xl font-bold text-foreground">用户管理</h1>
         <p className="mt-2 text-muted">共 {users.length} 个注册用户</p>
       </AnimatedSection>
-
-      {error && (
-        <div className="mt-6 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-          {error}
-        </div>
-      )}
 
       <AnimatedSection delay={0.1} className="mt-8">
         <div className="overflow-x-auto">

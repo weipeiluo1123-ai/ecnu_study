@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { ArrowLeft, Trash2, MessageSquare, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -18,22 +19,19 @@ interface AdminComment {
 
 export default function AdminCommentsPage() {
   const { user, loading } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
   const [comments, setComments] = useState<AdminComment[]>([]);
   const [fetching, setFetching] = useState(true);
   const [filter, setFilter] = useState("");
 
   async function fetchAllComments() {
-    // Fetch comments for all posts — we need to aggregate.
-    // Since there's no "all comments" API, we'll fetch via the posts list approach.
-    // For now, we get the post slugs from the MDX content and aggregate.
     try {
       const res = await fetch("/api/comments?postSlug=__all__");
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
       setComments(data.comments || []);
     } catch {
-      // Fallback: try getting comments post by post
       setComments([]);
     } finally {
       setFetching(false);
@@ -54,10 +52,13 @@ export default function AdminCommentsPage() {
     try {
       const res = await fetch(`/api/comments?id=${commentId}`, { method: "DELETE" });
       if (res.ok) {
+        addToast("success", "评论已删除");
         setComments((prev) => prev.filter((c) => c.id !== commentId));
+      } else {
+        addToast("error", "删除失败");
       }
     } catch {
-      // silent
+      addToast("error", "网络错误");
     }
   }
 

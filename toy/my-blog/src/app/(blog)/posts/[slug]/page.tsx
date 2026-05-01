@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Tag, User, Crown } from "lucide-react";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getPostBySlug } from "@/lib/posts";
+import { getPostBySlug, getPostSlugs } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { TagBadge } from "@/components/ui/TagBadge";
@@ -17,11 +17,15 @@ import { db } from "@/lib/db/index";
 import { userPosts, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
-// Always serve fresh content — user posts update frequently
-export const revalidate = 0;
+// ISR with 60s window — MDX posts are static, user posts are cache-busted via revalidatePath on CRUD
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+export function generateStaticParams() {
+  return getPostSlugs().map((slug) => ({ slug: slug.replace(/\.(md|mdx)$/, "") }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,12 +33,42 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Check MDX first
   const mdxPost = getPostBySlug(slug);
   if (mdxPost) {
-    return { title: mdxPost.title, description: mdxPost.description };
+    return {
+      title: mdxPost.title,
+      description: mdxPost.description,
+      openGraph: {
+        title: mdxPost.title,
+        description: mdxPost.description,
+        type: "article",
+        publishedTime: mdxPost.date,
+        modifiedTime: mdxPost.updated,
+        tags: mdxPost.tags,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: mdxPost.title,
+        description: mdxPost.description,
+      },
+    };
   }
   // Check user posts
   const userPost = db.select().from(userPosts).where(eq(userPosts.slug, slug)).get();
   if (userPost) {
-    return { title: userPost.title, description: userPost.description || userPost.title };
+    return {
+      title: userPost.title,
+      description: userPost.description || userPost.title,
+      openGraph: {
+        title: userPost.title,
+        description: userPost.description || userPost.title,
+        type: "article",
+        publishedTime: userPost.createdAt,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: userPost.title,
+        description: userPost.description || userPost.title,
+      },
+    };
   }
   return {};
 }

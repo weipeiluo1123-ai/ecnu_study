@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { Eye, Users, FileText, Activity, RefreshCw, AlertTriangle } from "lucide-react";
 import StatCard from "./StatCard";
-import TrafficChart from "./TrafficChart";
-import EngagementChart from "./EngagementChart";
-import PostAnalyticsTable from "./PostAnalyticsTable";
 import type { OverviewStats, HourlyCount, EngagementData, TopPost } from "@/lib/dashboard";
+
+const TrafficChart = dynamic(() => import("./TrafficChart"), { ssr: false });
+const EngagementChart = dynamic(() => import("./EngagementChart"), { ssr: false });
+const PostAnalyticsTable = dynamic(() => import("./PostAnalyticsTable"), { ssr: false });
 
 interface DashboardData {
   overview: OverviewStats;

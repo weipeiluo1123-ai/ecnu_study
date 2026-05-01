@@ -25,7 +25,14 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [tab, setTab] = useState<"posts" | "users">("posts");
+
+  // Debounce search query — 300ms delay
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
   const [users, setUsers] = useState<SiteUser[]>([]);
   const [usersLoaded, setUsersLoaded] = useState(false);
   const [postPage, setPostPage] = useState(1);
@@ -59,24 +66,24 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
     [initialPosts]
   );
 
-  // Reset page when query or tab changes
-  useEffect(() => { setPostPage(1); }, [query, tab]);
-  useEffect(() => { setUserPage(1); }, [query, tab]);
+  // Reset page when debounced query or tab changes
+  useEffect(() => { setPostPage(1); }, [debouncedQuery, tab]);
+  useEffect(() => { setUserPage(1); }, [debouncedQuery, tab]);
 
   const postResults = useMemo(() => {
-    if (!query.trim() || tab !== "posts") return [];
-    return fuse.search(query.trim()).map((r) => r.item);
-  }, [query, fuse, tab]);
+    if (!debouncedQuery.trim() || tab !== "posts") return [];
+    return fuse.search(debouncedQuery.trim()).map((r) => r.item);
+  }, [debouncedQuery, fuse, tab]);
 
   const userResults = useMemo(() => {
-    if (!query.trim() || tab !== "users") return [];
-    const q = query.trim().toLowerCase();
+    if (!debouncedQuery.trim() || tab !== "users") return [];
+    const q = debouncedQuery.trim().toLowerCase();
     return users.filter(
       (u) =>
         u.username.toLowerCase().includes(q) ||
         (u.bio && u.bio.toLowerCase().includes(q))
     );
-  }, [query, users, tab]);
+  }, [debouncedQuery, users, tab]);
 
   // Paginate results
   const paginatedPosts = useMemo(() => {
@@ -127,7 +134,7 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
           >
             <FileText size={16} />
             文章
-            {query.trim() && tab === "posts" && (
+            {debouncedQuery.trim() && tab === "posts" && (
               <span className="text-xs text-muted ml-1">{postResults.length}</span>
             )}
           </button>
@@ -139,30 +146,32 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
           >
             <User size={16} />
             用户
-            {query.trim() && tab === "users" && (
+            {debouncedQuery.trim() && tab === "users" && (
               <span className="text-xs text-muted ml-1">{userResults.length}</span>
             )}
           </button>
         </div>
 
-        {query.trim() && (
+        {debouncedQuery.trim() && (
           <p className="mt-3 text-sm text-muted">
             {tab === "posts"
               ? `找到 ${postResults.length} 篇匹配文章`
               : `找到 ${userResults.length} 个匹配用户`}
           </p>
         )}
-        {!query.trim() && (
+        {!debouncedQuery.trim() && (
           <p className="mt-3 text-sm text-muted">
             {tab === "posts" ? `共 ${initialPosts.length} 篇文章` : `共 ${users.length} 个注册用户`}
           </p>
         )}
       </AnimatedSection>
 
-      {/* Posts results */}
-      {tab === "posts" && (
-        <AnimatedSection delay={0.1} className="mt-8">
-          {query.trim() ? (
+      {/* ── Results area (same margin for both tabs) ── */}
+      <AnimatedSection delay={0.1} className="mt-8">
+
+        {/* Posts results */}
+        {tab === "posts" && (
+          debouncedQuery.trim() ? (
             paginatedPosts.length > 0 ? (
               <div className="space-y-4">
                 {paginatedPosts.map((post, i) => (
@@ -189,128 +198,127 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
                 )}
               </div>
             ) : (
-              <div className="text-center py-20">
+              <div className="text-center py-16">
                 <FileText size={48} className="mx-auto text-muted/30 mb-4" />
                 <p className="text-muted">未找到匹配的文章</p>
                 <p className="text-sm text-muted mt-1">试试其他关键词</p>
               </div>
             )
           ) : (
-            <div className="mt-8 space-y-4">
+            <div className="space-y-4">
+              <p className="text-sm text-muted">最新文章</p>
               {initialPosts.slice(0, 5).map((post, i) => (
                 <PostCard key={post.slug} post={post} index={i} />
               ))}
             </div>
-          )}
-        </AnimatedSection>
-      )}
+          )
+        )}
 
-      {/* Users results */}
-      {tab === "users" && (
-        <AnimatedSection delay={0.1} className="mt-8">
-          {query.trim() && userResults.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {paginatedUsers.map((u) => (
-                <Link
-                  key={u.id}
-                  href={`/users/${u.id}`}
-                  className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shrink-0 ${
-                      u.role === "super_admin"
-                        ? "bg-gradient-to-br from-amber-400 to-orange-600 text-white shadow-[0_0_12px_rgba(251,191,36,0.4)]"
-                        : "bg-neon-cyan/20 text-neon-cyan"
-                    }`}>
-                      {u.role === "super_admin" ? <Crown size={20} /> : u.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground group-hover:text-neon-cyan transition-colors truncate">
-                          {u.username}
-                        </span>
-                        {u.role === "super_admin" && (
-                          <span className="shrink-0 text-xs px-1.5 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">超级</span>
-                        )}
-                        {u.role === "admin" && (
-                          <span className="shrink-0 text-xs px-1.5 py-0.5 rounded-full bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
-                            <Shield size={10} className="inline" /> 管理
-                          </span>
-                        )}
-                      </div>
-                      {u.bio && (
-                        <p className="text-xs text-muted mt-0.5 line-clamp-1">{u.bio}</p>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-              </div>
-              {userTotalPages > 1 && (
-                <div className="flex items-center justify-center gap-1 mt-8">
-                  <button onClick={() => setUserPage(p => Math.max(1, p-1))} disabled={userPage <= 1}
-                    className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", userPage <= 1 && "opacity-40")}>
-                    <ChevronLeft size={16} />
-                  </button>
-                  {Array.from({ length: userTotalPages }, (_, i) => i+1).map(p => (
-                    <button key={p} onClick={() => setUserPage(p)}
-                      className={cn("flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium border transition-colors cursor-pointer",
-                        p === userPage ? "border-neon-cyan bg-neon-cyan/10 text-neon-cyan" : "border-border text-muted hover:text-foreground hover:border-accent")}>
-                      {p}
-                    </button>
-                  ))}
-                  <button onClick={() => setUserPage(p => Math.min(userTotalPages, p+1))} disabled={userPage >= userTotalPages}
-                    className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", userPage >= userTotalPages && "opacity-40")}>
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              )}
-            </>
-          ) : query.trim() ? (
-            <div className="text-center py-20">
-              <User size={48} className="mx-auto text-muted/30 mb-4" />
-              <p className="text-muted">未找到匹配的用户</p>
-              <p className="text-sm text-muted mt-1">试试其他关键词</p>
-            </div>
-          ) : (
-            <div className="mt-8">
-              {usersLoaded && users.length > 0 ? (
+        {/* Users results */}
+        {tab === "users" && (
+          debouncedQuery.trim() ? (
+            userResults.length > 0 ? (
+              <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {users.slice(0, 6).map((u) => (
+                  {paginatedUsers.map((u) => (
                     <Link
                       key={u.id}
                       href={`/users/${u.id}`}
                       className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-bold shrink-0 ${
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shrink-0 ${
                           u.role === "super_admin"
-                            ? "bg-gradient-to-br from-amber-400 to-orange-600 text-white"
+                            ? "bg-gradient-to-br from-amber-400 to-orange-600 text-white shadow-[0_0_12px_rgba(251,191,36,0.4)]"
                             : "bg-neon-cyan/20 text-neon-cyan"
                         }`}>
-                          {u.role === "super_admin" ? <Crown size={16} /> : u.username.charAt(0).toUpperCase()}
+                          {u.role === "super_admin" ? <Crown size={20} /> : u.username.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className="text-sm font-medium text-foreground group-hover:text-neon-cyan transition-colors truncate">
-                            {u.username}
-                          </span>
-                          {u.bio && <p className="text-xs text-muted truncate">{u.bio}</p>}
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-foreground group-hover:text-neon-cyan transition-colors truncate">
+                              {u.username}
+                            </span>
+                            {u.role === "super_admin" && (
+                              <span className="shrink-0 text-xs px-1.5 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">超级</span>
+                            )}
+                            {u.role === "admin" && (
+                              <span className="shrink-0 text-xs px-1.5 py-0.5 rounded-full bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
+                                <Shield size={10} className="inline" /> 管理
+                              </span>
+                            )}
+                          </div>
+                          {u.bio && (
+                            <p className="text-xs text-muted mt-0.5 line-clamp-1">{u.bio}</p>
+                          )}
                         </div>
                       </div>
                     </Link>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <User size={32} className="mx-auto text-muted/30 mb-2" />
-                  <p className="text-sm text-muted">输入关键词搜索用户</p>
-                </div>
-              )}
-            </div>
-          )}
-        </AnimatedSection>
-      )}
+                {userTotalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1 mt-8">
+                    <button onClick={() => setUserPage(p => Math.max(1, p-1))} disabled={userPage <= 1}
+                      className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", userPage <= 1 && "opacity-40")}>
+                      <ChevronLeft size={16} />
+                    </button>
+                    {Array.from({ length: userTotalPages }, (_, i) => i+1).map(p => (
+                      <button key={p} onClick={() => setUserPage(p)}
+                        className={cn("flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium border transition-colors cursor-pointer",
+                          p === userPage ? "border-neon-cyan bg-neon-cyan/10 text-neon-cyan" : "border-border text-muted hover:text-foreground hover:border-accent")}>
+                        {p}
+                      </button>
+                    ))}
+                    <button onClick={() => setUserPage(p => Math.min(userTotalPages, p+1))} disabled={userPage >= userTotalPages}
+                      className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", userPage >= userTotalPages && "opacity-40")}>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <User size={48} className="mx-auto text-muted/30 mb-4" />
+                <p className="text-muted">未找到匹配的用户</p>
+                <p className="text-sm text-muted mt-1">试试其他关键词</p>
+              </div>
+            )
+          ) : (
+            usersLoaded ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {users.slice(0, 6).map((u) => (
+                  <Link
+                    key={u.id}
+                    href={`/users/${u.id}`}
+                    className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-bold shrink-0 ${
+                        u.role === "super_admin"
+                          ? "bg-gradient-to-br from-amber-400 to-orange-600 text-white"
+                          : "bg-neon-cyan/20 text-neon-cyan"
+                      }`}>
+                        {u.role === "super_admin" ? <Crown size={16} /> : u.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm font-medium text-foreground group-hover:text-neon-cyan transition-colors truncate">
+                          {u.username}
+                        </span>
+                        {u.bio && <p className="text-xs text-muted truncate">{u.bio}</p>}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <User size={32} className="mx-auto text-muted/30 mb-2" />
+                <p className="text-sm text-muted">输入关键词搜索用户</p>
+              </div>
+            )
+          )
+        )}
+      </AnimatedSection>
     </div>
   );
 }

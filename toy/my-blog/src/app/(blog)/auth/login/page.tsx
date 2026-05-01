@@ -4,29 +4,30 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { LogIn } from "lucide-react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     const err = await login(username, password);
     setLoading(false);
 
     if (err) {
-      setError(err);
+      addToast("error", err);
     } else {
-      router.push("/");
+      addToast("success", "登录成功");
+      router.push("/home");
     }
   }
 
@@ -40,12 +41,6 @@ export default function LoginPage() {
                 <LogIn size={24} className="text-neon-cyan" />
                 <h1 className="text-2xl font-bold text-foreground">登录</h1>
               </div>
-
-              {error && (
-                <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                  {error}
-                </div>
-              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

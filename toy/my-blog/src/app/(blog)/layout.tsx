@@ -7,6 +7,18 @@ export const metadata = {
     template: `%s — ${BLOG_TITLE}`,
   },
   description: BLOG_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    locale: "zh_CN",
+    siteName: BLOG_TITLE,
+    title: `${BLOG_TITLE} — 思考 · 代码 · 生活`,
+    description: BLOG_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${BLOG_TITLE} — 思考 · 代码 · 生活`,
+    description: BLOG_DESCRIPTION,
+  },
 };
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
