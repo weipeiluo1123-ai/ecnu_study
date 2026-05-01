@@ -10,36 +10,39 @@ interface DateRange {
 }
 
 function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): DateRange {
+  // Use local date (UTC+8 for China server) for natural day/week/month boundaries
   const now = new Date();
-  const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, "/");
-  const pad = (n: number) => String(n).padStart(2, "0");
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const d = now.getDate();
+  const dayOfWeek = now.getDay();
+
+  const fmtLocal = (year: number, month: number, day: number) =>
+    `${year}/${String(month + 1).padStart(2, "0")}/${String(day).padStart(2, "0")}`;
+  const toUTC = (year: number, month: number, day: number, h = 0) =>
+    new Date(Date.UTC(year, month, day, h)).toISOString();
 
   if (range === "all") return { since: null, label: "" };
 
   if (range === "daily") {
-    const start = now.toISOString().slice(0, 10) + "T00:00:00.000Z";
-    return { since: start, label: fmt(now) };
+    return { since: toUTC(y, m, d), label: fmtLocal(y, m, d) };
   }
 
   if (range === "weekly") {
-    const day = now.getUTCDay();
-    const mondayOffset = day === 0 ? -6 : 1 - day;
-    const mon = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + mondayOffset));
-    const sun = new Date(mon.getTime() + 6 * 86400000);
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monDate = new Date(Date.UTC(y, m, d + mondayOffset));
+    const sunDate = new Date(monDate.getTime() + 6 * 86400000);
     return {
-      since: mon.toISOString().slice(0, 10) + "T00:00:00.000Z",
-      label: `${fmt(mon)} ~ ${fmt(sun)}`,
+      since: toUTC(monDate.getUTCFullYear(), monDate.getUTCMonth(), monDate.getUTCDate()),
+      label: `${fmtLocal(monDate.getUTCFullYear(), monDate.getUTCMonth(), monDate.getUTCDate())} ~ ${fmtLocal(sunDate.getUTCFullYear(), sunDate.getUTCMonth(), sunDate.getUTCDate())}`,
     };
   }
 
   // monthly
-  const y = now.getUTCFullYear();
-  const m = now.getUTCMonth();
-  const first = new Date(Date.UTC(y, m, 1));
-  const last = new Date(Date.UTC(y, m + 1, 0));
+  const lastDay = new Date(Date.UTC(y, m + 1, 0));
   return {
-    since: first.toISOString().slice(0, 10) + "T00:00:00.000Z",
-    label: `${fmt(first)} ~ ${fmt(last)}`,
+    since: toUTC(y, m, 1),
+    label: `${fmtLocal(y, m, 1)} ~ ${fmtLocal(lastDay.getUTCFullYear(), lastDay.getUTCMonth(), lastDay.getUTCDate())}`,
   };
 }
 
