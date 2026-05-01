@@ -4,48 +4,10 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { ArrowLeft, Save, Eye, Edit3, FileText } from "lucide-react";
+import { ArrowLeft, Save, Eye, Edit3, FileText, Code } from "lucide-react";
 import Link from "next/link";
 import { CATEGORIES, TAGS } from "@/lib/constants";
-
-function renderMarkdown(md: string): string {
-  let html = md
-    // Headers
-    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-foreground mt-4 mb-2">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold text-foreground mt-5 mb-2">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold text-foreground mt-6 mb-3">$1</h1>')
-    // Bold & italic
-    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // Inline code
-    .replace(/`(.+?)`/g, '<code class="bg-surface-alt px-1.5 py-0.5 rounded text-neon-cyan text-sm font-mono">$1</code>')
-    // Code blocks
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="bg-surface-alt border border-border rounded-xl p-4 my-3 overflow-x-auto"><code class="text-sm font-mono text-foreground">$2</code></pre>')
-    // Images
-    .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="my-4 rounded-xl max-w-full" />')
-    // Links
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-neon-cyan hover:underline">$1</a>')
-    // Unordered lists
-    .replace(/^- (.+)$/gm, '<li class="text-muted ml-4 list-disc">$1</li>')
-    // Ordered lists
-    .replace(/^\d+\. (.+)$/gm, '<li class="text-muted ml-4 list-decimal">$1</li>')
-    // Blockquotes
-    .replace(/^> (.+)$/gm, '<blockquote class="border-l-2 border-neon-cyan/30 pl-4 my-2 text-muted italic">$1</blockquote>')
-    // Horizontal rules
-    .replace(/^---$/gm, '<hr class="my-6 border-border" />')
-    // Paragraphs (double newlines)
-    .replace(/\n\n/g, '</p><p class="text-muted leading-relaxed mb-3">')
-    // Single newlines within paragraphs
-    .replace(/\n/g, '<br />');
-
-  // Wrap in paragraph if not starting with a block element
-  if (!html.startsWith("<h") && !html.startsWith("<pre") && !html.startsWith("<blockquote") && !html.startsWith("<li") && !html.startsWith("<hr")) {
-    html = '<p class="text-muted leading-relaxed mb-3">' + html + '</p>';
-  }
-
-  return html;
-}
+import { renderMarkdown } from "@/lib/markdown";
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -62,6 +24,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [success, setSuccess] = useState("");
   const [fetching, setFetching] = useState(true);
   const [preview, setPreview] = useState(false);
+  const [format, setFormat] = useState<"markdown" | "txt">("markdown");
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
@@ -87,6 +50,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       setDescription(post.description || "");
       setCategory(post.category || "notes");
       setSelectedTags(post.tags ? JSON.parse(post.tags) : []);
+      setFormat(post.format === "txt" ? "txt" : "markdown");
       setIsPublished(post.isPublished);
     } catch {
       setNotFound(true);
@@ -104,7 +68,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       const res = await fetch(`/api/user-posts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content, description, category, tags: selectedTags, isPublished }),
+        body: JSON.stringify({ title, content, description, category, tags: selectedTags, isPublished, format }),
       });
       if (res.ok) {
         setSuccess("保存成功！");
@@ -251,10 +215,33 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
           {/* Content with preview toggle */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">内容 (Markdown)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-foreground">内容</label>
+              {/* Format toggle */}
+              <div className="flex bg-surface-alt border border-border rounded-lg p-0.5">
+                <button type="button" onClick={() => { setFormat("markdown"); setPreview(false); }}
+                  className={`flex items-center gap-1 px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
+                    format === "markdown" ? "bg-neon-cyan/20 text-neon-cyan" : "text-muted hover:text-foreground"
+                  }`}>
+                  <Code size={12} />
+                  Markdown
+                </button>
+                <button type="button" onClick={() => { setFormat("txt"); setPreview(false); }}
+                  className={`flex items-center gap-1 px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
+                    format === "txt" ? "bg-neon-cyan/20 text-neon-cyan" : "text-muted hover:text-foreground"
+                  }`}>
+                  <FileText size={12} />
+                  TXT
+                </button>
+              </div>
+            </div>
             {preview ? (
               <div className="min-h-[400px] bg-surface-alt border border-border rounded-xl p-6 overflow-y-auto prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
+                dangerouslySetInnerHTML={{
+                  __html: format === "txt"
+                    ? content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")
+                    : renderMarkdown(content)
+                }}
               />
             ) : (
               <textarea
@@ -262,6 +249,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                 onChange={e => setContent(e.target.value)}
                 rows={20}
                 className="w-full bg-surface-alt border border-border rounded-xl px-4 py-3 text-foreground outline-none placeholder:text-muted focus:border-neon-cyan/50 transition-colors resize-y font-mono text-sm"
+                placeholder={format === "markdown" ? "用 Markdown 写文章..." : "直接输入纯文本..."}
               />
             )}
           </div>

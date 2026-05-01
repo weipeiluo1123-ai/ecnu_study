@@ -62,7 +62,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "无权修改" }, { status: 403 });
   }
 
-  const { title, content, description, category, tags, isPublished } = await req.json();
+  const { title, content, description, category, tags, isPublished, format } = await req.json();
   const now = new Date().toISOString();
 
   const updateData: Record<string, any> = { updatedAt: now };
@@ -72,6 +72,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
   if (category !== undefined) updateData.category = category;
   if (tags !== undefined) updateData.tags = JSON.stringify(normalizeTags(tags));
   if (isPublished !== undefined) updateData.isPublished = isPublished;
+  if (format !== undefined) updateData.format = format === "txt" ? "txt" : "markdown";
 
   db.update(userPosts).set(updateData).where(eq(userPosts.id, postId)).run();
 

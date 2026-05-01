@@ -185,6 +185,17 @@ export function initDB() {
   } catch (e) {
     // Migration may fail; that's OK
   }
+
+  // Migration: add format column to user_posts if not exists
+  try {
+    const postCols = sqlite.prepare("PRAGMA table_info(user_posts)").all() as any[];
+    const hasFormat = postCols.some((c: any) => c.name === "format");
+    if (!hasFormat) {
+      sqlite.exec(`ALTER TABLE user_posts ADD COLUMN format TEXT NOT NULL DEFAULT 'markdown';`);
+    }
+  } catch (e) {
+    // Migration may fail; that's OK
+  }
 }
 
 initDB();

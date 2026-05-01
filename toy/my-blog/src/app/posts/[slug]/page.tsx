@@ -12,6 +12,7 @@ import { LikeButton } from "@/components/ui/LikeButton";
 import { BookmarkButton } from "@/components/ui/BookmarkButton";
 import { ViewCounter } from "@/components/ui/ViewCounter";
 import { PostActions } from "@/components/ui/PostActions";
+import { renderContent } from "@/lib/markdown";
 import { db } from "@/lib/db/index";
 import { userPosts, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -58,6 +59,7 @@ export default async function PostPage({ params }: Props) {
     description: userPosts.description,
     category: userPosts.category,
     tags: userPosts.tags,
+    format: userPosts.format,
     authorId: userPosts.authorId,
     isPublished: userPosts.isPublished,
     createdAt: userPosts.createdAt,
@@ -150,9 +152,16 @@ export default async function PostPage({ params }: Props) {
       {/* Content */}
       <AnimatedSection delay={0.1} className="mt-10">
         <div className="prose-custom max-w-none prose prose-lg dark:prose-invert">
-          <div className="text-foreground leading-relaxed whitespace-pre-wrap">
-            {userPost.content}
-          </div>
+          {userPost.format === "markdown" ? (
+            <div
+              className="text-foreground leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: renderContent(userPost.content, "markdown") }}
+            />
+          ) : (
+            <div className="text-foreground leading-relaxed whitespace-pre-wrap font-mono text-sm">
+              {userPost.content}
+            </div>
+          )}
         </div>
       </AnimatedSection>
 

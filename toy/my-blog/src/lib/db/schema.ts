@@ -56,6 +56,7 @@ export const userPosts = sqliteTable("user_posts", {
   slug: text("slug").notNull().unique(),
   category: text("category").default("notes"),
   tags: text("tags").default("[]"),
+  format: text("format").notNull().default("markdown"),
   authorId: integer("author_id").notNull().references(() => users.id),
   isPublished: integer("is_published", { mode: "boolean" }).notNull().default(true),
   likesCount: integer("likes_count").notNull().default(0),

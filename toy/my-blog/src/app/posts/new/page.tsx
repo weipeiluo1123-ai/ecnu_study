@@ -5,33 +5,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { CATEGORIES, TAGS } from "@/lib/constants";
-import { Eye, Edit3, Send } from "lucide-react";
+import { Eye, Edit3, Send, FileText, Code } from "lucide-react";
 import Link from "next/link";
-
-function renderMarkdown(md: string): string {
-  let html = md
-    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-foreground mt-4 mb-2">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold text-foreground mt-5 mb-2">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold text-foreground mt-6 mb-3">$1</h1>')
-    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code class="bg-surface-alt px-1.5 py-0.5 rounded text-neon-cyan text-sm font-mono">$1</code>')
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="bg-surface-alt border border-border rounded-xl p-4 my-3 overflow-x-auto"><code class="text-sm font-mono text-foreground">$2</code></pre>')
-    .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="my-4 rounded-xl max-w-full" />')
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-neon-cyan hover:underline">$1</a>')
-    .replace(/^- (.+)$/gm, '<li class="text-muted ml-4 list-disc">$1</li>')
-    .replace(/^\d+\. (.+)$/gm, '<li class="text-muted ml-4 list-decimal">$1</li>')
-    .replace(/^> (.+)$/gm, '<blockquote class="border-l-2 border-neon-cyan/30 pl-4 my-2 text-muted italic">$1</blockquote>')
-    .replace(/^---$/gm, '<hr class="my-6 border-border" />')
-    .replace(/\n\n/g, '</p><p class="text-muted leading-relaxed mb-3">')
-    .replace(/\n/g, '<br />');
-
-  if (!html.startsWith("<h") && !html.startsWith("<pre") && !html.startsWith("<blockquote") && !html.startsWith("<li") && !html.startsWith("<hr")) {
-    html = '<p class="text-muted leading-relaxed mb-3">' + html + '</p>';
-  }
-  return html;
-}
+import { renderMarkdown } from "@/lib/markdown";
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -44,6 +20,7 @@ export default function NewPostPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(false);
+  const [format, setFormat] = useState<"markdown" | "txt">("markdown");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,7 +31,7 @@ export default function NewPostPage() {
       const res = await fetch("/api/user-posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content, description, category, tags: selectedTags }),
+        body: JSON.stringify({ title, content, description, category, tags: selectedTags, format }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -146,15 +123,38 @@ export default function NewPostPage() {
 
           {/* Content with preview */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">内容 (Markdown)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-foreground">内容</label>
+              {/* Format toggle */}
+              <div className="flex bg-surface-alt border border-border rounded-lg p-0.5">
+                <button type="button" onClick={() => { setFormat("markdown"); setPreview(false); }}
+                  className={`flex items-center gap-1 px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
+                    format === "markdown" ? "bg-neon-cyan/20 text-neon-cyan" : "text-muted hover:text-foreground"
+                  }`}>
+                  <Code size={12} />
+                  Markdown
+                </button>
+                <button type="button" onClick={() => { setFormat("txt"); setPreview(false); }}
+                  className={`flex items-center gap-1 px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
+                    format === "txt" ? "bg-neon-cyan/20 text-neon-cyan" : "text-muted hover:text-foreground"
+                  }`}>
+                  <FileText size={12} />
+                  TXT
+                </button>
+              </div>
+            </div>
             {preview ? (
               <div className="min-h-[400px] bg-surface-alt border border-border rounded-xl p-6 overflow-y-auto prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
+                dangerouslySetInnerHTML={{
+                  __html: format === "txt"
+                    ? content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")
+                    : renderMarkdown(content)
+                }} />
             ) : (
               <textarea value={content} onChange={(e) => setContent(e.target.value)}
                 rows={18}
                 className="w-full bg-surface-alt border border-border rounded-xl px-4 py-3 text-foreground outline-none placeholder:text-muted focus:border-neon-cyan/50 transition-colors resize-y font-mono text-sm"
-                placeholder="用 Markdown 写文章..." required />
+                placeholder={format === "markdown" ? "用 Markdown 写文章..." : "直接输入纯文本..."} required />
             )}
           </div>
 

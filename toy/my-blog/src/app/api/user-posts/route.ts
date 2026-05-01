@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
     slug: userPosts.slug,
     category: userPosts.category,
     tags: userPosts.tags,
+    format: userPosts.format,
     likesCount: userPosts.likesCount,
     viewsCount: userPosts.viewsCount,
     bookmarksCount: userPosts.bookmarksCount,
@@ -48,6 +49,7 @@ export async function GET(req: NextRequest) {
           slug: p.slug,
           category: p.category,
           tags: JSON.stringify(p.tags),
+          format: "markdown",
           likesCount: p.likesCount ?? 0,
           viewsCount: 0,
           bookmarksCount: p.bookmarksCount ?? 0,
@@ -80,7 +82,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "无权发布文章" }, { status: 403 });
   }
 
-  const { title, content, description, category, tags } = await req.json();
+  const { title, content, description, category, tags, format } = await req.json();
   if (!title?.trim() || !content?.trim()) {
     return NextResponse.json({ error: "标题和内容不能为空" }, { status: 400 });
   }
@@ -95,6 +97,7 @@ export async function POST(req: NextRequest) {
     slug,
     category: category || "notes",
     tags: JSON.stringify(normalizeTags(tags || [])),
+    format: format === "txt" ? "txt" : "markdown",
     authorId: session.id,
     isPublished: true,
     createdAt: now,
