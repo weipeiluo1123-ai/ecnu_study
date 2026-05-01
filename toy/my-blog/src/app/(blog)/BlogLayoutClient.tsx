@@ -5,6 +5,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { BackToTop } from "@/components/ui/BackToTop";
+import { BackToHome } from "@/components/ui/BackToHome";
 
 export default function BlogLayoutClient({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function BlogLayoutClient({ children }: { children: React.ReactNo
         <main className="flex-1">{children}</main>
         <Footer />
         <BackToTop />
+        <BackToHome />
       </div>
     </AuthProvider>
   );

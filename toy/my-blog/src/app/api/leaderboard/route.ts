@@ -7,13 +7,17 @@ import { getAllPosts } from "@/lib/posts";
 function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): Date | null {
   if (range === "all") return null;
   const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // today 00:00
   switch (range) {
     case "daily":
-      return new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    case "weekly":
-      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return start;
+    case "weekly": {
+      const dayOfWeek = now.getDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday as week start
+      return new Date(start.getTime() + mondayOffset * 24 * 60 * 60 * 1000);
+    }
     case "monthly":
-      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      return new Date(now.getFullYear(), now.getMonth(), 1);
   }
 }
 
