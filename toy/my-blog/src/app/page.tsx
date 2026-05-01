@@ -142,7 +142,7 @@ export default function LandingPage() {
             { label: "文章", href: "/posts", icon: BookOpen },
             { label: "分类", href: "/categories", icon: Sparkles },
             { label: "排行榜", href: "/leaderboard", icon: ArrowRight },
-            { label: "联系", href: "mailto:i@weipeiluo.space", icon: Mail },
+            { label: "联系", href: "mailto:weipeilu1123@outlook.com", icon: Mail },
           ].map((link, i) => {
             const Icon = link.icon;
             return (
