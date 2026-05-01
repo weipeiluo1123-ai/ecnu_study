@@ -1,5 +1,8 @@
 export function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString("zh-CN", {
+  if (!date) return "";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -7,7 +10,10 @@ export function formatDate(date: string): string {
 }
 
 export function formatDateShort(date: string): string {
-  return new Date(date).toLocaleDateString("zh-CN", {
+  if (!date) return "";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

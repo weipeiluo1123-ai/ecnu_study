@@ -32,8 +32,10 @@ export function BookmarkButton({ postSlug }: Props) {
 
   async function handleToggle() {
     if (!user) return;
-    setBookmarked(!bookmarked);
-    setCount(bookmarked ? count - 1 : count + 1);
+    const prevBookmarked = bookmarked;
+    const prevCount = count;
+    setBookmarked(!prevBookmarked);
+    setCount(prevBookmarked ? prevCount - 1 : prevCount + 1);
 
     try {
       const res = await fetch("/api/bookmarks", {
@@ -45,8 +47,8 @@ export function BookmarkButton({ postSlug }: Props) {
       setCount(data.count);
       setBookmarked(data.bookmarked);
     } catch {
-      setBookmarked(!bookmarked);
-      setCount(bookmarked ? count - 1 : count + 1);
+      setBookmarked(prevBookmarked);
+      setCount(prevCount);
     }
   }
 

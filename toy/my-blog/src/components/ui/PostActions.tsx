@@ -36,8 +36,10 @@ export function PostActions({ postSlug }: Props) {
 
   async function handleLike() {
     if (!user) return;
-    setLiked(!liked);
-    setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+    const prevLiked = liked;
+    const prevLikeCount = likeCount;
+    setLiked(!prevLiked);
+    setLikeCount(prevLiked ? prevLikeCount - 1 : prevLikeCount + 1);
     try {
       const res = await fetch("/api/likes", {
         method: "POST",
@@ -48,15 +50,17 @@ export function PostActions({ postSlug }: Props) {
       setLikeCount(data.count);
       setLiked(data.liked);
     } catch {
-      setLiked(!liked);
-      setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+      setLiked(prevLiked);
+      setLikeCount(prevLikeCount);
     }
   }
 
   async function handleBookmark() {
     if (!user) return;
-    setBookmarked(!bookmarked);
-    setBmCount(bookmarked ? bmCount - 1 : bmCount + 1);
+    const prevBookmarked = bookmarked;
+    const prevBmCount = bmCount;
+    setBookmarked(!prevBookmarked);
+    setBmCount(prevBookmarked ? prevBmCount - 1 : prevBmCount + 1);
     try {
       const res = await fetch("/api/bookmarks", {
         method: "POST",
@@ -67,8 +71,8 @@ export function PostActions({ postSlug }: Props) {
       setBmCount(data.count);
       setBookmarked(data.bookmarked);
     } catch {
-      setBookmarked(!bookmarked);
-      setBmCount(bookmarked ? bmCount - 1 : bmCount + 1);
+      setBookmarked(prevBookmarked);
+      setBmCount(prevBmCount);
     }
   }
 

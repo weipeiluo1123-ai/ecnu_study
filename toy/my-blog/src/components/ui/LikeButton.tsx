@@ -32,9 +32,11 @@ export function LikeButton({ postSlug }: Props) {
 
   async function handleLike() {
     if (!user) return;
+    const prevLiked = liked;
+    const prevCount = count;
     // Optimistic update
-    setLiked(!liked);
-    setCount(liked ? count - 1 : count + 1);
+    setLiked(!prevLiked);
+    setCount(prevLiked ? prevCount - 1 : prevCount + 1);
 
     try {
       const res = await fetch("/api/likes", {
@@ -46,9 +48,9 @@ export function LikeButton({ postSlug }: Props) {
       setCount(data.count);
       setLiked(data.liked);
     } catch {
-      // rollback
-      setLiked(!liked);
-      setCount(liked ? count - 1 : count + 1);
+      // rollback to captured values
+      setLiked(prevLiked);
+      setCount(prevCount);
     }
   }
 

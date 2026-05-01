@@ -133,7 +133,8 @@ export function normalizeTags(tags: string[]): string[] {
     // If it's already a valid slug, keep it
     const bySlug = TAGS.find((tag) => tag.slug === t);
     if (bySlug) return bySlug.slug;
-    // Fallback: strip non-ASCII
-    return t.replace(/[^a-zA-Z0-9-]/g, "").toLowerCase() || "unknown";
+    // Fallback: keep original tag, just slugify
+    const slug = t.trim().replace(/\s+/g, "-").toLowerCase();
+    return slug || "unknown";
   });
 }

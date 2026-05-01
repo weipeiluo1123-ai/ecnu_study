@@ -37,8 +37,8 @@ const projects = [
 ];
 
 export default async function AboutPage() {
-  // Fetch weipeiluo's data from the database
-  const superAdmin = db.select().from(users).where(eq(users.username, "weipeiluo")).get();
+  // Fetch super admin by role (not hardcoded username)
+  const superAdmin = db.select().from(users).where(eq(users.role, "super_admin")).get();
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">

@@ -10,7 +10,7 @@
 // ── Step 1: extract fenced code blocks ──────────────────────────
 function extractCodeBlocks(md: string) {
   const blocks: { lang: string; code: string }[] = [];
-  const safe = md.replace(/```(\w*)\n([\s\S]*?)```/g, (_m, lang, code) => {
+  const safe = md.replace(/```(\S*)\n([\s\S]*?)```/g, (_m, lang, code) => {
     const idx = blocks.length;
     blocks.push({ lang, code });
     return `\n%%CB${idx}%%\n`;
@@ -51,8 +51,8 @@ function processBlocks(text: string): string {
       continue;
     }
 
-    // Headings
-    const hMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    // Headings (h1-h6)
+    const hMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
     if (hMatch) {
       const level = hMatch[1].length;
       const text = hMatch[2];
@@ -60,6 +60,9 @@ function processBlocks(text: string): string {
         1: "text-2xl font-bold text-foreground mt-6 mb-3",
         2: "text-xl font-bold text-foreground mt-5 mb-2",
         3: "text-lg font-bold text-foreground mt-4 mb-2",
+        4: "text-base font-bold text-foreground mt-3 mb-1",
+        5: "text-sm font-bold text-foreground mt-3 mb-1",
+        6: "text-xs font-bold text-foreground mt-2 mb-1",
       };
       out.push(
         `<h${level} class="${sizes[level]}">${processInlines(text)}</h${level}>`

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db/index";
 import { views, likes, bookmarks, comments, userPosts } from "@/lib/db/schema";
 import { count, sql } from "drizzle-orm";
+import { getAllPosts } from "@/lib/posts";
 
 type QueryRow = { slug?: string; hour?: string; c: number; uid?: number };
 
@@ -65,19 +66,22 @@ export function getOverviewStats(range: string = "24h"): OverviewStats {
 
     // Combined active users: distinct users who liked, bookmarked, or commented
     const activeUsers = (() => {
-      if (since) {
-        const [likeUsers, bmUsers, commentUsers] = [
-          db.select({ uid: likes.userId }).from(likes).where(sql`${likes.createdAt} >= ${since}`).all(),
-          db.select({ uid: bookmarks.userId }).from(bookmarks).where(sql`${bookmarks.createdAt} >= ${since}`).all(),
-          db.select({ uid: comments.authorId }).from(comments).where(sql`${comments.createdAt} >= ${since}`).all(),
-        ];
-        const s = new Set<number>();
-        likeUsers.forEach(u => u.uid !== null && s.add(u.uid));
-        bmUsers.forEach(u => s.add(u.uid));
-        commentUsers.forEach(u => u.uid !== null && s.add(u.uid));
-        return s.size;
-      }
-      return 0;
+      const [likeUsers, bmUsers, commentUsers] = since
+        ? [
+            db.select({ uid: likes.userId }).from(likes).where(sql`${likes.createdAt} >= ${since}`).all(),
+            db.select({ uid: bookmarks.userId }).from(bookmarks).where(sql`${bookmarks.createdAt} >= ${since}`).all(),
+            db.select({ uid: comments.authorId }).from(comments).where(sql`${comments.createdAt} >= ${since}`).all(),
+          ]
+        : [
+            db.select({ uid: likes.userId }).from(likes).all(),
+            db.select({ uid: bookmarks.userId }).from(bookmarks).all(),
+            db.select({ uid: comments.authorId }).from(comments).all(),
+          ];
+      const s = new Set<number>();
+      likeUsers.forEach(u => u.uid !== null && s.add(u.uid));
+      bmUsers.forEach(u => s.add(u.uid));
+      commentUsers.forEach(u => u.uid !== null && s.add(u.uid));
+      return s.size;
     })();
 
     const newPosts = since
@@ -217,6 +221,13 @@ export function getTopPosts(
     }).from(userPosts).all();
 
     const postMap = new Map(posts.map(p => [p.slug, p.title]));
+
+    // Also include MDX post titles (not in userPosts)
+    for (const p of getAllPosts()) {
+      if (!postMap.has(p.slug)) {
+        postMap.set(p.slug, p.title);
+      }
+    }
 
     const result: TopPost[] = [];
     for (const slug of allSlugs) {
