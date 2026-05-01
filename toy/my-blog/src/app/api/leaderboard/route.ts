@@ -4,30 +4,32 @@ import { likes, bookmarks, views, users } from "@/lib/db/schema";
 import { count, sql } from "drizzle-orm";
 import { getAllPosts } from "@/lib/posts";
 
-function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): Date | null {
+function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): string | null {
   if (range === "all") return null;
   const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // today 00:00
+  // Use UTC midnight to match stored UTC timestamps
+  const todayUTC = now.toISOString().slice(0, 10); // "2026-05-02"
   switch (range) {
     case "daily":
-      return start;
+      return todayUTC + "T00:00:00.000Z";
     case "weekly": {
-      const dayOfWeek = now.getDay();
-      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday as week start
-      return new Date(start.getTime() + mondayOffset * 24 * 60 * 60 * 1000);
+      const dayOfWeek = now.getUTCDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      const monday = new Date(now.getTime() + mondayOffset * 86400000);
+      return monday.toISOString().slice(0, 10) + "T00:00:00.000Z";
     }
     case "monthly":
-      return new Date(now.getFullYear(), now.getMonth(), 1);
+      return now.toISOString().slice(0, 7) + "-01T00:00:00.000Z";
   }
 }
 
-function batchCount(table: any, since: Date | null) {
+function batchCount(table: any, since: string | null) {
   let q: any = db.select({
     slug: table.postSlug,
     count: count(),
   }).from(table);
   if (since) {
-    q = q.where(sql`${table.createdAt} >= ${since.toISOString()}`);
+    q = q.where(sql`${table.createdAt} >= ${since}`);
   }
   return q.groupBy(table.postSlug).all() as { slug: string; count: number }[];
 }

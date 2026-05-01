@@ -278,9 +278,9 @@ function processInlines(text: string): string {
         /!\[(.*?)\]\((.*?)\)/g,
         '<img src="$2" alt="$1" class="my-4 rounded-xl max-w-full" loading="lazy" />'
       )
-      // Links
+      // Links — allow parentheses in URLs by matching balanced parens
       .replace(
-        /\[([^\]]+)\]\(([^)]+)\)/g,
+        /\[([^\]]+)\]\(((?:[^()]|\([^()]*\))+)\)/g,
         '<a href="$2" class="text-neon-cyan hover:underline" rel="noopener noreferrer">$1</a>'
       )
       // Bold + Italic

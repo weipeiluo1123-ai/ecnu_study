@@ -243,7 +243,7 @@ export function getTopPosts(
       : sortBy === "bookmarks" ? "bookmarks" as const
       : "views" as const;
 
-    return result.sort((a, b) => b[sortKey] - a[sortKey]).slice(0, limit);
+    return result.sort((a, b) => b[sortKey] - a[sortKey]).slice(0, Math.max(1, limit || 10));
   } catch (e) {
     console.error("getTopPosts failed", e);
     return [];

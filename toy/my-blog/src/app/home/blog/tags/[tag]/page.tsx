@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getPostsByTag, getAllPosts, paginatePosts } from "@/lib/posts";
 import { TAGS } from "@/lib/constants";
@@ -36,7 +37,8 @@ export default async function TagPage({ params, searchParams }: Props) {
   const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
   const allPosts = getPostsByTag(tag);
   const tagInfo = TAGS.find((t) => t.slug === tag.toLowerCase());
-  const tagName = tagInfo?.name || tag;
+  if (!tagInfo) notFound();
+  const tagName = tagInfo.name;
   const { posts, totalPages, currentPage } = paginatePosts(allPosts, page, pageSize);
 
   return (
@@ -74,7 +76,7 @@ export default async function TagPage({ params, searchParams }: Props) {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        basePath={`/home/blog/tags/${tag}`}
+        basePath={`/home/blog/tags/${encodeURIComponent(tag)}`}
         pageSize={pageSize}
         showSizeSelector
       />
