@@ -4,9 +4,14 @@ import { db } from "./db/index";
 import { users } from "./db/schema";
 import { eq } from "drizzle-orm";
 
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "nexus-blog-dev-secret-key-2026"
-);
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  throw new Error(
+    "JWT_SECRET environment variable is not set. " +
+    "Set a strong random string in .env.local or environment configuration."
+  );
+}
+const SECRET = new TextEncoder().encode(jwtSecret);
 
 const COOKIE_NAME = "nexus_token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days

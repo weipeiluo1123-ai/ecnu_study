@@ -196,7 +196,7 @@ featured: true
 
 **我的文章（`/my-posts`）：**
 - 用户可管理自己发布的所有文章
-- 操作：查看文章、编辑（标题/内容/分类/标签）、删除
+- 操作：点击卡片查看文章、编辑（标题/内容/分类/标签）、删除（仅数据库文章）
 - 编辑页面支持 Markdown 实时预览（编辑/预览模式切换）
 
 **写文章（`/posts/new`）：**
@@ -252,7 +252,7 @@ featured: true
 
 ### 9. 排行榜
 
-四个时间维度统计用户积分排名，数据每 **60 秒**自动刷新：
+四个时间维度统计用户积分排名，数据每 **60 秒**自动刷新。前端展示每页 **10 人**，容器高度容纳约 5 人，超出部分可滚动查看：
 
 | 标签 | 统计范围 |
 |------|---------|
@@ -267,7 +267,7 @@ featured: true
 用户总积分 = 该周期内所有文章的积分之和
 ```
 
-积分从 `likes`、`bookmarks`、`views` 事件表中按时间范围过滤聚合，不同周期展示不同结果。默认展示"总分"（全部时间）。
+积分从 `likes`、`bookmarks`、`views` 事件表中按时间范围过滤聚合，使用 **GROUP BY 批量聚合查询**代替逐文章查询（N+1 → 3 次查询），不同周期展示不同结果。默认展示"总分"（全部时间）。
 
 ### 10. 其他功能
 
@@ -283,12 +283,12 @@ featured: true
 ## 数据库 Schema
 
 ```
-users                → id, username, email, password_hash, email_verified, role(user|admin|super_admin), permissions, ...
-comments             → id, post_slug, author_id, content, created_at
+users                → id, username, email, password_hash, email_verified, role(user|admin|super_admin), permissions, bio, created_at
+comments             → id, post_slug, author_id, content, parent_id, created_at
 likes                → id, post_slug, user_id, created_at (unique)
 bookmarks            → id, post_slug, user_id, created_at (unique)
 views                → id, post_slug, visitor_id, created_at
-user_posts           → id, title, content, slug, author_id, likes_count, views_count, ...
+user_posts           → id, title, content, description, slug, category, tags, format(markdown|txt), author_id, isPublished, likes_count, views_count, bookmarks_count, created_at, updated_at
 name_change_requests → id, user_id, old_name, new_name, status(pending|approved|rejected), reviewed_by, reviewed_at, created_at
 verification_codes   → id, email, code, type(register|reset), expires_at, used_at, created_at
 ```

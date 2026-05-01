@@ -90,7 +90,7 @@ npm run dev
 
 ## 可用标签
 
-`react` `nextjs` `typescript` `javascript` `nodejs` `python` `rust` `go` `docker` `kubernetes` `tailwind` `framer-motion` `database` `api` `testing` `git` `linux` `performance` `security` `ai` `llm` `tutorial` `心得`
+`react` `nextjs` `typescript` `javascript` `nodejs` `python` `rust` `go` `docker` `kubernetes` `tailwind` `framer-motion` `database` `api` `testing` `git` `linux` `performance` `security` `ai` `llm` `tutorial` `心得` `cpp` `c` `java` `swift` `kotlin` `php` `ruby`
 
 ---
 

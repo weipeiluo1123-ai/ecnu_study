@@ -17,16 +17,33 @@ function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): Date | nul
   }
 }
 
+function batchCount(
+  table: { postSlug: typeof likes.postSlug; createdAt: typeof likes.createdAt },
+  since: Date | null,
+) {
+  let q = db.select({
+    slug: table.postSlug,
+    count: count(),
+  }).from(table as any);
+  if (since) {
+    q = (q as any).where(sql`${table.createdAt} >= ${since.toISOString()}`);
+  }
+  return (q as any).groupBy(table.postSlug).all() as { slug: string; count: number }[];
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const range = (searchParams.get("range") || "all") as "daily" | "weekly" | "monthly" | "all";
   const since = getDateRange(range);
 
-  // Build where clause; null since = no date filter (all time)
-  function withTimeFilter(table: { postSlug: any; createdAt: any }, slug: string) {
-    if (!since) return sql`${table.postSlug} = ${slug}`;
-    return sql`${table.postSlug} = ${slug} AND ${table.createdAt} >= ${since.toISOString()}`;
-  }
+  // Batch aggregate queries — only 3 queries total regardless of post count
+  const likesBatch = batchCount(likes, since);
+  const bmBatch = batchCount(bookmarks, since);
+  const viewsBatch = batchCount(views, since);
+
+  const likeMap = new Map(likesBatch.map(r => [r.slug, r.count]));
+  const bmMap = new Map(bmBatch.map(r => [r.slug, r.count]));
+  const viewMap = new Map(viewsBatch.map(r => [r.slug, r.count]));
 
   // Get ALL posts (MDX + user_posts) with author info
   const allPosts = getAllPosts();
@@ -61,34 +78,18 @@ export async function GET(req: NextRequest) {
     const s = scores[post.authorId];
     s.postCount++;
 
-    // Likes within time range
-    const likesInRange = db.select({ count: count() }).from(likes)
-      .where(withTimeFilter(likes, post.slug))
-      .get();
-    const likeCount = likesInRange?.count || 0;
+    const likeCount = likeMap.get(post.slug) ?? 0;
+    const bmCount = bmMap.get(post.slug) ?? 0;
+    const viewCount = viewMap.get(post.slug) ?? 0;
+
     s.totalLikes += likeCount;
-    s.score += likeCount * 5;
-
-    // Bookmarks within time range
-    const bmInRange = db.select({ count: count() }).from(bookmarks)
-      .where(withTimeFilter(bookmarks, post.slug))
-      .get();
-    const bmCount = bmInRange?.count || 0;
     s.totalBookmarks += bmCount;
-    s.score += bmCount * 10;
-
-    // Views within time range
-    const viewsInRange = db.select({ count: count() }).from(views)
-      .where(withTimeFilter(views, post.slug))
-      .get();
-    const viewCount = viewsInRange?.count || 0;
     s.totalViews += viewCount;
-    s.score += viewCount * 1;
+    s.score += likeCount * 5 + bmCount * 10 + viewCount * 1;
   }
 
   const sorted = Object.values(scores)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 20)
     .map((s, i) => ({ rank: i + 1, ...s }));
 
   return NextResponse.json({ range, leaderboard: sorted });

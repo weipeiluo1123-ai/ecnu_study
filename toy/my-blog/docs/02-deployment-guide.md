@@ -72,11 +72,45 @@ SMTP_PORT=587
 SMTP_USER=your-email@qq.com
 SMTP_PASS=your-smtp-authorization-code
 
-# JWT 密钥（生产环境请修改为强随机字符串）
-JWT_SECRET=your-strong-secret-key
+# JWT 密钥（必填！服务器启动时检查，缺失则直接报错退出）
+JWT_SECRET=your-strong-random-secret-key
 ```
 
 > ⚠️ `.env.local` 包含敏感信息，不要提交到 git。`.gitignore` 已默认排除。
+
+### 生成 JWT 密钥
+
+`JWT_SECRET` 用于签名用户会话令牌，必须是一个**强随机字符串**。部署时用以下命令生成：
+
+```bash
+# Linux / MacBook 终端
+openssl rand -base64 32
+# 输出示例: 7XQxKj3mFp8nR2vY5bL9cW1dE4gH6sA0tU8oI7pN3mQ=
+
+# Windows PowerShell
+[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Max 256 }))
+# 输出示例: AAFkN2I5YzRkZTZmM2IwMTE0NTY3ODkwYWJjZGVm
+```
+
+将生成的字符串写入 `.env.local`：
+
+```bash
+echo "JWT_SECRET=7XQxKj3mFp8nR2vY5bL9cW1dE4gH6sA0tU8oI7pN3mQ=" >> .env.local
+```
+
+### 部署安全检查清单
+
+部署前逐项核对以下安全事项，每项不满足都会带来实际风险：
+
+| # | 检查项 | 风险说明 |
+|---|--------|---------|
+| 1 | `JWT_SECRET` 已设置为随机字符串 | 若缺失，服务器启动即报错（不会回退到默认密钥） |
+| 2 | `.env.local` 未被提交到 Git | 文件包含 SMTP 密码和 JWT 密钥，泄露后攻击者可伪造身份 |
+| 3 | `data/blog.db` 在 `.gitignore` 中 | 数据库包含用户密码哈希和所有业务数据 |
+| 4 | 默认管理员密码已修改 | `admin/admin123` 是公开的默认凭据 |
+| 5 | 云服务器防火墙仅开放必要端口 | 22(SSH)、80(HTTP)、443(HTTPS) 即可，3000(Next.js) 不暴露公网 |
+| 6 | Nginx 反向代理已启用（推荐） | 直接暴露 Next.js 端口容易遭受针对性攻击 |
+| 7 | JWT Cookie 的 `secure` 标志在生产环境设为 `true` | 否则 Cookie 会通过 HTTP 明文传输（`src/lib/auth.ts:51`） |
 
 ---
 

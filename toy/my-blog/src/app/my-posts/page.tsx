@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { ArrowLeft, FileText, Plus, Edit, Trash2, ExternalLink, ChevronLeft, ChevronRight, Filter, X } from "lucide-react";
+import { ArrowLeft, FileText, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Filter, X } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -219,7 +219,11 @@ export default function MyPostsPage() {
             </div>
             <div className="space-y-3">
               {paginated.map((post) => (
-                <div key={post.id} className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all">
+                <div
+                  key={post.id}
+                  onClick={() => router.push(`/posts/${post.slug}`)}
+                  className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all cursor-pointer"
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -241,11 +245,7 @@ export default function MyPostsPage() {
                         <span>🔖 {post.bookmarksCount}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Link href={`/posts/${post.slug}`}
-                        className="p-2 rounded-lg text-muted hover:text-neon-cyan transition-colors" title="查看文章">
-                        <ExternalLink size={16} />
-                      </Link>
+                    <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                       {post.id > 0 && (
                         <Link href={`/my-posts/${post.id}/edit`}
                           className="p-2 rounded-lg text-muted hover:text-neon-cyan transition-colors" title="编辑文章">

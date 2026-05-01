@@ -25,12 +25,26 @@ export function renderMarkdown(md: string): string {
     .replace(/\n\n/g, '</p><p class="text-muted leading-relaxed mb-3">')
     .replace(/\n/g, '<br />');
 
-  // Step 3: Wrap in paragraph if needed (skip code blocks)
+  // Step 3: XSS sanitization — strip dangerous HTML injected via raw input
+  html = html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "")
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, "")
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, "")
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+    .replace(/ on\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/ on\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/ on\w+\s*=\s*[^\s>]+/gi, "")
+    .replace(/javascript\s*:/gi, "blocked:");
+  // Strip leading/trailing whitespace left by removed tags
+  html = html.replace(/^\s+|\s+$/gm, "").replace(/\n{3,}/g, "\n\n");
+
+  // Step 4: Wrap in paragraph if needed (skip code blocks)
   if (!html.startsWith("<h") && !html.startsWith("%%CODEBLOCK") && !html.startsWith("<blockquote") && !html.startsWith("<li") && !html.startsWith("<hr")) {
     html = '<p class="text-muted leading-relaxed mb-3">' + html + '</p>';
   }
 
-  // Step 4: Restore code blocks with proper HTML escaping and language label
+  // Step 5: Restore code blocks with proper HTML escaping and language label
   html = html.replace(/%%CODEBLOCK_(\d+)%%/g, (_m, idx) => {
     const { lang, code } = codeBlocks[parseInt(idx)];
     const escaped = code
