@@ -31,6 +31,7 @@ export const comments = sqliteTable("comments", {
   authorId: integer("author_id"),
   authorName: text("author_name"),
   content: text("content").notNull(),
+  parentId: integer("parent_id"),
   createdAt: text("created_at").notNull(),
 });
 

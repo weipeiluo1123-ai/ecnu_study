@@ -37,6 +37,7 @@ export function initDB() {
       author_id INTEGER,
       author_name TEXT,
       content TEXT NOT NULL,
+      parent_id INTEGER REFERENCES comments(id),
       created_at TEXT NOT NULL
     );
 
@@ -143,6 +144,17 @@ export function initDB() {
     }
   } catch (e) {
     // Migration may fail if DB is new; that's OK
+  }
+
+  // Migration: add parent_id column to comments for nested replies
+  try {
+    const commentCols = sqlite.prepare("PRAGMA table_info(comments)").all() as any[];
+    const hasParentId = commentCols.some((c: any) => c.name === "parent_id");
+    if (!hasParentId) {
+      sqlite.exec(`ALTER TABLE comments ADD COLUMN parent_id INTEGER REFERENCES comments(id);`);
+    }
+  } catch (e) {
+    // Migration may fail; that's OK
   }
 
   // Migration: ensure role column supports super_admin

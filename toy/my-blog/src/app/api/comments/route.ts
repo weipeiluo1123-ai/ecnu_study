@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
     postSlug: comments.postSlug,
     authorId: comments.authorId,
     authorName: comments.authorName,
+    parentId: comments.parentId,
     author: {
       id: users.id,
       username: users.username,
@@ -25,19 +26,18 @@ export async function GET(req: NextRequest) {
     .leftJoin(users, eq(comments.authorId, users.id))
     .orderBy(desc(comments.createdAt));
 
-  // If postSlug is provided and is not a special keyword, filter by it
   if (postSlug && postSlug !== "__all__") {
     query = query.where(eq(comments.postSlug, postSlug)) as typeof query;
   }
 
   const rows = query.all();
 
-  // Map to client-friendly format
   const mapped = rows.map((r) => ({
     id: r.id,
     content: r.content,
     createdAt: r.createdAt,
     postSlug: r.postSlug,
+    parentId: r.parentId,
     author: r.author?.id
       ? { id: r.author.id, username: r.author.username, avatar: r.author.avatar }
       : { id: null, username: r.authorName || "已注销", avatar: null },
@@ -52,19 +52,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "请先登录" }, { status: 401 });
   }
 
-  const { postSlug, content } = await req.json();
+  const { postSlug, content, parentId } = await req.json();
   if (!postSlug || !content?.trim()) {
     return NextResponse.json({ error: "内容和文章不能为空" }, { status: 400 });
   }
 
+  // If replying, verify parent comment exists and belongs to same post
+  if (parentId) {
+    const parent = db.select().from(comments).where(eq(comments.id, parentId)).get();
+    if (!parent) {
+      return NextResponse.json({ error: "父评论不存在" }, { status: 404 });
+    }
+    if (parent.postSlug !== postSlug) {
+      return NextResponse.json({ error: "评论与文章不匹配" }, { status: 400 });
+    }
+  }
+
   const now = new Date().toISOString();
-  const result = db.insert(comments).values({
-    postSlug,
-    authorId: session.id,
-    authorName: session.username,
-    content: content.trim(),
-    createdAt: now,
-  }).run();
+  const result = parentId
+    ? db.insert(comments).values({
+        postSlug,
+        authorId: session.id,
+        authorName: session.username,
+        content: content.trim(),
+        parentId,
+        createdAt: now,
+      }).run()
+    : db.insert(comments).values({
+        postSlug,
+        authorId: session.id,
+        authorName: session.username,
+        content: content.trim(),
+        createdAt: now,
+      }).run();
 
   return NextResponse.json({
     comment: {
@@ -72,6 +92,7 @@ export async function POST(req: NextRequest) {
       content: content.trim(),
       createdAt: now,
       postSlug,
+      parentId: parentId || null,
       author: { id: session.id, username: session.username },
     },
   });
@@ -95,6 +116,8 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "无权删除此评论" }, { status: 403 });
   }
 
+  // Delete replies first, then the comment itself
+  db.delete(comments).where(eq(comments.parentId, commentId)).run();
   db.delete(comments).where(eq(comments.id, commentId)).run();
   return NextResponse.json({ ok: true });
 }

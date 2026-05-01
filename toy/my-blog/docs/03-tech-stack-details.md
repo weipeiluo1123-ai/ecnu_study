@@ -152,13 +152,39 @@ export function canUser(user, permission): boolean {
 - 评论内容、所属文章、发表时间均保留
 - 数据显示为 "已注销"，不可再删除
 
+### 多级嵌套回复
+
+评论系统支持无限层级嵌套（UI 限制最多 2 级展示）：
+
+- `comments` 表新增 `parent_id` 字段，指向父评论 ID
+- 删除评论时自动删除所有子回复
+- 回复时自动 @提及被回复者用户名
+- 前端按树形结构渲染，子评论缩进展示
+
+### Emoji 选择器
+
+评论输入框旁有一个 Emoji 选择器按钮：
+
+- 分类展示（表情、手势、爱心、符号）
+- 点击即插入到当前输入框光标位置
+- 选择器浮窗，点击外部自动关闭
+
+### 评论内容格式
+
+评论内容支持轻量 Markdown 渲染：
+
+- `**加粗**`、`*斜体*`、`***加粗斜体***`
+- `` `代码` `` 行内代码
+- `[链接文字](url)` 超链接
+- 纯文本保留换行
+
 ### API
 
 ```
-GET  /api/comments?postSlug=xxx    → 获取指定文章评论
-GET  /api/comments?postSlug=__all__ → 获取全部评论（管理员）
-POST /api/comments                  → 发表评论
-DELETE /api/comments?id=xxx         → 删除评论（本人或管理员）
+GET  /api/comments?postSlug=xxx      → 获取指定文章评论（含 parentId）
+GET  /api/comments?postSlug=__all__   → 获取全部评论（管理员）
+POST /api/comments                    → 发表评论（可选 parentId 回复）
+DELETE /api/comments?id=xxx           → 删除评论（本人或管理员，含子回复）
 ```
 
 ### PostActions 底部操作栏
