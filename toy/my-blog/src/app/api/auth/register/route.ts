@@ -16,6 +16,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate all inputs BEFORE consuming the code
+    if (username.length < 2 || username.length > 20) {
+      return NextResponse.json(
+        { error: "用户名长度需在 2-20 个字符之间" },
+        { status: 400 }
+      );
+    }
+
+    const reservedUsernames = ["weipeiluo", "admin", "root", "system"];
+    if (reservedUsernames.includes(username.toLowerCase())) {
+      return NextResponse.json(
+        { error: "该用户名已被注册" },
+        { status: 409 }
+      );
+    }
+
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: "密码长度不能少于 6 个字符" },
+        { status: 400 }
+      );
+    }
+
     const now = new Date().toISOString();
 
     // Verify the code
@@ -42,34 +65,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Mark code as used
+    // Only NOW mark code as used — all validations passed
     db.update(verificationCodes)
       .set({ usedAt: now })
       .where(eq(verificationCodes.id, validCode.id))
       .run();
-
-    if (username.length < 2 || username.length > 20) {
-      return NextResponse.json(
-        { error: "用户名长度需在 2-20 个字符之间" },
-        { status: 400 }
-      );
-    }
-
-    // Prevent registration with reserved system usernames
-    const reservedUsernames = ["weipeiluo", "admin", "root", "system"];
-    if (reservedUsernames.includes(username.toLowerCase())) {
-      return NextResponse.json(
-        { error: "该用户名已被注册" },
-        { status: 409 }
-      );
-    }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: "密码长度不能少于 6 个字符" },
-        { status: 400 }
-      );
-    }
 
     const existingUser = db.select().from(users).where(
       eq(users.username, username)
@@ -86,22 +86,34 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const result = db.insert(users).values({
-      username,
-      email,
-      passwordHash,
-      emailVerified: true,
-      role: "user",
-      permissions: JSON.stringify({
-        canComment: true,
-        canPost: true,
-        canLike: true,
-      }),
-      avatar: null,
-      bio: null,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    let result;
+    try {
+      result = db.insert(users).values({
+        username,
+        email,
+        passwordHash,
+        emailVerified: true,
+        role: "user",
+        permissions: JSON.stringify({
+          canComment: true,
+          canPost: true,
+          canLike: true,
+        }),
+        avatar: null,
+        bio: null,
+        createdAt: now,
+        updatedAt: now,
+      }).run();
+    } catch (insertErr: any) {
+      // Handle race: UNIQUE constraint on username/email
+      if (insertErr?.message?.includes("UNIQUE")) {
+        return NextResponse.json(
+          { error: "用户名或邮箱已被注册" },
+          { status: 409 }
+        );
+      }
+      throw insertErr;
+    }
 
     const sessionUser = {
       id: Number(result.lastInsertRowid),

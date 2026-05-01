@@ -111,7 +111,7 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={tab === "posts" ? "输入关键词搜索文章..." : "输入用户名、邮箱搜索用户..."}
+            placeholder={tab === "posts" ? "输入关键词搜索文章..." : "输入用户名搜索用户..."}
             className="w-full bg-surface border border-border rounded-xl pl-12 pr-10 py-3 text-foreground outline-none placeholder:text-muted focus:border-neon-cyan/50 transition-colors"
           />
           {query && (

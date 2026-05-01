@@ -3,6 +3,7 @@ import { db } from "@/lib/db/index";
 import { userPosts, users } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
+import { clearPostsCache } from "@/lib/posts";
 
 // GET /api/admin/posts — list all user-published articles (admin/super_admin only)
 export async function GET() {
@@ -56,6 +57,8 @@ export async function PATCH(req: NextRequest) {
 
   db.update(userPosts).set(updateData).where(eq(userPosts.id, postId)).run();
 
+  clearPostsCache();
+
   return NextResponse.json({ ok: true });
 }
 
@@ -73,6 +76,8 @@ export async function DELETE(req: NextRequest) {
   }
 
   db.delete(userPosts).where(eq(userPosts.id, postId)).run();
+
+  clearPostsCache();
 
   return NextResponse.json({ ok: true });
 }

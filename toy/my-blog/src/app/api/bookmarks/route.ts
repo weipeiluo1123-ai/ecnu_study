@@ -3,6 +3,7 @@ import { db } from "@/lib/db/index";
 import { bookmarks, userPosts } from "@/lib/db/schema";
 import { eq, and, count, desc } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
+import { clearPostsCache } from "@/lib/posts";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -84,6 +85,8 @@ export async function POST(req: NextRequest) {
     .set({ bookmarksCount: total?.count || 0 })
     .where(eq(userPosts.slug, postSlug))
     .run();
+
+  clearPostsCache();
 
   return NextResponse.json({
     bookmarked: !existing,

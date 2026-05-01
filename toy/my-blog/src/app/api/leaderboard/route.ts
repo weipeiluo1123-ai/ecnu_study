@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
-import { likes, bookmarks, views } from "@/lib/db/schema";
+import { likes, bookmarks, views, users } from "@/lib/db/schema";
 import { count, sql } from "drizzle-orm";
 import { getAllPosts } from "@/lib/posts";
 
@@ -45,6 +45,13 @@ export async function GET(req: NextRequest) {
   // Get ALL posts (MDX + user_posts) with author info
   const allPosts = getAllPosts();
 
+  // Batch lookup: map username→id for MDX posts whose authorId may be stale
+  const nameToId = new Map<string, number>();
+  const allUsers = db.select({ id: users.id, username: users.username }).from(users).all();
+  for (const u of allUsers) {
+    nameToId.set(u.username, u.id);
+  }
+
   type ScoreEntry = {
     userId: number;
     username: string;
@@ -58,11 +65,12 @@ export async function GET(req: NextRequest) {
   const scores: Record<number, ScoreEntry> = {};
 
   for (const post of allPosts) {
-    if (!post.authorId) continue;
+    const effectiveAuthorId = post.authorId || nameToId.get(post.author);
+    if (!effectiveAuthorId) continue;
 
-    if (!scores[post.authorId]) {
-      scores[post.authorId] = {
-        userId: post.authorId,
+    if (!scores[effectiveAuthorId]) {
+      scores[effectiveAuthorId] = {
+        userId: effectiveAuthorId,
         username: post.author,
         score: 0,
         postCount: 0,
@@ -72,7 +80,7 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    const s = scores[post.authorId];
+    const s = scores[effectiveAuthorId];
     s.postCount++;
 
     const likeCount = likeMap.get(post.slug) ?? 0;

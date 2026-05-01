@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/index";
 import { userPosts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -78,6 +79,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
   db.update(userPosts).set(updateData).where(eq(userPosts.id, postId)).run();
 
   clearPostsCache();
+  revalidatePath("/posts/" + post.slug);
 
   return NextResponse.json({ ok: true, post: { id: postId, ...updateData } });
 }
@@ -110,6 +112,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
   db.delete(userPosts).where(eq(userPosts.id, postId)).run();
 
   clearPostsCache();
+  revalidatePath("/posts/" + post.slug);
 
   return NextResponse.json({ ok: true });
 }
