@@ -140,7 +140,7 @@ export default function AdminCommentsPage() {
                       </div>
                       {comment.author.id ? (
                         <Link
-                          href={`/users/${comment.author.id}`}
+                          href={`/home/blog/users/${comment.author.id}`}
                           className="font-medium text-foreground hover:text-neon-cyan transition-colors"
                         >
                           {comment.author.username}
@@ -160,7 +160,7 @@ export default function AdminCommentsPage() {
 
                     {/* Post link */}
                     <Link
-                      href={`/posts/${comment.postSlug}`}
+                      href={`/home/blog/posts/${comment.postSlug}`}
                       className="mt-2 inline-flex items-center gap-1 text-xs text-neon-cyan hover:underline"
                     >
                       <ExternalLink size={12} />

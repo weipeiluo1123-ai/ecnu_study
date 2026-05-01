@@ -161,7 +161,7 @@ export default async function UserProfilePage({ params, searchParams }: Props) {
             {allPosts.slice((page - 1) * pageSize, page * pageSize).map((post, i) => (
               <Link
                 key={post.isMdx ? `mdx-${post.slug}` : `db-${post.id}`}
-                href={`/posts/${post.slug}`}
+                href={`/home/blog/posts/${post.slug}`}
                 className="block rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -210,7 +210,7 @@ export default async function UserProfilePage({ params, searchParams }: Props) {
             {userComments.map((c) => (
               <Link
                 key={c.id}
-                href={`/posts/${c.postSlug}`}
+                href={`/home/blog/posts/${c.postSlug}`}
                 className="block rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-colors"
               >
                 <p className="text-sm text-foreground line-clamp-2">{c.content}</p>

@@ -35,7 +35,7 @@ export function SearchDialog({ open, onClose }: Props) {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (query.trim()) {
-        router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+        router.push(`/home/blog/search?q=${encodeURIComponent(query.trim())}`);
         onClose();
       }
     },

@@ -182,7 +182,7 @@ export default function AdminReviewsPage() {
                     <tr key={req.id} className="border-b border-border hover:bg-surface-alt/50 transition-colors">
                       <td className="py-3 px-4">
                         <Link
-                          href={`/users/${req.userId}`}
+                          href={`/home/blog/users/${req.userId}`}
                           className="flex items-center gap-2 text-foreground hover:text-neon-cyan transition-colors"
                         >
                           <User size={14} className="text-muted" />
@@ -275,7 +275,7 @@ export default function AdminReviewsPage() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Link
-                        href={`/posts/${post.slug}`}
+                        href={`/home/blog/posts/${post.slug}`}
                         className="p-1.5 rounded-md text-muted hover:text-neon-cyan transition-colors"
                         title="查看文章"
                       >

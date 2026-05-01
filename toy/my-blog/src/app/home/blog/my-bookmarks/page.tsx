@@ -81,7 +81,7 @@ export default async function MyBookmarksPage({ searchParams }: Props) {
                 return (
                   <Link
                     key={bm.id}
-                    href={`/posts/${bm.postSlug}`}
+                    href={`/home/blog/posts/${bm.postSlug}`}
                     className="block rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-3">

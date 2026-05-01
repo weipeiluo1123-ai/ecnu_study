@@ -59,7 +59,7 @@ export function PostCard({ post, index = 0 }: Props) {
                 <div className="mt-2 flex items-center gap-2">
                   {post.authorId ? (
                     <button
-                      onClick={(e) => { e.stopPropagation(); router.push(`/users/${post.authorId}`); }}
+                      onClick={(e) => { e.stopPropagation(); router.push(`/home/blog/users/${post.authorId}`); }}
                       className="flex items-center gap-1.5 text-xs text-muted hover:text-neon-cyan transition-colors cursor-pointer"
                     >
                       {post.authorRole === "super_admin" ? (

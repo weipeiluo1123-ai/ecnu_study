@@ -138,7 +138,7 @@ export default async function PostPage({ params }: Props) {
           {/* Author */}
           <div className="flex items-center gap-2">
             <Link
-              href={`/users/${userPost.authorId}`}
+              href={`/home/blog/users/${userPost.authorId}`}
               className="flex items-center gap-2 text-sm text-muted hover:text-neon-cyan transition-colors"
             >
               {userPost.authorRole === "super_admin" ? (
@@ -221,7 +221,7 @@ async function renderMDXPost(post: any, slug: string) {
         <header>
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <Link
-              href={`/categories/${post.category}`}
+              href={`/home/blog/categories/${post.category}`}
               className="text-xs font-medium px-2 py-0.5 rounded-full bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20"
             >
               {post.category}
@@ -231,7 +231,7 @@ async function renderMDXPost(post: any, slug: string) {
           <div className="mt-3 flex items-center gap-2">
             {post.authorId ? (
               <Link
-                href={`/users/${post.authorId}`}
+                href={`/home/blog/users/${post.authorId}`}
                 className="flex items-center gap-2 text-sm text-muted hover:text-neon-cyan transition-colors"
               >
                 {post.authorRole === "super_admin" ? (

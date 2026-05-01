@@ -142,7 +142,7 @@ export default function LeaderboardPage() {
                       list.map((entry) => (
                         <Link
                           key={entry.userId}
-                          href={`/users/${entry.userId}`}
+                          href={`/home/blog/users/${entry.userId}`}
                           className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-alt transition-colors group"
                         >
                           {/* Rank */}

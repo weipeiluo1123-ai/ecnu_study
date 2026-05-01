@@ -223,7 +223,7 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
                   {paginatedUsers.map((u) => (
                     <Link
                       key={u.id}
-                      href={`/users/${u.id}`}
+                      href={`/home/blog/users/${u.id}`}
                       className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all group"
                     >
                       <div className="flex items-center gap-3">
@@ -289,7 +289,7 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
                 {users.slice(0, 6).map((u) => (
                   <Link
                     key={u.id}
-                    href={`/users/${u.id}`}
+                    href={`/home/blog/users/${u.id}`}
                     className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all group"
                   >
                     <div className="flex items-center gap-3">

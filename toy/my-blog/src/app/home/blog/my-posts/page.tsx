@@ -141,7 +141,7 @@ export default function MyPostsPage() {
             <p className="mt-2 text-muted">管理你发布的所有文章</p>
           </div>
           <Link
-            href="/posts/new"
+            href="/home/blog/posts/new"
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neon-cyan text-background text-sm font-medium hover:bg-neon-cyan/90 transition-colors"
           >
             <Plus size={16} />
@@ -210,7 +210,7 @@ export default function MyPostsPage() {
               {posts.length === 0 ? "还没有发布过文章" : "没有匹配的文章"}
             </p>
             {posts.length === 0 ? (
-              <Link href="/posts/new" className="inline-block mt-3 text-neon-cyan hover:underline text-sm">
+              <Link href="/home/blog/posts/new" className="inline-block mt-3 text-neon-cyan hover:underline text-sm">
                 开始写第一篇文章 →
               </Link>
             ) : (
@@ -230,7 +230,7 @@ export default function MyPostsPage() {
               {paginated.map((post) => (
                 <div
                   key={post.id}
-                  onClick={() => router.push(`/posts/${post.slug}`)}
+                  onClick={() => router.push(`/home/blog/posts/${post.slug}`)}
                   className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -256,7 +256,7 @@ export default function MyPostsPage() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                       {post.id > 0 && (
-                        <Link href={`/my-posts/${post.id}/edit`}
+                        <Link href={`/home/blog/my-posts/${post.id}/edit`}
                           className="p-2 rounded-lg text-muted hover:text-neon-cyan transition-colors" title="编辑文章">
                           <Edit size={16} />
                         </Link>
