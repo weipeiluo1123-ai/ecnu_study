@@ -36,7 +36,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const addToast = useCallback(
     (type: ToastType, message: string) => {
       const id = ++toastId;
-      setToasts((prev) => [...prev, { id, type, message }]);
+      setToasts((prev) => {
+        // Keep max 5 toasts, remove oldest
+        const next = [...prev, { id, type, message }];
+        if (next.length > 5) return next.slice(next.length - 5);
+        return next;
+      });
       setTimeout(() => removeToast(id), 4000);
     },
     [removeToast]

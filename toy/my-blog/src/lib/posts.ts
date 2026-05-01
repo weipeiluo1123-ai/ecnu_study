@@ -134,7 +134,7 @@ function getAllDbPosts(): PostMeta[] {
       updated: r.updated || undefined,
       description: r.description || "",
       category: r.category || "notes",
-      tags: JSON.parse(r.tags || "[]"),
+      tags: safeJsonParse(r.tags || "[]", []),
       author: r.authorUsername || "已注销",
       authorId: r.authorId,
       authorRole: r.authorRole,
@@ -256,6 +256,10 @@ export function paginatePosts(
     totalPages,
     currentPage: page,
   };
+}
+
+function safeJsonParse<T>(json: string, fallback: T): T {
+  try { return JSON.parse(json); } catch { return fallback; }
 }
 
 export function searchPosts(query: string): PostMeta[] {

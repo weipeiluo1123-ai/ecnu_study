@@ -90,19 +90,27 @@ export async function POST(req: NextRequest) {
   const slug = `user-${Date.now()}-${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").toLowerCase()}`;
   const now = new Date().toISOString();
 
-  const result = db.insert(userPosts).values({
-    title: title.trim(),
-    content,
-    description: description || title.slice(0, 100),
-    slug,
-    category: category || "notes",
-    tags: JSON.stringify(normalizeTags(tags || [])),
-    format: format === "txt" ? "txt" : "markdown",
-    authorId: session.id,
-    isPublished: true,
-    createdAt: now,
-    updatedAt: now,
-  }).run();
+  let result;
+  try {
+    result = db.insert(userPosts).values({
+      title: title.trim(),
+      content,
+      description: description || title.slice(0, 100),
+      slug,
+      category: category || "notes",
+      tags: JSON.stringify(normalizeTags(tags || [])),
+      format: format === "txt" ? "txt" : "markdown",
+      authorId: session.id,
+      isPublished: true,
+      createdAt: now,
+      updatedAt: now,
+    }).run();
+  } catch (insertErr: any) {
+    if (insertErr?.message?.includes("UNIQUE")) {
+      return NextResponse.json({ error: "文章发布失败，请重试" }, { status: 409 });
+    }
+    throw insertErr;
+  }
 
   clearPostsCache();
 

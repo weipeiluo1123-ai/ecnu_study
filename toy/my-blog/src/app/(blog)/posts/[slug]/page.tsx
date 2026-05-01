@@ -15,7 +15,7 @@ import { PostActions } from "@/components/ui/PostActions";
 import { renderContent } from "@/lib/markdown";
 import { db } from "@/lib/db/index";
 import { userPosts, users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 // ISR with 60s window — MDX posts are static, user posts are cache-busted via revalidatePath on CRUD
 export const revalidate = 60;
@@ -51,8 +51,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     };
   }
-  // Check user posts
-  const userPost = db.select().from(userPosts).where(eq(userPosts.slug, slug)).get();
+  // Check user posts (only published)
+  const userPost = db.select().from(userPosts).where(
+    and(eq(userPosts.slug, slug), eq(userPosts.isPublished, true))
+  ).get();
   if (userPost) {
     return {
       title: userPost.title,

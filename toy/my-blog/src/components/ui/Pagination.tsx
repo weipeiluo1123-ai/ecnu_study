@@ -15,6 +15,8 @@ interface Props {
 }
 
 export function Pagination({ currentPage, totalPages, basePath, pageSize = 10, showSizeSelector = false }: Props) {
+  // Clamp to valid bounds
+  const p = Math.max(1, Math.min(currentPage, totalPages || 1));
   if (totalPages <= 1 && !showSizeSelector) return null;
 
   function getPageLink(page: number, size?: number) {
@@ -34,7 +36,7 @@ export function Pagination({ currentPage, totalPages, basePath, pageSize = 10, s
       if (
         i === 1 ||
         i === totalPages ||
-        (i >= currentPage - delta && i <= currentPage + delta)
+        (i >= p - delta && i <= p + delta)
       ) {
         pages.push(i);
       } else if (pages[pages.length - 1] !== "...") {
@@ -69,12 +71,12 @@ export function Pagination({ currentPage, totalPages, basePath, pageSize = 10, s
       {totalPages > 1 && (
         <nav className="flex items-center justify-center gap-1">
           <Link
-            href={getPageLink(currentPage - 1, pageSize)}
+            href={getPageLink(p - 1, pageSize)}
             className={cn(
               "flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors",
-              currentPage <= 1 && "pointer-events-none opacity-40"
+              p <= 1 && "pointer-events-none opacity-40"
             )}
-            aria-disabled={currentPage <= 1}
+            aria-disabled={p <= 1}
           >
             <ChevronLeft size={16} />
           </Link>
@@ -88,7 +90,7 @@ export function Pagination({ currentPage, totalPages, basePath, pageSize = 10, s
                 href={getPageLink(page, pageSize)}
                 className={cn(
                   "flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium border transition-colors",
-                  page === currentPage
+                  page === p
                     ? "border-neon-cyan bg-neon-cyan/10 text-neon-cyan"
                     : "border-border text-muted hover:text-foreground hover:border-accent"
                 )}
@@ -99,12 +101,12 @@ export function Pagination({ currentPage, totalPages, basePath, pageSize = 10, s
           )}
 
           <Link
-            href={getPageLink(currentPage + 1, pageSize)}
+            href={getPageLink(p + 1, pageSize)}
             className={cn(
               "flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors",
-              currentPage >= totalPages && "pointer-events-none opacity-40"
+              p >= totalPages && "pointer-events-none opacity-40"
             )}
-            aria-disabled={currentPage >= totalPages}
+            aria-disabled={p >= totalPages}
           >
             <ChevronRight size={16} />
           </Link>

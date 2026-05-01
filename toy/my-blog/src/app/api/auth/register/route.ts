@@ -65,12 +65,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Only NOW mark code as used — all validations passed
-    db.update(verificationCodes)
-      .set({ usedAt: now })
-      .where(eq(verificationCodes.id, validCode.id))
-      .run();
-
     const existingUser = db.select().from(users).where(
       eq(users.username, username)
     ).get() || db.select().from(users).where(
@@ -85,6 +79,12 @@ export async function POST(req: NextRequest) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+
+    // Consume code and insert atomically after all async work is done
+    db.update(verificationCodes)
+      .set({ usedAt: now })
+      .where(eq(verificationCodes.id, validCode.id))
+      .run();
 
     let result;
     try {
@@ -105,7 +105,6 @@ export async function POST(req: NextRequest) {
         updatedAt: now,
       }).run();
     } catch (insertErr: any) {
-      // Handle race: UNIQUE constraint on username/email
       if (insertErr?.message?.includes("UNIQUE")) {
         return NextResponse.json(
           { error: "用户名或邮箱已被注册" },
