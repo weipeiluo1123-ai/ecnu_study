@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
-import { userPosts, users } from "@/lib/db/schema";
+import { userPosts, users, likes, bookmarks, comments, views } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
 import { clearPostsCache } from "@/lib/posts";
@@ -75,6 +75,16 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "缺少文章 ID" }, { status: 400 });
   }
 
+  const post = db.select().from(userPosts).where(eq(userPosts.id, postId)).get();
+  if (!post) {
+    return NextResponse.json({ error: "文章不存在" }, { status: 404 });
+  }
+
+  // Clean up related data before deleting the post
+  db.delete(likes).where(eq(likes.postSlug, post.slug)).run();
+  db.delete(bookmarks).where(eq(bookmarks.postSlug, post.slug)).run();
+  db.delete(comments).where(eq(comments.postSlug, post.slug)).run();
+  db.delete(views).where(eq(views.postSlug, post.slug)).run();
   db.delete(userPosts).where(eq(userPosts.id, postId)).run();
 
   clearPostsCache();

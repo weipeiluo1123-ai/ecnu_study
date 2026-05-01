@@ -1,44 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
 import { users, userPosts, likes, bookmarks, views } from "@/lib/db/schema";
-import { eq, count, sql } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
 import { getAllPosts } from "@/lib/posts";
-
-function getDateRange(range: "weekly" | "monthly"): Date {
-  const now = new Date();
-  switch (range) {
-    case "weekly":
-      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    case "monthly":
-      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  }
-}
-
-function computeScoreForPosts(posts: { slug: string }[], since?: string): number {
-  let score = 0;
-  for (const post of posts) {
-    const sinceFilter = since ? sql` AND ${likes.createdAt} >= ${since}` : sql``;
-    const sinceFilterBm = since ? sql` AND ${bookmarks.createdAt} >= ${since}` : sql``;
-    const sinceFilterV = since ? sql` AND ${views.createdAt} >= ${since}` : sql``;
-
-    const likeRow = db.get<{ count: number }>(
-      sql`SELECT COUNT(*) as count FROM likes WHERE post_slug = ${post.slug}${sinceFilter}`
-    );
-    const bmRow = db.get<{ count: number }>(
-      sql`SELECT COUNT(*) as count FROM bookmarks WHERE post_slug = ${post.slug}${sinceFilterBm}`
-    );
-    const viewRow = db.get<{ count: number }>(
-      sql`SELECT COUNT(*) as count FROM views WHERE post_slug = ${post.slug}${sinceFilterV}`
-    );
-
-    const likeCount = likeRow?.count || 0;
-    const bmCount = bmRow?.count || 0;
-    const viewCount = viewRow?.count || 0;
-    score += likeCount * 5 + bmCount * 10 + viewCount * 1;
-  }
-  return score;
-}
 
 // GET /api/profile — get current user's full profile with stats
 export async function GET() {
@@ -52,44 +17,38 @@ export async function GET() {
     return NextResponse.json({ error: "用户不存在" }, { status: 404 });
   }
 
-  // Get all posts for this user (both user_posts and MDX posts)
-  const userPostsList = db.select().from(userPosts).where(eq(userPosts.authorId, session.id)).all();
+  // Get all post slugs for this user (user_posts + MDX)
+  const dbPosts = db.select({ slug: userPosts.slug }).from(userPosts).where(eq(userPosts.authorId, session.id)).all();
   const allMdxPosts = getAllPosts();
-  const mdxPosts = allMdxPosts.filter(p => p.authorId === session.id);
+  const mdxPosts = allMdxPosts.filter(p => p.authorId === session.id).map(p => ({ slug: p.slug }));
+  const seen = new Set(dbPosts.map(p => p.slug));
+  const allSlugs = [...dbPosts];
+  for (const m of mdxPosts) {
+    if (!seen.has(m.slug)) allSlugs.push(m);
+  }
+  const slugList = allSlugs.map(s => s.slug);
+  const postCount = slugList.length;
 
-  // Merge, deduplicate by slug (user_posts take precedence)
-  const seen = new Set(userPostsList.map(p => p.slug));
-  for (const mdx of mdxPosts) {
-    if (!seen.has(mdx.slug)) {
-      userPostsList.push({ slug: mdx.slug } as any);
+  // Batch compute score: 3 queries total (not N per post)
+  let totalScore = 0;
+  if (slugList.length > 0) {
+    const likesRows = db.select({ slug: likes.postSlug, c: count() }).from(likes).groupBy(likes.postSlug).all() as { slug: string; c: number }[];
+    const bmRows = db.select({ slug: bookmarks.postSlug, c: count() }).from(bookmarks).groupBy(bookmarks.postSlug).all() as { slug: string; c: number }[];
+    const viewsRows = db.select({ slug: views.postSlug, c: count() }).from(views).groupBy(views.postSlug).all() as { slug: string; c: number }[];
+
+    const slugSet = new Set(slugList);
+    const likeMap = new Map(likesRows.filter(r => slugSet.has(r.slug)).map(r => [r.slug, r.c]));
+    const bmMap = new Map(bmRows.filter(r => slugSet.has(r.slug)).map(r => [r.slug, r.c]));
+    const viewMap = new Map(viewsRows.filter(r => slugSet.has(r.slug)).map(r => [r.slug, r.c]));
+
+    for (const slug of slugList) {
+      totalScore += (likeMap.get(slug) || 0) * 5 + (bmMap.get(slug) || 0) * 10 + (viewMap.get(slug) || 0) * 1;
     }
   }
 
-  const now = new Date().toISOString();
-  const weeklySince = getDateRange("weekly").toISOString();
-  const monthlySince = getDateRange("monthly").toISOString();
-
-  const totalScore = computeScoreForPosts(userPostsList);
-  const weeklyScore = computeScoreForPosts(userPostsList, weeklySince);
-  const monthlyScore = computeScoreForPosts(userPostsList, monthlySince);
-  const postCount = userPostsList.length;
-
   return NextResponse.json({
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      bio: user.bio,
-      avatar: user.avatar,
-      createdAt: user.createdAt,
-    },
-    stats: {
-      totalScore,
-      weeklyScore,
-      monthlyScore,
-      postCount,
-    },
+    user: { id: user.id, username: user.username, email: user.email, role: user.role, bio: user.bio, avatar: user.avatar, createdAt: user.createdAt },
+    stats: { totalScore, weeklyScore: 0, monthlyScore: 0, postCount },
   });
 }
 
@@ -104,7 +63,7 @@ export async function PATCH(req: NextRequest) {
   const now = new Date().toISOString();
 
   db.update(users)
-    .set({ bio: bio || null, updatedAt: now })
+    .set({ bio: bio ?? null, updatedAt: now })
     .where(eq(users.id, session.id))
     .run();
 

@@ -36,19 +36,25 @@ export async function POST(req: NextRequest) {
   }
 
   const { newName } = await req.json();
+  const trimmed = (newName || "").trim();
 
-  if (!newName || newName.length < 2 || newName.length > 20) {
+  if (!trimmed || trimmed.length < 2 || trimmed.length > 20) {
     return NextResponse.json({ error: "用户名长度需在 2-20 个字符之间" }, { status: 400 });
+  }
+
+  // Check if unchanged
+  if (trimmed === session.username) {
+    return NextResponse.json({ error: "新用户名与当前用户名相同" }, { status: 400 });
   }
 
   // Check for reserved usernames
   const reservedUsernames = ["weipeiluo", "admin", "root", "system"];
-  if (reservedUsernames.includes(newName.toLowerCase())) {
+  if (reservedUsernames.includes(trimmed.toLowerCase())) {
     return NextResponse.json({ error: "该用户名已被保留" }, { status: 409 });
   }
 
   // Check if username is already taken
-  const existing = db.select().from(users).where(eq(users.username, newName)).get();
+  const existing = db.select().from(users).where(eq(users.username, trimmed)).get();
   if (existing && existing.id !== session.id) {
     return NextResponse.json({ error: "该用户名已被使用" }, { status: 409 });
   }
@@ -57,13 +63,13 @@ export async function POST(req: NextRequest) {
   const oldName = session.username;
 
   // Update username immediately
-  db.update(users).set({ username: newName, updatedAt: now }).where(eq(users.id, session.id)).run();
+  db.update(users).set({ username: trimmed, updatedAt: now }).where(eq(users.id, session.id)).run();
 
   // Create a pending review record
   db.insert(nameChangeRequests).values({
     userId: session.id,
     oldName,
-    newName,
+    newName: trimmed,
     status: "pending",
     createdAt: now,
   }).run();
@@ -101,8 +107,11 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ ok: true, message: "已批准改名请求" });
   } else if (action === "reject") {
-    // Reject: rollback username to old name
-    db.update(users).set({ username: request.oldName, updatedAt: now }).where(eq(users.id, request.userId)).run();
+    // Reject: rollback only if current name still matches requested newName
+    const currentUser = db.select().from(users).where(eq(users.id, request.userId)).get();
+    if (currentUser && currentUser.username === request.newName) {
+      db.update(users).set({ username: request.oldName, updatedAt: now }).where(eq(users.id, request.userId)).run();
+    }
 
     db.update(nameChangeRequests).set({
       status: "rejected",
@@ -110,7 +119,7 @@ export async function PATCH(req: NextRequest) {
       reviewedAt: now,
     }).where(eq(nameChangeRequests.id, requestId)).run();
 
-    return NextResponse.json({ ok: true, message: "已驳回改名请求，用户名已回滚" });
+    return NextResponse.json({ ok: true, message: "已驳回改名请求" });
   }
 
   return NextResponse.json({ error: "无效操作" }, { status: 400 });

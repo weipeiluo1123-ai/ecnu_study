@@ -35,7 +35,10 @@ export default async function PostsPage({ searchParams }: Props) {
       <AnimatedSection>
         <h1 className="text-3xl font-bold text-foreground">文章</h1>
         <p className="mt-2 text-muted">
-          共 {allPosts.length} 篇文章，第 {currentPage}/{totalPages} 页
+          {allPosts.length > 0
+            ? `共 ${allPosts.length} 篇文章，第 ${currentPage}/${totalPages} 页`
+            : "暂无文章"}
+
         </p>
       </AnimatedSection>
 
