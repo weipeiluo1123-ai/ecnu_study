@@ -44,6 +44,7 @@ interface LeaderboardEntry {
   totalLikes: number;
   totalViews: number;
   totalBookmarks: number;
+  interactors?: number;
 }
 
 type Range = "all" | "monthly" | "weekly" | "daily";
@@ -157,7 +158,7 @@ export default function LeaderboardPage() {
                               {entry.username}
                             </div>
                             <div className="text-[11px] text-muted">
-                              {entry.postCount} 篇 · 👁{entry.totalViews} · ❤{entry.totalLikes}
+                              {entry.postCount} 篇 · 👁{entry.totalViews} · ❤{entry.totalLikes} · 👥{entry.interactors ?? 0}
                             </div>
                           </div>
                           <span className="shrink-0 text-sm font-bold text-neon-cyan tabular-nums">

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
-import { likes, bookmarks, views, users } from "@/lib/db/schema";
+import { likes, bookmarks, views, comments, users } from "@/lib/db/schema";
 import { count, sql } from "drizzle-orm";
 import { getAllPosts } from "@/lib/posts";
 
@@ -99,9 +99,39 @@ export async function GET(req: NextRequest) {
     s.score += likeCount * 5 + bmCount * 10 + viewCount * 1;
   }
 
+  // Compute unique interactors per author
+  const authorSlugs = new Map<number, string[]>();
+  for (const post of allPosts) {
+    const aid = post.authorId || nameToId.get(post.author);
+    if (!aid) continue;
+    if (!authorSlugs.has(aid)) authorSlugs.set(aid, []);
+    authorSlugs.get(aid)!.push(post.slug);
+  }
+
+  const interactorMap = new Map<number, number>();
+  for (const [authorId, slugs] of authorSlugs) {
+    const uniq = new Set<number>();
+    // Count distinct users who liked any of this author's posts
+    for (const slug of slugs) {
+      const likers = since
+        ? db.select({ uid: likes.userId }).from(likes).where(sql`${likes.postSlug} = ${slug} AND ${likes.createdAt} >= ${since}`).all()
+        : db.select({ uid: likes.userId }).from(likes).where(sql`${likes.postSlug} = ${slug}`).all();
+      const commenters = since
+        ? db.select({ uid: comments.authorId }).from(comments).where(sql`${comments.postSlug} = ${slug} AND ${comments.createdAt} >= ${since}`).all()
+        : db.select({ uid: comments.authorId }).from(comments).where(sql`${comments.postSlug} = ${slug}`).all();
+      const bookmarkers = since
+        ? db.select({ uid: bookmarks.userId }).from(bookmarks).where(sql`${bookmarks.postSlug} = ${slug} AND ${bookmarks.createdAt} >= ${since}`).all()
+        : db.select({ uid: bookmarks.userId }).from(bookmarks).where(sql`${bookmarks.postSlug} = ${slug}`).all();
+      for (const r of likers) if (r.uid) uniq.add(r.uid);
+      for (const r of commenters) if (r.uid) uniq.add(r.uid);
+      for (const r of bookmarkers) if (r.uid) uniq.add(r.uid);
+    }
+    interactorMap.set(authorId, uniq.size);
+  }
+
   const sorted = Object.values(scores)
     .sort((a, b) => b.score - a.score)
-    .map((s, i) => ({ rank: i + 1, ...s }));
+    .map((s, i) => ({ rank: i + 1, ...s, interactors: interactorMap.get(s.userId) ?? 0 }));
 
   return NextResponse.json({ range, leaderboard: sorted });
 }
