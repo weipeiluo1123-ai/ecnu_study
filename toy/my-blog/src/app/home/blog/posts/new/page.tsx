@@ -49,7 +49,7 @@ export default function NewPostPage() {
       } else {
         if (draftKey) clearDraft(draftKey);
         addToast("success", "文章发布成功！");
-        setTimeout(() => router.push("/my-posts"), 1200);
+        setTimeout(() => router.push("/home/blog/my-posts"), 1200);
       }
     } catch {
       addToast("error", "发布失败，请稍后重试");

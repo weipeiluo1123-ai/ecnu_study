@@ -58,7 +58,7 @@ export default function RegisterPage() {
       addToast("error", err);
     } else {
       addToast("success", "注册成功");
-      router.push("/home");
+      router.push("/home/blog");
     }
   }
 

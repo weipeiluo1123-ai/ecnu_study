@@ -29,7 +29,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.push("/auth/login");
+      router.push("/home/blog/auth/login");
       return;
     }
     loadPost();
@@ -77,7 +77,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       });
       if (res.ok) {
         addToast("success", "保存成功！");
-        setTimeout(() => router.push("/my-posts"), 1200);
+        setTimeout(() => router.push("/home/blog/my-posts"), 1200);
       } else {
         const data = await res.json();
         addToast("error", data.error || "保存失败");

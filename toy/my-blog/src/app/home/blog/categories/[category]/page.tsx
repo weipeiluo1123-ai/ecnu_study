@@ -75,7 +75,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        basePath={`/categories/${category}`}
+        basePath={`/home/blog/categories/${category}`}
         pageSize={pageSize}
         showSizeSelector
       />

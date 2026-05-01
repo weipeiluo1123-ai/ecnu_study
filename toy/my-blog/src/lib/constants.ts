@@ -5,13 +5,13 @@ export const BLOG_DESCRIPTION = "个人技术博客 — 分享编程、技术与
 export const POSTS_PER_PAGE = 10;
 
 export const NAV_LINKS = [
-  { href: "/home", label: "博客" },
-  { href: "/posts", label: "文章" },
-  { href: "/categories", label: "分类" },
-  { href: "/tags", label: "标签" },
-  { href: "/leaderboard", label: "排行" },
-  { href: "/search", label: "搜索" },
-  { href: "/about", label: "关于" },
+  { href: "/home/blog", label: "博客" },
+  { href: "/home/blog/posts", label: "文章" },
+  { href: "/home/blog/categories", label: "分类" },
+  { href: "/home/blog/tags", label: "标签" },
+  { href: "/home/blog/leaderboard", label: "排行" },
+  { href: "/home/blog/search", label: "搜索" },
+  { href: "/home/blog/about", label: "关于" },
 ] as const;
 
 export const CATEGORIES = [

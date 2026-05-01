@@ -70,7 +70,7 @@ export default async function PostsPage({ searchParams }: Props) {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        basePath="/posts"
+        basePath="/home/blog/posts"
         pageSize={pageSize}
         showSizeSelector
       />

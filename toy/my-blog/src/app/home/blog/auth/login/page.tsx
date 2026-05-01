@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   // Redirect if already logged in
   if (user) {
-    router.replace("/home");
+    router.replace("/home/blog");
     return null;
   }
 
@@ -33,7 +33,7 @@ export default function LoginPage() {
       addToast("error", err);
     } else {
       addToast("success", "登录成功");
-      router.push("/home");
+      router.push("/home/blog");
     }
   }
 

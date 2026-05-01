@@ -74,7 +74,7 @@ export default async function TagPage({ params, searchParams }: Props) {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        basePath={`/tags/${tag}`}
+        basePath={`/home/blog/tags/${tag}`}
         pageSize={pageSize}
         showSizeSelector
       />

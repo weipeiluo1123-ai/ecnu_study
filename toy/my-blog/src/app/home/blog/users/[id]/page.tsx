@@ -195,7 +195,7 @@ export default async function UserProfilePage({ params, searchParams }: Props) {
           <Pagination
             currentPage={page}
             totalPages={Math.max(1, Math.ceil(allPosts.length / pageSize))}
-            basePath={`/users/${userId}`}
+            basePath={`/home/blog/users/${userId}`}
             pageSize={pageSize}
             showSizeSelector
           />

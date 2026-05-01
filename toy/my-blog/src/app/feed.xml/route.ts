@@ -9,10 +9,10 @@ export async function GET() {
       (post) => `
     <item>
       <title><![CDATA[${post.title}]]></title>
-      <link>${baseUrl}/posts/${post.slug}</link>
+      <link>${baseUrl}/home/blog/posts/${post.slug}</link>
       <description><![CDATA[${post.description}]]></description>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
-      <guid>${baseUrl}/posts/${post.slug}</guid>
+      <guid>${baseUrl}/home/blog/posts/${post.slug}</guid>
       <category>${post.category}</category>
     </item>`
     )

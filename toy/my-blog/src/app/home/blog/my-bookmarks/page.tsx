@@ -25,7 +25,7 @@ export default async function MyBookmarksPage({ searchParams }: Props) {
   const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
   const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/home/blog/auth/login");
 
   const rows = db.select({
     id: bookmarks.id,
@@ -106,7 +106,7 @@ export default async function MyBookmarksPage({ searchParams }: Props) {
             <Pagination
               currentPage={page}
               totalPages={Math.max(1, Math.ceil(rows.length / pageSize))}
-              basePath="/my-bookmarks"
+              basePath="/home/blog/my-bookmarks"
               pageSize={pageSize}
               showSizeSelector
             />
