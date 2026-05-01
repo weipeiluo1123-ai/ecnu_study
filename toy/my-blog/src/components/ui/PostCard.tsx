@@ -7,6 +7,7 @@ import type { PostMeta } from "@/lib/posts";
 import { formatDateShort } from "@/lib/format";
 import { estimateReadingTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { TAGS } from "@/lib/constants";
 
 interface Props {
   post: PostMeta;
@@ -30,14 +31,17 @@ export function PostCard({ post, index = 0 }: Props) {
                   <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20">
                     {post.category}
                   </span>
-                  {post.tags.slice(0, 2).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs px-2 py-0.5 rounded-full bg-surface-alt text-muted border border-border"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  {post.tags.slice(0, 2).map((tag) => {
+                    const tagInfo = TAGS.find((t) => t.slug === tag);
+                    return (
+                      <span
+                        key={tag}
+                        className="text-xs px-2 py-0.5 rounded-full bg-surface-alt text-muted border border-border"
+                      >
+                        {tagInfo?.name || tag}
+                      </span>
+                    );
+                  })}
                 </div>
 
                 {/* Title */}

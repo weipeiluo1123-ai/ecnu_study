@@ -112,8 +112,21 @@ export const TAGS = [
   { slug: "ai", name: "AI" },
   { slug: "llm", name: "LLM" },
   { slug: "tutorial", name: "教程" },
-  { slug: "心得", name: "心得" },
+  { slug: "insights", name: "心得" },
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
 export type TagSlug = (typeof TAGS)[number]["slug"];
+
+export function normalizeTags(tags: string[]): string[] {
+  return tags.map((t) => {
+    // If the tag matches a TAGS name, use the slug
+    const byName = TAGS.find((tag) => tag.name === t);
+    if (byName) return byName.slug;
+    // If it's already a valid slug, keep it
+    const bySlug = TAGS.find((tag) => tag.slug === t);
+    if (bySlug) return bySlug.slug;
+    // Fallback: strip non-ASCII
+    return t.replace(/[^a-zA-Z0-9-]/g, "").toLowerCase() || "unknown";
+  });
+}

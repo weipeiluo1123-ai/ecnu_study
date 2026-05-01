@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { ArrowLeft, FileText, Plus, Edit, Trash2, ExternalLink } from "lucide-react";
+import { ArrowLeft, FileText, Plus, Edit, Trash2, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 interface UserPost {
   id: number;
@@ -26,6 +27,8 @@ export default function MyPostsPage() {
   const router = useRouter();
   const [posts, setPosts] = useState<UserPost[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [postPage, setPostPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     if (loading) return;
@@ -107,7 +110,7 @@ export default function MyPostsPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {posts.map((post, i) => (
+            {posts.slice((postPage - 1) * pageSize, postPage * pageSize).map((post, i) => (
               <div
                 key={post.id}
                 className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all"
@@ -155,6 +158,25 @@ export default function MyPostsPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {posts.length > pageSize && (
+          <div className="flex items-center justify-center gap-1 mt-8">
+            <button onClick={() => setPostPage(p => Math.max(1, p-1))} disabled={postPage <= 1}
+              className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", postPage <= 1 && "opacity-40")}>
+              <ChevronLeft size={16} />
+            </button>
+            {Array.from({ length: Math.ceil(posts.length / pageSize) }, (_, i) => i+1).map(p => (
+              <button key={p} onClick={() => setPostPage(p)}
+                className={cn("flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium border transition-colors cursor-pointer",
+                  p === postPage ? "border-neon-cyan bg-neon-cyan/10 text-neon-cyan" : "border-border text-muted hover:text-foreground hover:border-accent")}>
+                {p}
+              </button>
+            ))}
+            <button onClick={() => setPostPage(p => Math.min(Math.ceil(posts.length / pageSize), p+1))} disabled={postPage >= Math.ceil(posts.length / pageSize)}
+              className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", postPage >= Math.ceil(posts.length / pageSize) && "opacity-40")}>
+              <ChevronRight size={16} />
+            </button>
           </div>
         )}
       </AnimatedSection>

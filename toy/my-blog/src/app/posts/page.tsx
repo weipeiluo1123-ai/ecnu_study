@@ -16,14 +16,15 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 interface Props {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string }>;
 }
 
 export default async function PostsPage({ searchParams }: Props) {
   const params = await searchParams;
   const page = Math.max(1, parseInt(params.page || "1", 10) || 1);
+  const pageSize = Math.min(50, Math.max(1, parseInt(params.pageSize || String(POSTS_PER_PAGE), 10) || POSTS_PER_PAGE));
   const allPosts = getAllPosts();
-  const { posts, totalPages, currentPage } = paginatePosts(allPosts, page, POSTS_PER_PAGE);
+  const { posts, totalPages, currentPage } = paginatePosts(allPosts, page, pageSize);
   const tagCounts = getAllTags();
   const topTags = Object.entries(tagCounts)
     .sort(([, a], [, b]) => b - a)
@@ -67,6 +68,8 @@ export default async function PostsPage({ searchParams }: Props) {
         currentPage={currentPage}
         totalPages={totalPages}
         basePath="/posts"
+        pageSize={pageSize}
+        showSizeSelector
       />
     </div>
   );

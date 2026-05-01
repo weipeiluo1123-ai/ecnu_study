@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X, User, FileText, Crown, Shield } from "lucide-react";
+import { Search, X, User, FileText, Crown, Shield, ChevronLeft, ChevronRight } from "lucide-react";
 import Fuse from "fuse.js";
 import type { PostMeta } from "@/lib/posts";
 import { PostCard } from "@/components/ui/PostCard";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface Props {
   initialPosts: PostMeta[];
@@ -27,6 +28,9 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
   const [tab, setTab] = useState<"posts" | "users">("posts");
   const [users, setUsers] = useState<SiteUser[]>([]);
   const [usersLoaded, setUsersLoaded] = useState(false);
+  const [postPage, setPostPage] = useState(1);
+  const [userPage, setUserPage] = useState(1);
+  const pageSize = 10;
 
   // Fetch all users for searching
   useEffect(() => {
@@ -55,6 +59,10 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
     [initialPosts]
   );
 
+  // Reset page when query or tab changes
+  useEffect(() => { setPostPage(1); }, [query, tab]);
+  useEffect(() => { setUserPage(1); }, [query, tab]);
+
   const postResults = useMemo(() => {
     if (!query.trim() || tab !== "posts") return [];
     return fuse.search(query.trim()).map((r) => r.item);
@@ -69,6 +77,20 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
         (u.bio && u.bio.toLowerCase().includes(q))
     );
   }, [query, users, tab]);
+
+  // Paginate results
+  const paginatedPosts = useMemo(() => {
+    const start = (postPage - 1) * pageSize;
+    return postResults.slice(start, start + pageSize);
+  }, [postResults, postPage]);
+
+  const paginatedUsers = useMemo(() => {
+    const start = (userPage - 1) * pageSize;
+    return userResults.slice(start, start + pageSize);
+  }, [userResults, userPage]);
+
+  const postTotalPages = Math.max(1, Math.ceil(postResults.length / pageSize));
+  const userTotalPages = Math.max(1, Math.ceil(userResults.length / pageSize));
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
@@ -140,18 +162,39 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
       {/* Posts results */}
       {tab === "posts" && (
         <AnimatedSection delay={0.1} className="mt-8">
-          {postResults.length > 0 ? (
-            <div className="space-y-4">
-              {postResults.map((post, i) => (
-                <PostCard key={post.slug} post={post} index={i} />
-              ))}
-            </div>
-          ) : query.trim() ? (
-            <div className="text-center py-20">
-              <FileText size={48} className="mx-auto text-muted/30 mb-4" />
-              <p className="text-muted">未找到匹配的文章</p>
-              <p className="text-sm text-muted mt-1">试试其他关键词</p>
-            </div>
+          {query.trim() ? (
+            paginatedPosts.length > 0 ? (
+              <div className="space-y-4">
+                {paginatedPosts.map((post, i) => (
+                  <PostCard key={post.slug} post={post} index={i} />
+                ))}
+                {postTotalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1 mt-8">
+                    <button onClick={() => setPostPage(p => Math.max(1, p-1))} disabled={postPage <= 1}
+                      className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", postPage <= 1 && "opacity-40")}>
+                      <ChevronLeft size={16} />
+                    </button>
+                    {Array.from({ length: postTotalPages }, (_, i) => i+1).map(p => (
+                      <button key={p} onClick={() => setPostPage(p)}
+                        className={cn("flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium border transition-colors cursor-pointer",
+                          p === postPage ? "border-neon-cyan bg-neon-cyan/10 text-neon-cyan" : "border-border text-muted hover:text-foreground hover:border-accent")}>
+                        {p}
+                      </button>
+                    ))}
+                    <button onClick={() => setPostPage(p => Math.min(postTotalPages, p+1))} disabled={postPage >= postTotalPages}
+                      className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", postPage >= postTotalPages && "opacity-40")}>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <FileText size={48} className="mx-auto text-muted/30 mb-4" />
+                <p className="text-muted">未找到匹配的文章</p>
+                <p className="text-sm text-muted mt-1">试试其他关键词</p>
+              </div>
+            )
           ) : (
             <div className="mt-8 space-y-4">
               {initialPosts.slice(0, 5).map((post, i) => (
@@ -165,9 +208,10 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
       {/* Users results */}
       {tab === "users" && (
         <AnimatedSection delay={0.1} className="mt-8">
-          {userResults.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {userResults.map((u) => (
+          {query.trim() && userResults.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {paginatedUsers.map((u) => (
                 <Link
                   key={u.id}
                   href={`/users/${u.id}`}
@@ -202,7 +246,27 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
                   </div>
                 </Link>
               ))}
-            </div>
+              </div>
+              {userTotalPages > 1 && (
+                <div className="flex items-center justify-center gap-1 mt-8">
+                  <button onClick={() => setUserPage(p => Math.max(1, p-1))} disabled={userPage <= 1}
+                    className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", userPage <= 1 && "opacity-40")}>
+                    <ChevronLeft size={16} />
+                  </button>
+                  {Array.from({ length: userTotalPages }, (_, i) => i+1).map(p => (
+                    <button key={p} onClick={() => setUserPage(p)}
+                      className={cn("flex items-center justify-center w-9 h-9 rounded-lg text-sm font-medium border transition-colors cursor-pointer",
+                        p === userPage ? "border-neon-cyan bg-neon-cyan/10 text-neon-cyan" : "border-border text-muted hover:text-foreground hover:border-accent")}>
+                      {p}
+                    </button>
+                  ))}
+                  <button onClick={() => setUserPage(p => Math.min(userTotalPages, p+1))} disabled={userPage >= userTotalPages}
+                    className={cn("flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer", userPage >= userTotalPages && "opacity-40")}>
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
+            </>
           ) : query.trim() ? (
             <div className="text-center py-20">
               <User size={48} className="mx-auto text-muted/30 mb-4" />

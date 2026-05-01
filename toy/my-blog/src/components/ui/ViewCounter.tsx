@@ -18,17 +18,12 @@ export function ViewCounter({ postSlug }: Props) {
       localStorage.setItem("nexus_visitor_id", vid);
     }
 
-    // Debounce view counting
-    const viewed = sessionStorage.getItem(`viewed_${postSlug}`);
-    if (!viewed) {
-      sessionStorage.setItem(`viewed_${postSlug}`, "1");
-      // Increment view
-      fetch("/api/views", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postSlug, visitorId: vid }),
-      }).catch(() => {});
-    }
+    // Increment view on every visit
+    fetch("/api/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postSlug, visitorId: vid }),
+    }).catch(() => {});
 
     // Fetch count
     fetch(`/api/views?postSlug=${postSlug}`)

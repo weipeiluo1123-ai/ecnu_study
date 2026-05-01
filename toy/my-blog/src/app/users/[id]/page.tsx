@@ -3,17 +3,22 @@ import Link from "next/link";
 import { db } from "@/lib/db/index";
 import { users, userPosts, comments } from "@/lib/db/schema";
 import { eq, desc, and } from "drizzle-orm";
-import { Calendar, MessageSquare, FileText, ArrowLeft, Shield, User, Crown } from "lucide-react";
+import { Calendar, MessageSquare, FileText, ArrowLeft, Shield, User, Crown, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { formatDate } from "@/lib/format";
 import { getAllPosts } from "@/lib/posts";
+import { Pagination } from "@/components/ui/Pagination";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string }>;
 }
 
-export default async function UserProfilePage({ params }: Props) {
+export default async function UserProfilePage({ params, searchParams }: Props) {
   const { id } = await params;
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
+  const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
   const userId = parseInt(id);
   if (!userId) notFound();
 
@@ -153,7 +158,7 @@ export default async function UserProfilePage({ params }: Props) {
         <AnimatedSection delay={0.15} className="mt-8">
           <h2 className="text-lg font-semibold text-foreground mb-4">发布的文章</h2>
           <div className="space-y-3">
-            {allPosts.map((post, i) => (
+            {allPosts.slice((page - 1) * pageSize, page * pageSize).map((post, i) => (
               <Link
                 key={post.isMdx ? `mdx-${post.slug}` : `db-${post.id}`}
                 href={`/posts/${post.slug}`}
@@ -187,6 +192,13 @@ export default async function UserProfilePage({ params }: Props) {
               </Link>
             ))}
           </div>
+          <Pagination
+            currentPage={page}
+            totalPages={Math.max(1, Math.ceil(allPosts.length / pageSize))}
+            basePath={`/users/${userId}`}
+            pageSize={pageSize}
+            showSizeSelector
+          />
         </AnimatedSection>
       )}
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TAGS } from "@/lib/constants";
 
 interface Props {
   tag: string;
@@ -7,6 +8,9 @@ interface Props {
 }
 
 export function TagBadge({ tag, count, size = "sm" }: Props) {
+  const tagInfo = TAGS.find((t) => t.slug === tag);
+  const displayName = tagInfo?.name || tag;
+
   const sizeClasses = {
     sm: "text-xs px-2 py-0.5",
     md: "text-sm px-3 py-1",
@@ -15,11 +19,11 @@ export function TagBadge({ tag, count, size = "sm" }: Props) {
 
   return (
     <Link
-      href={`/tags/${encodeURIComponent(tag)}`}
+      href={`/tags/${tag}`}
       className={`inline-flex items-center gap-1 rounded-full border border-border bg-surface-alt ${sizeClasses[size]} text-muted hover:text-neon-cyan hover:border-neon-cyan/30 transition-all duration-300`}
     >
       <span>#</span>
-      {tag}
+      {displayName}
       {count !== undefined && (
         <span className="text-xs opacity-60">({count})</span>
       )}

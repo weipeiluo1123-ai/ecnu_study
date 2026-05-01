@@ -3,6 +3,7 @@ import { db } from "@/lib/db/index";
 import { userPosts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
+import { normalizeTags } from "@/lib/constants";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -69,7 +70,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
   if (content !== undefined) updateData.content = content;
   if (description !== undefined) updateData.description = description;
   if (category !== undefined) updateData.category = category;
-  if (tags !== undefined) updateData.tags = JSON.stringify(tags);
+  if (tags !== undefined) updateData.tags = JSON.stringify(normalizeTags(tags));
   if (isPublished !== undefined) updateData.isPublished = isPublished;
 
   db.update(userPosts).set(updateData).where(eq(userPosts.id, postId)).run();

@@ -2,15 +2,17 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { getPostsByCategory, getAllPosts } from "@/lib/posts";
+import { getPostsByCategory, getAllPosts, paginatePosts } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/constants";
 import { PostCard } from "@/components/ui/PostCard";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { Pagination } from "@/components/ui/Pagination";
 
 export const revalidate = 60;
 
 interface Props {
   params: Promise<{ category: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -28,12 +30,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params;
-  const posts = getPostsByCategory(category);
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
+  const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
+  const allPosts = getPostsByCategory(category);
   const catInfo = CATEGORIES.find((c) => c.slug === category);
 
   if (!catInfo) notFound();
+
+  const { posts, totalPages, currentPage } = paginatePosts(allPosts, page, pageSize);
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
@@ -48,7 +55,7 @@ export default async function CategoryPage({ params }: Props) {
 
         <h1 className="text-3xl font-bold text-foreground">{catInfo.name}</h1>
         <p className="mt-2 text-muted">{catInfo.description}</p>
-        <p className="mt-1 text-sm text-muted">{posts.length} 篇文章</p>
+        <p className="mt-1 text-sm text-muted">{allPosts.length} 篇文章</p>
       </AnimatedSection>
 
       <AnimatedSection delay={0.1} className="mt-10">
@@ -64,6 +71,14 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         )}
       </AnimatedSection>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath={`/categories/${category}`}
+        pageSize={pageSize}
+        showSizeSelector
+      />
     </div>
   );
 }

@@ -1,16 +1,17 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { getPostsByTag, getAllPosts } from "@/lib/posts";
+import { getPostsByTag, getAllPosts, paginatePosts } from "@/lib/posts";
 import { TAGS } from "@/lib/constants";
 import { PostCard } from "@/components/ui/PostCard";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { Pagination } from "@/components/ui/Pagination";
 
 export const revalidate = 60;
 
 interface Props {
   params: Promise<{ tag: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -28,12 +29,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function TagPage({ params }: Props) {
+export default async function TagPage({ params, searchParams }: Props) {
   const { tag } = await params;
-  const posts = getPostsByTag(tag);
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
+  const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
+  const allPosts = getPostsByTag(tag);
   const tagInfo = TAGS.find((t) => t.slug === tag);
-
-  if (!tagInfo) notFound();
+  const tagName = tagInfo?.name || tag;
+  const { posts, totalPages, currentPage } = paginatePosts(allPosts, page, pageSize);
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
@@ -48,9 +52,9 @@ export default async function TagPage({ params }: Props) {
 
         <h1 className="text-3xl font-bold text-foreground">
           <span className="text-neon-cyan">#</span>
-          {tagInfo.name}
+          {tagName}
         </h1>
-        <p className="mt-2 text-muted">{posts.length} 篇文章</p>
+        <p className="mt-2 text-muted">{allPosts.length} 篇文章</p>
       </AnimatedSection>
 
       <AnimatedSection delay={0.1} className="mt-10">
@@ -66,6 +70,14 @@ export default async function TagPage({ params }: Props) {
           </div>
         )}
       </AnimatedSection>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath={`/tags/${tag}`}
+        pageSize={pageSize}
+        showSizeSelector
+      />
     </div>
   );
 }

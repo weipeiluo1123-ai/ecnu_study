@@ -12,7 +12,32 @@
       "Bash(kill -9 29464)",
       "Bash(npx --yes lsof -ti:3000)",
       "Bash(xargs kill *)",
-      "Bash(cmd.exe *)"
+      "Bash(cmd.exe *)",
+      "Bash(lsof -ti:3000)",
+      "Bash(awk '{print $5}')",
+      "Bash(pm2 start *)",
+      "Bash(pm2 logs *)",
+      "Bash(node node_modules/next/dist/bin/next start --host 0.0.0.0 -p 3000)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(kill %1)",
+      "Bash(node node_modules/next/dist/bin/next start --help)",
+      "Bash(ipconfig)",
+      "Bash(node *)",
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777561300880-%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B\")",
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777561300880-测试流程\")",
+      "Bash(curl -s \"http://localhost:3000/posts\")",
+      "Bash(curl -s --path-as-is -o /dev/null -w \"Status: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777561300880-%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B\")",
+      "Bash(pm2 restart *)",
+      "Bash(curl -v \"http://localhost:3000/posts/user-1777561300880-%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B\")",
+      "Bash(curl -s \"http://localhost:3000/posts/user-1777561300880-%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B\")",
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559318959-lospbak-blog\")",
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code} — \" \"http://localhost:3000/posts/user-1777561300880-%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B\")",
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code} — \" \"http://localhost:3000/posts/user-1777561300880-测试流程\")",
+      "Bash(curl -s \"http://localhost:3000/api/comments?postSlug=user-1777561300880-测试流程\")",
+      "Bash(curl -s \"http://localhost:3000/api/comments?postSlug=user-1777561300880-%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B\")",
+      "Bash(curl -s -o /dev/null -w \"lospbak-blog: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559318959-lospbak-blog\")",
+      "Bash(curl -s -o /dev/null -w \"morn1ng-blog: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559003968-morn1ng-blog\")",
+      "Bash(curl -s -o /dev/null -w \"morn1ng\\(encoded\\): %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559003968-morn1ng-blog\")"
     ]
   }
 }

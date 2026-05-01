@@ -3,6 +3,7 @@ import { db } from "@/lib/db/index";
 import { userPosts, users } from "@/lib/db/schema";
 import { eq, desc, count } from "drizzle-orm";
 import { getSession, canUser } from "@/lib/auth";
+import { normalizeTags } from "@/lib/constants";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "标题和内容不能为空" }, { status: 400 });
   }
 
-  const slug = `user-${Date.now()}-${title.slice(0, 30).replace(/[^a-zA-Z0-9一-龥]/g, "-").toLowerCase()}`;
+  const slug = `user-${Date.now()}-${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").toLowerCase()}`;
   const now = new Date().toISOString();
 
   const result = db.insert(userPosts).values({
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
     description: description || title.slice(0, 100),
     slug,
     category: category || "notes",
-    tags: JSON.stringify(tags || []),
+    tags: JSON.stringify(normalizeTags(tags || [])),
     authorId: session.id,
     isPublished: true,
     createdAt: now,
