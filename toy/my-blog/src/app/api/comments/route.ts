@@ -112,12 +112,19 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "评论不存在" }, { status: 404 });
   }
 
-  if (comment.authorId !== session.id && session.role !== "admin") {
+  if (comment.authorId !== session.id && session.role !== "admin" && session.role !== "super_admin") {
     return NextResponse.json({ error: "无权删除此评论" }, { status: 403 });
   }
 
-  // Delete replies first, then the comment itself
-  db.delete(comments).where(eq(comments.parentId, commentId)).run();
+  // Delete all descendants recursively, then the comment itself
+  const children = db.select({ id: comments.id }).from(comments).where(eq(comments.parentId, commentId)).all();
+  const queue = children.map((c) => c.id);
+  while (queue.length > 0) {
+    const id = queue.shift()!;
+    const grand = db.select({ id: comments.id }).from(comments).where(eq(comments.parentId, id)).all();
+    grand.forEach((g) => queue.push(g.id));
+    db.delete(comments).where(eq(comments.id, id)).run();
+  }
   db.delete(comments).where(eq(comments.id, commentId)).run();
   return NextResponse.json({ ok: true });
 }

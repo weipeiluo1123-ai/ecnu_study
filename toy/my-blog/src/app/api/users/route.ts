@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
-import { users, comments, likes } from "@/lib/db/schema";
+import { users, comments, likes, bookmarks } from "@/lib/db/schema";
 import { eq, count, sql } from "drizzle-orm";
 import { getSession, parsePermissions } from "@/lib/auth";
 
@@ -69,13 +69,14 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "不能删除超级管理员" }, { status: 403 });
   }
 
-  // Anonymize user's comments instead of deleting them
+  // Clean up user data: anonymize comments, remove likes/bookmarks/views
   const name = targetUser?.username || "已注销";
   db.update(comments)
     .set({ authorId: null, authorName: `已注销(${name})` })
     .where(eq(comments.authorId, userId))
     .run();
   db.delete(likes).where(eq(likes.userId, userId)).run();
+  db.delete(bookmarks).where(eq(bookmarks.userId, userId)).run();
   db.delete(users).where(eq(users.id, userId)).run();
 
   return NextResponse.json({ ok: true });

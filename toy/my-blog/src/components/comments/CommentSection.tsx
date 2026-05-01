@@ -107,7 +107,7 @@ function CommentItem({
                 <Reply size={14} />
               </button>
             )}
-            {(user?.id === comment.author.id || user?.role === "admin") && comment.author.id && (
+            {(user?.id === comment.author.id || user?.role === "admin" || user?.role === "super_admin") && comment.author.id && (
               <button
                 onClick={() => onDelete(comment.id)}
                 className="p-1.5 rounded-lg text-muted hover:text-red-400 hover:bg-surface transition-colors cursor-pointer"
