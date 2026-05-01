@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight, BookOpen, LogIn, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
 
 // ═══════════════════════════════════════════════════════
 // Floating decorations
@@ -94,6 +96,8 @@ const upcoming = [
 // ═══════════════════════════════════════════════════════
 
 export default function LandingPage() {
+  const { user, logout } = useAuth();
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* ── Background layers ── */}
@@ -133,6 +137,32 @@ export default function LandingPage() {
           <p className="mt-4 text-xl md:text-2xl text-slate-400 font-light tracking-wide">
             全栈开发者 · 算法 · ACG
           </p>
+
+          {/* Auth state */}
+          <div className="mt-8 flex items-center justify-center gap-3">
+            {user ? (
+              <>
+                <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm border border-slate-200 text-sm text-slate-600">
+                  <User size={16} />
+                  {user.username}
+                </span>
+                <button
+                  onClick={() => logout()}
+                  className="px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-sm text-slate-500 transition-colors cursor-pointer"
+                >
+                  退出
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-500 to-pink-500 text-white text-sm font-medium shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 transition-all hover:scale-105"
+              >
+                <LogIn size={16} />
+                登录 / 注册
+              </Link>
+            )}
+          </div>
         </motion.div>
 
         {/* ── Featured: Nexus Blog ── */}

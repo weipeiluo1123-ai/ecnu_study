@@ -149,7 +149,7 @@ export function Header() {
                 </>
               ) : (
                 <Link
-                  href="/home/blog/auth/login"
+                  href="/auth/login"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neon-cyan text-background text-sm font-medium hover:bg-neon-cyan/90 transition-colors"
                 >
                   <User size={14} />
@@ -259,7 +259,7 @@ export function Header() {
               </>
             ) : (
               <Link
-                href="/home/blog/auth/login"
+                href="/auth/login"
                 onClick={() => setMenuOpen(false)}
                 className="block px-3 py-2 rounded-md text-sm text-neon-cyan hover:bg-surface-alt transition-colors"
               >
