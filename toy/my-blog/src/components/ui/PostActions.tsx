@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Heart, Bookmark } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
@@ -16,6 +17,8 @@ export function PostActions({ postSlug }: Props) {
   const [likeCount, setLikeCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
   const [bmCount, setBmCount] = useState(0);
+  const [showLikePopup, setShowLikePopup] = useState(false);
+  const popupTimer = useRef(0 as unknown as ReturnType<typeof setTimeout>);
 
   const fetchData = useCallback(async () => {
     try {
@@ -32,14 +35,20 @@ export function PostActions({ postSlug }: Props) {
     } catch {}
   }, [postSlug, user]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { fetchData(); return () => clearTimeout(popupTimer.current); }, [fetchData]);
 
   async function handleLike() {
     if (!user) return;
     const prevLiked = liked;
     const prevLikeCount = likeCount;
-    setLiked(!prevLiked);
+    const nowLiked = !prevLiked;
+    setLiked(nowLiked);
     setLikeCount(prevLiked ? prevLikeCount - 1 : prevLikeCount + 1);
+    if (nowLiked) {
+      setShowLikePopup(true);
+      clearTimeout(popupTimer.current);
+      popupTimer.current = setTimeout(() => setShowLikePopup(false), 1500) as unknown as ReturnType<typeof setTimeout>;
+    }
     try {
       const res = await fetch("/api/likes", {
         method: "POST",
@@ -82,10 +91,25 @@ export function PostActions({ postSlug }: Props) {
       <span className="text-sm font-medium">{likeCount}</span>
     </Link>
   ) : (
-    <button onClick={handleLike} className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all cursor-pointer ${liked ? "bg-neon-pink/10 border-neon-pink/30 text-neon-pink" : "bg-surface-alt border-border text-muted hover:border-neon-pink/30 hover:text-neon-pink"}`}>
-      <Heart size={20} className={liked ? "fill-neon-pink text-neon-pink" : ""} />
-      <span className="text-sm font-medium">{likeCount}</span>
-    </button>
+    <span className="relative inline-flex">
+      <button onClick={handleLike} className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all cursor-pointer ${liked ? "bg-neon-pink/10 border-neon-pink/30 text-neon-pink" : "bg-surface-alt border-border text-muted hover:border-neon-pink/30 hover:text-neon-pink"}`}>
+        <Heart size={20} className={liked ? "fill-neon-pink text-neon-pink" : ""} />
+        <span className="text-sm font-medium">{likeCount}</span>
+      </button>
+      <AnimatePresence>
+        {showLikePopup && (
+          <motion.span
+            initial={{ opacity: 0, y: 10, scale: 0.5 }}
+            animate={{ opacity: 1, y: -24, scale: 1 }}
+            exit={{ opacity: 0, y: -34, scale: 0.8 }}
+            className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 text-xs font-medium text-neon-pink whitespace-nowrap pointer-events-none"
+          >
+            <Heart size={12} className="fill-neon-pink" />
+            Liked!
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </span>
   );
 
   const bmBtn = !user ? (

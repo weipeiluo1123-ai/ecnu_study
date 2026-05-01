@@ -3,7 +3,6 @@ import { db } from "@/lib/db/index";
 import { users, userPosts, likes, bookmarks, views } from "@/lib/db/schema";
 import { eq, count } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
-import { getAllPosts } from "@/lib/posts";
 
 // GET /api/profile — get current user's full profile with stats
 export async function GET() {
@@ -17,16 +16,9 @@ export async function GET() {
     return NextResponse.json({ error: "用户不存在" }, { status: 404 });
   }
 
-  // Get all post slugs for this user (user_posts + MDX)
+  // Get post count from user_posts only (consistent with "my posts" page)
   const dbPosts = db.select({ slug: userPosts.slug }).from(userPosts).where(eq(userPosts.authorId, session.id)).all();
-  const allMdxPosts = getAllPosts();
-  const mdxPosts = allMdxPosts.filter(p => p.authorId === session.id).map(p => ({ slug: p.slug }));
-  const seen = new Set(dbPosts.map(p => p.slug));
-  const allSlugs = [...dbPosts];
-  for (const m of mdxPosts) {
-    if (!seen.has(m.slug)) allSlugs.push(m);
-  }
-  const slugList = allSlugs.map(s => s.slug);
+  const slugList = dbPosts.map(p => p.slug);
   const postCount = slugList.length;
 
   // Batch compute score: 3 queries total (not N per post)

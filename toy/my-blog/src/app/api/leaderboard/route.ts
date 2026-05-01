@@ -6,21 +6,8 @@ import { getAllPosts } from "@/lib/posts";
 
 function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): string | null {
   if (range === "all") return null;
-  const now = new Date();
-  // Use UTC midnight to match stored UTC timestamps
-  const todayUTC = now.toISOString().slice(0, 10); // "2026-05-02"
-  switch (range) {
-    case "daily":
-      return todayUTC + "T00:00:00.000Z";
-    case "weekly": {
-      const dayOfWeek = now.getUTCDay();
-      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      const monday = new Date(now.getTime() + mondayOffset * 86400000);
-      return monday.toISOString().slice(0, 10) + "T00:00:00.000Z";
-    }
-    case "monthly":
-      return now.toISOString().slice(0, 7) + "-01T00:00:00.000Z";
-  }
+  const ms = range === "daily" ? 86400000 : range === "weekly" ? 604800000 : 2592000000;
+  return new Date(Date.now() - ms).toISOString();
 }
 
 function batchCount(table: any, since: string | null) {
@@ -87,16 +74,20 @@ export async function GET(req: NextRequest) {
     }
 
     const s = scores[effectiveAuthorId];
-    s.postCount++;
 
     const likeCount = likeMap.get(post.slug) ?? 0;
     const bmCount = bmMap.get(post.slug) ?? 0;
     const viewCount = viewMap.get(post.slug) ?? 0;
 
+    // Only count posts that have interactions in this period
+    if (likeCount + bmCount + viewCount > 0) {
+      s.postCount++;
+    }
+
     s.totalLikes += likeCount;
     s.totalBookmarks += bmCount;
     s.totalViews += viewCount;
-    s.score += likeCount * 5 + bmCount * 10 + viewCount * 1;
+    s.score += likeCount * 5 + bmCount * 10 + viewCount * 1 + 1; // +1 base per interaction
   }
 
   // Compute unique interactors per author
