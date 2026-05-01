@@ -204,14 +204,16 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => toggleRole(u.id, u.role)}
-                          disabled={u.id === user?.id}
-                          className="p-1.5 rounded-md text-muted hover:text-neon-cyan transition-colors disabled:opacity-30 cursor-pointer"
-                          title={u.id === user?.id ? "不能修改自己" : "切换角色"}
-                        >
-                          <Shield size={16} />
-                        </button>
+                        {user?.role === "super_admin" && (
+                          <button
+                            onClick={() => toggleRole(u.id, u.role)}
+                            disabled={u.id === user?.id}
+                            className="p-1.5 rounded-md text-muted hover:text-neon-cyan transition-colors disabled:opacity-30 cursor-pointer"
+                            title={u.id === user?.id ? "不能修改自己" : "切换角色"}
+                          >
+                            <Shield size={16} />
+                          </button>
+                        )}
                         <button
                           onClick={() => deleteUser(u.id, u.username, u.role)}
                           disabled={u.id === user?.id || u.role === "super_admin"}

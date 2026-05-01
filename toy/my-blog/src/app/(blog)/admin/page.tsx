@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { Users, MessageSquare, Eye, Shield, ClipboardCheck, Crown } from "lucide-react";
+import { Users, MessageSquare, Eye, Shield, ClipboardCheck, Crown, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminPage() {
@@ -51,6 +51,13 @@ export default function AdminPage() {
       icon: MessageSquare,
       href: "/admin/comments",
       desc: "查看和管理评论",
+    },
+    {
+      label: "监控面板",
+      value: "图表",
+      icon: BarChart3,
+      href: "/admin/dashboard",
+      desc: "站点数据分析",
     },
     {
       label: "审核管理",

@@ -1,18 +1,19 @@
+"use client";
+
 import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-      <h1 className="text-6xl font-bold text-neon-cyan glitch" data-text="404">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-pink-950 px-6">
+      <div className="text-8xl font-bold bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent mb-4">
         404
-      </h1>
-      <p className="mt-4 text-xl text-muted">页面未找到</p>
-      <p className="mt-2 text-sm text-muted">你访问的页面不存在或已被移除</p>
+      </div>
+      <p className="text-purple-200/60 mb-8">这里好像什么都没有...</p>
       <Link
-        href="/home"
-        className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neon-cyan text-background font-medium hover:bg-neon-cyan/90 transition-all"
+        href="/"
+        className="px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105"
       >
-        返回首页
+        回到首页
       </Link>
     </div>
   );

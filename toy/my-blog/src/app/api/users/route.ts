@@ -32,6 +32,11 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "不能修改超级管理员" }, { status: 403 });
   }
 
+  // Only super_admin can change roles
+  if (role && session.role !== "super_admin") {
+    return NextResponse.json({ error: "无权修改用户角色" }, { status: 403 });
+  }
+
   const updateData: Record<string, any> = {};
   if (role) updateData.role = role;
   if (permissions) updateData.permissions = JSON.stringify(permissions);

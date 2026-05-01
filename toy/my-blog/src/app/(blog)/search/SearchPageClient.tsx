@@ -274,9 +274,39 @@ function SearchContent({ initialPosts }: { initialPosts: PostMeta[] }) {
               <p className="text-sm text-muted mt-1">试试其他关键词</p>
             </div>
           ) : (
-            <div className="text-center py-20">
-              <User size={48} className="mx-auto text-muted/30 mb-4" />
-              <p className="text-muted">输入关键词搜索用户</p>
+            <div className="mt-8">
+              {usersLoaded && users.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {users.slice(0, 6).map((u) => (
+                    <Link
+                      key={u.id}
+                      href={`/users/${u.id}`}
+                      className="rounded-xl border border-border bg-surface p-4 hover:border-neon-cyan/30 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-bold shrink-0 ${
+                          u.role === "super_admin"
+                            ? "bg-gradient-to-br from-amber-400 to-orange-600 text-white"
+                            : "bg-neon-cyan/20 text-neon-cyan"
+                        }`}>
+                          {u.role === "super_admin" ? <Crown size={16} /> : u.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="text-sm font-medium text-foreground group-hover:text-neon-cyan transition-colors truncate">
+                            {u.username}
+                          </span>
+                          {u.bio && <p className="text-xs text-muted truncate">{u.bio}</p>}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <User size={32} className="mx-auto text-muted/30 mb-2" />
+                  <p className="text-sm text-muted">输入关键词搜索用户</p>
+                </div>
+              )}
             </div>
           )}
         </AnimatedSection>

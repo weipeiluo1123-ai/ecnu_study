@@ -66,7 +66,7 @@ export default function LeaderboardPage() {
   const paginated = data.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
       <AnimatedSection>
         <div className="flex items-center gap-3 mb-2">
           <Trophy size={28} className="text-neon-yellow" />
