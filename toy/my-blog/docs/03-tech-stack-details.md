@@ -196,17 +196,39 @@ DELETE /api/comments?id=xxx         → 删除评论（本人或管理员）
 
 ### 周期
 
-- **每日**：24 小时内数据
-- **每周**：7 天内数据
-- **每月**：30 天内数据
+四个时间维度标签页，默认展示"总分"：
+
+| 标签 | API range 参数 | 时间范围 |
+|------|---------------|---------|
+| 总分 | `all` | 全部时间（无时间过滤） |
+| 每日 | `daily` | 过去 24 小时 |
+| 每周 | `weekly` | 过去 7 天 |
+| 每月 | `monthly` | 过去 30 天 |
+
+### 实现细节
+
+积分基于 `likes`、`bookmarks`、`views` 事件表中的 `created_at` 时间戳进行范围过滤：
+
+```typescript
+function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): Date | null {
+  if (range === "all") return null; // 无时间限制
+  // ... daily/weekly/monthly 计算偏移
+}
+
+// 查询时根据 since 决定是否加时间条件
+function withTimeFilter(table, slug) {
+  if (!since) return sql`${table.postSlug} = ${slug}`;
+  return sql`${table.postSlug} = ${slug} AND ${table.createdAt} >= ${since.toISOString()}`;
+}
+```
 
 ### API
 
 ```
-GET /api/leaderboard?range=daily|weekly|monthly
+GET /api/leaderboard?range=all|daily|weekly|monthly
 ```
 
-返回按积分降序排列的前 20 名用户。
+返回按积分降序排列的前 20 名用户。`range` 参数默认为 `all`。
 
 ---
 

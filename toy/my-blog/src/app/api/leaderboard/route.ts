@@ -4,7 +4,8 @@ import { likes, bookmarks, views } from "@/lib/db/schema";
 import { count, sql } from "drizzle-orm";
 import { getAllPosts } from "@/lib/posts";
 
-function getDateRange(range: "daily" | "weekly" | "monthly"): Date {
+function getDateRange(range: "daily" | "weekly" | "monthly" | "all"): Date | null {
+  if (range === "all") return null;
   const now = new Date();
   switch (range) {
     case "daily":
@@ -18,8 +19,14 @@ function getDateRange(range: "daily" | "weekly" | "monthly"): Date {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const range = (searchParams.get("range") || "weekly") as "daily" | "weekly" | "monthly";
-  const since = getDateRange(range).toISOString();
+  const range = (searchParams.get("range") || "all") as "daily" | "weekly" | "monthly" | "all";
+  const since = getDateRange(range);
+
+  // Build where clause; null since = no date filter (all time)
+  function withTimeFilter(table: { postSlug: any; createdAt: any }, slug: string) {
+    if (!since) return sql`${table.postSlug} = ${slug}`;
+    return sql`${table.postSlug} = ${slug} AND ${table.createdAt} >= ${since.toISOString()}`;
+  }
 
   // Get ALL posts (MDX + user_posts) with author info
   const allPosts = getAllPosts();
@@ -56,7 +63,7 @@ export async function GET(req: NextRequest) {
 
     // Likes within time range
     const likesInRange = db.select({ count: count() }).from(likes)
-      .where(sql`${likes.postSlug} = ${post.slug} AND ${likes.createdAt} >= ${since}`)
+      .where(withTimeFilter(likes, post.slug))
       .get();
     const likeCount = likesInRange?.count || 0;
     s.totalLikes += likeCount;
@@ -64,7 +71,7 @@ export async function GET(req: NextRequest) {
 
     // Bookmarks within time range
     const bmInRange = db.select({ count: count() }).from(bookmarks)
-      .where(sql`${bookmarks.postSlug} = ${post.slug} AND ${bookmarks.createdAt} >= ${since}`)
+      .where(withTimeFilter(bookmarks, post.slug))
       .get();
     const bmCount = bmInRange?.count || 0;
     s.totalBookmarks += bmCount;
@@ -72,7 +79,7 @@ export async function GET(req: NextRequest) {
 
     // Views within time range
     const viewsInRange = db.select({ count: count() }).from(views)
-      .where(sql`${views.postSlug} = ${post.slug} AND ${views.createdAt} >= ${since}`)
+      .where(withTimeFilter(views, post.slug))
       .get();
     const viewCount = viewsInRange?.count || 0;
     s.totalViews += viewCount;

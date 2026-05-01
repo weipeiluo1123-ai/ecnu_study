@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { Trophy, Medal, TrendingUp, Calendar, Star } from "lucide-react";
+import { Trophy, Medal, TrendingUp, Calendar } from "lucide-react";
 import Link from "next/link";
 
 interface LeaderboardEntry {
@@ -16,22 +16,24 @@ interface LeaderboardEntry {
   totalBookmarks: number;
 }
 
-type Range = "daily" | "weekly" | "monthly";
+type Range = "all" | "daily" | "weekly" | "monthly";
 
 const rangeLabels: Record<Range, string> = {
+  all: "总分",
   daily: "每日",
   weekly: "每周",
   monthly: "每月",
 };
 
 const rangeIcons: Record<Range, any> = {
+  all: Trophy,
   daily: Calendar,
   weekly: TrendingUp,
   monthly: Star,
 };
 
 export default function LeaderboardPage() {
-  const [range, setRange] = useState<Range>("weekly");
+  const [range, setRange] = useState<Range>("all");
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -70,7 +72,7 @@ export default function LeaderboardPage() {
       {/* Range Tabs */}
       <AnimatedSection delay={0.05} className="mt-8">
         <div className="flex gap-2">
-          {(["daily", "weekly", "monthly"] as Range[]).map((r) => {
+          {(["all", "daily", "weekly", "monthly"] as Range[]).map((r) => {
             const Icon = rangeIcons[r];
             const active = range === r;
             return (
