@@ -5,6 +5,14 @@ import { db } from "@/lib/db/index";
 import { userPosts, users, likes, bookmarks } from "@/lib/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 
+// In-memory cache: MDX posts never change at runtime, cache indefinitely
+let mdxCache: PostMeta[] | null = null;
+
+// getAllPosts() result cache with 6s TTL — avoids redoing heavy work
+// on every dynamic render (searchParams forces /posts to be dynamic)
+let allPostsCache: { data: PostMeta[]; time: number } | null = null;
+const ALL_POSTS_TTL = 6000;
+
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
 export interface PostMeta {
@@ -88,12 +96,14 @@ export function getPostBySlug(slug: string): PostData | null {
 }
 
 function getAllMdxPosts(): PostMeta[] {
+  if (mdxCache) return mdxCache;
   const slugs = getPostSlugs();
-  return slugs
+  mdxCache = slugs
     .map((slug) => getPostBySlug(slug.replace(/\.(md|mdx)$/, "")))
     .filter((post): post is PostData => post !== null && post.published)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .map(({ content: _, ...meta }) => meta);
+  return mdxCache;
 }
 
 function getAllDbPosts(): PostMeta[] {
@@ -138,6 +148,12 @@ function getAllDbPosts(): PostMeta[] {
 }
 
 export function getAllPosts(): PostMeta[] {
+  // Use cached result if within TTL
+  const now = Date.now();
+  if (allPostsCache && now - allPostsCache.time < ALL_POSTS_TTL) {
+    return allPostsCache.data;
+  }
+
   const mdx = getAllMdxPosts();
   const dbp = getAllDbPosts();
 
@@ -178,7 +194,9 @@ export function getAllPosts(): PostMeta[] {
     // Silently fail; counts default to 0
   }
 
-  return merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const result = merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  allPostsCache = { data: result, time: Date.now() };
+  return result;
 }
 
 export function getPostsByCategory(category: string): PostMeta[] {
@@ -210,6 +228,11 @@ export function getAllTags(): Record<string, number> {
     });
   });
   return counts;
+}
+
+/** Call after creating/editing/deleting a user post to invalidate cache */
+export function clearPostsCache() {
+  allPostsCache = null;
 }
 
 export function getFeaturedPosts(): PostMeta[] {

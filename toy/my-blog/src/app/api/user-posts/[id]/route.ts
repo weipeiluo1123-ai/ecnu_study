@@ -4,6 +4,7 @@ import { userPosts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
 import { normalizeTags } from "@/lib/constants";
+import { clearPostsCache } from "@/lib/posts";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -76,6 +77,8 @@ export async function PATCH(req: NextRequest, { params }: Props) {
 
   db.update(userPosts).set(updateData).where(eq(userPosts.id, postId)).run();
 
+  clearPostsCache();
+
   return NextResponse.json({ ok: true, post: { id: postId, ...updateData } });
 }
 
@@ -105,6 +108,8 @@ export async function DELETE(req: NextRequest, { params }: Props) {
   }
 
   db.delete(userPosts).where(eq(userPosts.id, postId)).run();
+
+  clearPostsCache();
 
   return NextResponse.json({ ok: true });
 }

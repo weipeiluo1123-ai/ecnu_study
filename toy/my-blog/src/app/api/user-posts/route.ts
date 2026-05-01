@@ -4,7 +4,7 @@ import { userPosts, users } from "@/lib/db/schema";
 import { eq, desc, count } from "drizzle-orm";
 import { getSession, canUser } from "@/lib/auth";
 import { normalizeTags } from "@/lib/constants";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts, clearPostsCache } from "@/lib/posts";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -103,6 +103,8 @@ export async function POST(req: NextRequest) {
     createdAt: now,
     updatedAt: now,
   }).run();
+
+  clearPostsCache();
 
   return NextResponse.json({
     post: {
