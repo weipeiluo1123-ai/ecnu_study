@@ -161,6 +161,25 @@ POST /api/comments                  → 发表评论
 DELETE /api/comments?id=xxx         → 删除评论（本人或管理员）
 ```
 
+### PostActions 底部操作栏
+
+文章详情页底部（评论区上方）有一个独立操作栏 `PostActions`：
+
+- **点赞按钮**（心形）：霓虹粉色，`rounded-full` 椭圆形
+- **收藏按钮**（书签形）：霓虹青色，`rounded-full` 椭圆形
+- 尺寸：`px-6 py-3`，比顶部栏按钮更大更明显
+- 未登录时点击跳转登录页
+- 已登录时即时交互（乐观更新 + 服务端同步）
+- 同时显示当前计数
+- 使用 `AnimatedSection` 带有入场动画
+
+### 文章卡片点赞/收藏展示
+
+文章列表卡片（`PostCard`）不再显示阅读时长，改为展示：
+- 点赞数（Heart 图标 + 数字）
+- 收藏数（Bookmark 图标 + 数字）
+- 数据来源：用户文章从 `user_posts` 表实时读取；MDX 文章从 `likes`/`bookmarks` 表批量查询聚合
+
 ---
 
 ## 排行榜系统
