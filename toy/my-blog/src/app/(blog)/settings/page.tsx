@@ -183,6 +183,7 @@ export default function SettingsPage() {
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={3}
+            maxLength={500}
             className="w-full bg-surface-alt border border-border rounded-xl px-4 py-3 text-foreground outline-none placeholder:text-muted focus:border-neon-cyan/50 transition-colors resize-y text-sm"
             placeholder="介绍一下你自己、你的技术兴趣和爱好..."
           />

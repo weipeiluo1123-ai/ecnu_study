@@ -12,9 +12,15 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { addToast } = useToast();
   const router = useRouter();
+
+  // Redirect if already logged in
+  if (user) {
+    router.replace("/home");
+    return null;
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

@@ -15,7 +15,8 @@ function extractCodeBlocks(md: string) {
     blocks.push({ lang, code });
     return `\n%%CB${idx}%%\n`;
   });
-  return { safe, blocks };
+  // Escape any remaining unclosed ``` markers (prevent HTML corruption)
+  return { safe: safe.replace(/```/g, "&#96;&#96;&#96;"), blocks };
 }
 
 // ── Inline helpers ──────────────────────────────────────────────

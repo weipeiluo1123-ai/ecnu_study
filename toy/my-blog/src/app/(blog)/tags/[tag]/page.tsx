@@ -35,7 +35,7 @@ export default async function TagPage({ params, searchParams }: Props) {
   const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
   const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
   const allPosts = getPostsByTag(tag);
-  const tagInfo = TAGS.find((t) => t.slug === tag);
+  const tagInfo = TAGS.find((t) => t.slug === tag.toLowerCase());
   const tagName = tagInfo?.name || tag;
   const { posts, totalPages, currentPage } = paginatePosts(allPosts, page, pageSize);
 

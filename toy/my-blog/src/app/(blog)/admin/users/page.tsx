@@ -138,7 +138,8 @@ export default function AdminUsersPage() {
             </thead>
             <tbody>
               {users.map((u) => {
-                const perms = JSON.parse(u.permissions || "{}");
+                let perms: Record<string, boolean> = {};
+                try { perms = JSON.parse(u.permissions || "{}"); } catch { /* corrupt data */ }
                 return (
                   <tr key={u.id} className="border-b border-border hover:bg-surface-alt/50 transition-colors">
                     <td className="py-3 px-4 text-muted">{u.id}</td>

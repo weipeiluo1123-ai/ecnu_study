@@ -20,7 +20,7 @@ export default async function UserProfilePage({ params, searchParams }: Props) {
   const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
   const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
   const userId = parseInt(id);
-  if (!userId) notFound();
+  if (isNaN(userId) || userId < 1) notFound();
 
   const user = db.select().from(users).where(eq(users.id, userId)).get();
   if (!user) notFound();

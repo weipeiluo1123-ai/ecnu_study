@@ -11,11 +11,16 @@ export function ViewCounter({ postSlug }: Props) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
-    // Generate a simple visitor ID
-    let vid = localStorage.getItem("nexus_visitor_id");
-    if (!vid) {
-      vid = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      localStorage.setItem("nexus_visitor_id", vid);
+    let vid = "anonymous";
+    try {
+      let stored = localStorage.getItem("nexus_visitor_id");
+      if (!stored) {
+        stored = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        localStorage.setItem("nexus_visitor_id", stored);
+      }
+      vid = stored;
+    } catch {
+      // localStorage unavailable (private browsing, etc.)
     }
 
     // Increment view on every visit

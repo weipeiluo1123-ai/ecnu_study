@@ -36,7 +36,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
   const pageSize = Math.min(50, Math.max(1, parseInt(sp.pageSize || "10", 10) || 10));
   const allPosts = getPostsByCategory(category);
-  const catInfo = CATEGORIES.find((c) => c.slug === category);
+  const catInfo = CATEGORIES.find((c) => c.slug === category.toLowerCase());
 
   if (!catInfo) notFound();
 

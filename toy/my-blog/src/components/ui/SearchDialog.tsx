@@ -23,6 +23,14 @@ export function SearchDialog({ open, onClose }: Props) {
     }
   }, [open]);
 
+  // ESC key to close
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [open, onClose]);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
@@ -61,6 +69,7 @@ export function SearchDialog({ open, onClose }: Props) {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="搜索文章、标签、分类..."
+                  maxLength={200}
                   className="flex-1 bg-transparent pl-12 pr-12 py-4 text-foreground text-base outline-none placeholder:text-muted"
                 />
                 {query && (
