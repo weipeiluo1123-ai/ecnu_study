@@ -3,6 +3,7 @@
 import { ThemeProvider } from "next-themes";
 import { type ReactNode } from "react";
 import { ToastProvider } from "@/hooks/useToast";
+import { AuthProvider } from "@/hooks/useAuth";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -13,7 +14,9 @@ export function Providers({ children }: { children: ReactNode }) {
       storageKey="nexus-blog-theme"
     >
       <ToastProvider>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </ToastProvider>
     </ThemeProvider>
   );
