@@ -27,11 +27,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
+    if (loading || !user) return;
     loadPost();
   }, [user, loading, router, id]);
 

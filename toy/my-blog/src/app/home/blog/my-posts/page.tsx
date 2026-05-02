@@ -42,11 +42,7 @@ export default function MyPostsPage() {
   const [filterTag, setFilterTag] = useState<string | null>(null);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
+    if (loading || !user) return;
     fetchMyPosts();
   }, [user, loading, router]);
 

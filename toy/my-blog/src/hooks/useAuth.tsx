@@ -107,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // Client state cleared regardless of network error
     }
+    window.location.href = "/";
   }, []);
 
   return (

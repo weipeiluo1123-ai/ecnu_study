@@ -64,17 +64,7 @@ export default function NewPostPage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <FileText size={48} className="mx-auto text-muted/30 mb-4" />
-        <p className="text-muted">请先登录后再发布文章</p>
-        <Link href="/auth/login" className="text-neon-cyan hover:underline mt-3 inline-block">
-          去登录
-        </Link>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">

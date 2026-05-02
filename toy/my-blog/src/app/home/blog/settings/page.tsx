@@ -24,11 +24,7 @@ export default function SettingsPage() {
   const [savingBio, setSavingBio] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
+    if (loading || !user) return;
     setNewName(user.username);
     loadProfile();
   }, [user, loading, router]);
