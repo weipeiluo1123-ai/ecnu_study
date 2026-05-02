@@ -29,7 +29,7 @@ export default function AdminUsersPage() {
     try {
       const res = await fetch("/api/users");
       if (!res.ok) {
-        if (res.status === 403) router.push("/home/blog/auth/login");
+        if (res.status === 403) router.push("/auth/login");
         return;
       }
       const data = await res.json();
@@ -44,7 +44,7 @@ export default function AdminUsersPage() {
   useEffect(() => {
     if (loading) return;
     if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
-      router.push("/home/blog/auth/login");
+      router.push("/auth/login");
       return;
     }
     fetchUsers();

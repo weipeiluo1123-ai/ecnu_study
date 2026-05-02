@@ -304,7 +304,7 @@ export function CommentSection({ postSlug }: Props) {
         </div>
       ) : (
         <div className="mb-8 p-4 rounded-xl bg-surface-alt border border-border text-center text-sm text-muted">
-          <Link href="/home/blog/auth/login" className="text-neon-cyan hover:underline">登录</Link>
+          <Link href="/auth/login" className="text-neon-cyan hover:underline">登录</Link>
           {" 后即可评论"}
         </div>
       )}

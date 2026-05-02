@@ -26,7 +26,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.push("/home/blog/auth/login");
+      router.push("/auth/login");
       return;
     }
     setNewName(user.username);

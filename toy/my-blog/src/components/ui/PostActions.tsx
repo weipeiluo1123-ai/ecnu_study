@@ -86,7 +86,7 @@ export function PostActions({ postSlug }: Props) {
   }
 
   const likeBtn = !user ? (
-    <Link href="/home/blog/auth/login" className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all cursor-pointer ${liked ? "bg-neon-pink/10 border-neon-pink/30 text-neon-pink" : "bg-surface-alt border-border text-muted hover:border-neon-pink/30 hover:text-neon-pink"}`}>
+    <Link href="/auth/login" className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all cursor-pointer ${liked ? "bg-neon-pink/10 border-neon-pink/30 text-neon-pink" : "bg-surface-alt border-border text-muted hover:border-neon-pink/30 hover:text-neon-pink"}`}>
       <Heart size={20} className={liked ? "fill-neon-pink text-neon-pink" : ""} />
       <span className="text-sm font-medium">{likeCount}</span>
     </Link>
@@ -113,7 +113,7 @@ export function PostActions({ postSlug }: Props) {
   );
 
   const bmBtn = !user ? (
-    <Link href="/home/blog/auth/login" className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all cursor-pointer ${bookmarked ? "bg-neon-cyan/10 border-neon-cyan/30 text-neon-cyan" : "bg-surface-alt border-border text-muted hover:border-neon-cyan/30 hover:text-neon-cyan"}`}>
+    <Link href="/auth/login" className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all cursor-pointer ${bookmarked ? "bg-neon-cyan/10 border-neon-cyan/30 text-neon-cyan" : "bg-surface-alt border-border text-muted hover:border-neon-cyan/30 hover:text-neon-cyan"}`}>
       <Bookmark size={20} className={bookmarked ? "fill-neon-cyan text-neon-cyan" : ""} />
       <span className="text-sm font-medium">{bmCount}</span>
     </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -65,10 +65,12 @@ export default function RegisterForm() {
   const { register, sendCode, user, loading: authLoading } = useAuth();
   const { addToast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/home/blog";
 
   useEffect(() => {
-    if (user && !authLoading) router.replace("/home/blog");
-  }, [user, authLoading, router]);
+    if (user && !authLoading) router.replace(redirect);
+  }, [user, authLoading, router, redirect]);
 
   async function handleSendCode() {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -106,7 +108,7 @@ export default function RegisterForm() {
       addToast("error", err);
     } else {
       addToast("success", "注册成功！");
-      setTimeout(() => router.push("/home/blog"), 800);
+      setTimeout(() => router.push(redirect), 800);
     }
   }
 

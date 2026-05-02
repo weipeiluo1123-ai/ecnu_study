@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (loading) return;
     if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
-      router.push("/home/blog/auth/login");
+      router.push("/auth/login");
     }
   }, [user, loading, router]);
 

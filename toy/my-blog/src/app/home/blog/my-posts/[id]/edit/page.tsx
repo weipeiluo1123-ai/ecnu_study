@@ -29,7 +29,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.push("/home/blog/auth/login");
+      router.push("/auth/login");
       return;
     }
     loadPost();

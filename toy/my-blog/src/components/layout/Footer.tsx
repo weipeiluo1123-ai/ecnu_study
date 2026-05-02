@@ -54,7 +54,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/home/blog/auth/login" className="text-sm text-muted hover:text-neon-cyan transition-colors">
+                <Link href="/auth/login" className="text-sm text-muted hover:text-neon-cyan transition-colors">
                   登录 / 注册
                 </Link>
               </li>

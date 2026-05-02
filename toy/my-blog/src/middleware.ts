@@ -1,32 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const publicPaths = [
+const trulyPublic = [
   "/",
-  "/home",      // redirects to /
   "/auth",
   "/api",
   "/feed.xml",
   "/sitemap.xml",
   "/robots.txt",
-  "/_next",
   "/favicon.ico",
 ];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public paths
-  if (publicPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+  // /home alone (not /home/blog) is the redirect page, allow it
+  if (pathname === "/home" || pathname === "/home/") {
+    return NextResponse.next();
+  }
+
+  // Allow truly public paths
+  if (trulyPublic.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     return NextResponse.next();
   }
 
   // Allow static files
-  if (pathname.startsWith("/_next") || pathname.match(/\.(ico|png|svg|jpg|woff2?|js|css)$/)) {
+  if (pathname.startsWith("/_next") || /\.(ico|png|svg|jpg|woff2?|js|css)$/.test(pathname)) {
     return NextResponse.next();
   }
 
-  // Everything else (including /home/blog/*) requires auth
+  // Protect /home/blog/* and all other routes
   const token = request.cookies.get("nexus_token")?.value;
   if (!token) {
     const loginUrl = new URL("/auth/login", request.url);

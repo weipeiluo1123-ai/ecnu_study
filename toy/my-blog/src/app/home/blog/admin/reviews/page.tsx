@@ -67,7 +67,7 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     if (loading) return;
     if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
-      router.push("/home/blog/auth/login");
+      router.push("/auth/login");
       return;
     }
     fetchData();

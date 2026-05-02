@@ -11,18 +11,21 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user) {
-      const loginUrl = `/auth/login?redirect=${encodeURIComponent(pathname)}`;
-      router.replace(loginUrl);
+      router.replace(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
     }
   }, [user, loading, router, pathname]);
 
-  if (loading || !user) {
+  // Show nothing while checking auth
+  if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="animate-pulse text-lg tracking-widest text-neon-cyan/50">✦</div>
       </div>
     );
   }
+
+  // Not logged in — useEffect will redirect, show minimal placeholder
+  if (!user) return null;
 
   return <>{children}</>;
 }

@@ -67,7 +67,7 @@ export function LikeButton({ postSlug }: Props) {
   if (!user) {
     return (
       <Link
-        href="/home/blog/auth/login"
+        href="/auth/login"
         className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-neon-cyan transition-colors"
       >
         <Heart size={16} />
