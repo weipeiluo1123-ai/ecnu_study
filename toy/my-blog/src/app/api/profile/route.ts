@@ -51,11 +51,14 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "请先登录" }, { status: 401 });
   }
 
-  const { bio } = await req.json();
+  const body = await req.json();
+  if (!body || !("bio" in body)) {
+    return NextResponse.json({ error: "缺少 bio 字段" }, { status: 400 });
+  }
   const now = new Date().toISOString();
 
   db.update(users)
-    .set({ bio: bio ?? null, updatedAt: now })
+    .set({ bio: body.bio || null, updatedAt: now })
     .where(eq(users.id, session.id))
     .run();
 

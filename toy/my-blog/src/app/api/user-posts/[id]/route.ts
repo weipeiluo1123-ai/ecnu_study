@@ -68,8 +68,8 @@ export async function PATCH(req: NextRequest, { params }: Props) {
   const now = new Date().toISOString();
 
   const updateData: Record<string, any> = { updatedAt: now };
-  if (title !== undefined) updateData.title = title;
-  if (content !== undefined) updateData.content = content;
+  if (title != null) updateData.title = title;
+  if (content != null) updateData.content = content;
   if (description !== undefined) updateData.description = description;
   if (category !== undefined) updateData.category = category;
   if (tags !== undefined) updateData.tags = JSON.stringify(normalizeTags(tags));

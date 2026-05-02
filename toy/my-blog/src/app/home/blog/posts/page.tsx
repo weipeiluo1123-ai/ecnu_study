@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import { getAllPosts, paginatePosts } from "@/lib/posts";
 import { POSTS_PER_PAGE } from "@/lib/constants";
 import { PostCard } from "@/components/ui/PostCard";
@@ -65,7 +66,9 @@ export default async function PostsPage({ searchParams }: Props) {
                 : "暂无文章"}
             </p>
           </div>
-          <PostsSortBar current={sort} />
+          <Suspense fallback={<div className="h-8 w-40 skeleton rounded-lg" />}>
+            <PostsSortBar current={sort} />
+          </Suspense>
         </div>
       </AnimatedSection>
 

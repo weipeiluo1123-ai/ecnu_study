@@ -26,6 +26,10 @@ export async function PATCH(req: NextRequest) {
 
   const { userId, username, role, permissions, bio } = await req.json();
 
+  if (!userId || typeof userId !== "number") {
+    return NextResponse.json({ error: "缺少有效的 userId" }, { status: 400 });
+  }
+
   // Protect super_admin from modification by regular admin
   const targetUser = db.select().from(users).where(eq(users.id, userId)).get();
   if (targetUser?.role === "super_admin" && session.role !== "super_admin") {
@@ -59,6 +63,9 @@ export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = parseInt(searchParams.get("id") || "");
 
+  if (isNaN(userId) || userId < 1) {
+    return NextResponse.json({ error: "缺少有效的用户 ID" }, { status: 400 });
+  }
   if (userId === session.id) {
     return NextResponse.json({ error: "不能删除自己" }, { status: 400 });
   }

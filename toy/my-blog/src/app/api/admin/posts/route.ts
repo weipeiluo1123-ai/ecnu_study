@@ -4,6 +4,7 @@ import { userPosts, users, likes, bookmarks, comments, views } from "@/lib/db/sc
 import { eq, desc } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
 import { clearPostsCache } from "@/lib/posts";
+import { revalidatePath } from "next/cache";
 
 // GET /api/admin/posts — list all user-published articles (admin/super_admin only)
 export async function GET() {
@@ -42,6 +43,10 @@ export async function PATCH(req: NextRequest) {
   }
 
   const { postId, isPublished, title, description, category } = await req.json();
+
+  if (!postId || typeof postId !== "number") {
+    return NextResponse.json({ error: "缺少有效的 postId" }, { status: 400 });
+  }
 
   const post = db.select().from(userPosts).where(eq(userPosts.id, postId)).get();
   if (!post) {
@@ -88,6 +93,7 @@ export async function DELETE(req: NextRequest) {
   db.delete(userPosts).where(eq(userPosts.id, postId)).run();
 
   clearPostsCache();
+  revalidatePath("/home/blog/posts/" + post.slug);
 
   return NextResponse.json({ ok: true });
 }

@@ -20,12 +20,16 @@ export function Pagination({ currentPage, totalPages, basePath, pageSize = 10, s
   if (totalPages <= 1 && !showSizeSelector) return null;
 
   function getPageLink(page: number, size?: number) {
-    const params = new URLSearchParams();
+    // Split basePath into path + existing query params
+    const [path, existingQs] = basePath.split("?");
+    const params = new URLSearchParams(existingQs || "");
     if (page > 1) params.set("page", String(page));
+    else params.delete("page");
     if (size !== undefined && size !== 10) params.set("pageSize", String(size));
+    else params.delete("pageSize");
     const qs = params.toString();
-    if (!qs) return basePath;
-    return `${basePath}?${qs}`;
+    if (!qs) return path;
+    return `${path}?${qs}`;
   }
 
   function getVisiblePages(): (number | "...")[] {

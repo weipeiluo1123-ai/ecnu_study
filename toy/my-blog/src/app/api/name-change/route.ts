@@ -86,6 +86,10 @@ export async function PATCH(req: NextRequest) {
 
   const { requestId, action } = await req.json();
 
+  if (!requestId || typeof requestId !== "number") {
+    return NextResponse.json({ error: "缺少有效的 requestId" }, { status: 400 });
+  }
+
   const request = db.select().from(nameChangeRequests).where(eq(nameChangeRequests.id, requestId)).get();
   if (!request) {
     return NextResponse.json({ error: "请求不存在" }, { status: 404 });
