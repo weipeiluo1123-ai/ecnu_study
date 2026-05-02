@@ -37,7 +37,11 @@
       "Bash(curl -s \"http://localhost:3000/api/comments?postSlug=user-1777561300880-%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B\")",
       "Bash(curl -s -o /dev/null -w \"lospbak-blog: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559318959-lospbak-blog\")",
       "Bash(curl -s -o /dev/null -w \"morn1ng-blog: %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559003968-morn1ng-blog\")",
-      "Bash(curl -s -o /dev/null -w \"morn1ng\\(encoded\\): %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559003968-morn1ng-blog\")"
+      "Bash(curl -s -o /dev/null -w \"morn1ng\\(encoded\\): %{http_code}\\\\n\" \"http://localhost:3000/posts/user-1777559003968-morn1ng-blog\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "WebFetch(domain:43.138.158.121)"
     ]
   }
 }
