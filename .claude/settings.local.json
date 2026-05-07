@@ -41,7 +41,18 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(git push *)",
-      "WebFetch(domain:43.138.158.121)"
+      "WebFetch(domain:43.138.158.121)",
+      "Bash(sqlite3 blog.db \".tables\")",
+      "Bash(sqlite3 blog.db \"SELECT id, username, email, role, bio, created_at FROM users;\")",
+      "Bash(sqlite3 blog.db \"SELECT id, title, slug, category, author_id, likes_count, views_count, bookmarks_count, created_at FROM user_posts;\")",
+      "Bash(sqlite3 blog.db \"SELECT id, post_slug, author_id, author_name, substr\\(content,1,60\\) as content_preview, parent_id, created_at FROM comments;\")",
+      "Bash(sqlite3 blog.db \"SELECT * FROM likes;\")",
+      "Bash(sqlite3 landing.db \".tables\")",
+      "Bash(sqlite3 landing.db \"SELECT id, username, email, role, created_at FROM users;\")",
+      "Bash(sqlite3 landing.db \"SELECT id, email, code, type, expires_at, used_at FROM verification_codes;\")",
+      "Bash(sqlite3 blog.db \"SELECT * FROM users_new;\")",
+      "Bash(sqlite3 blog.db \".schema users_new\")",
+      "Bash(sqlite3 blog.db \".schema users\")"
     ]
   }
 }
